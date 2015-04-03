@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>c3photo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="
+Fernando E. Miguez
+">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Simulates C3 photosynthesis</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>c3photo(Qp, Tl, RH, vcmax&nbsp;=&nbsp;100, jmax&nbsp;=&nbsp;180, Rd&nbsp;=&nbsp;1.1, Catm&nbsp;=&nbsp;380, O2&nbsp;=&nbsp;210, b0&nbsp;=&nbsp;0.08, b1&nbsp;=&nbsp;5, theta&nbsp;=&nbsp;0.7, StomWS&nbsp;=&nbsp;1, ws&nbsp;=&nbsp;c("gs", "vmax"))</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>Qp</dt>
+      <dd>Quantum flux</dd>
+      <dt>Tl</dt>
+      <dd>Leaf temperature</dd>
+      <dt>RH</dt>
+      <dd>Relative humidity (fraction -- 0-1)</dd>
+      <dt>vcmax</dt>
+      <dd>Maximum rate of carboxylation</dd>
+      <dt>jmax</dt>
+      <dd>Maximum rate of electron transport</dd>
+      <dt>Rd</dt>
+      <dd>Leaf dark respiration</dd>
+      <dt>Catm</dt>
+      <dd>Atmospheric carbon dioxide.</dd>
+      <dt>O2</dt>
+      <dd>Atmospheric Oxygen concentration (mmol/mol)</dd>
+      <dt>b0</dt>
+      <dd>Intercept for the Ball-Berry model</dd>
+      <dt>b1</dt>
+      <dd>Slope for the Ball-Berry model</dd>
+      <dt>theta</dt>
+      <dd>Curvature parameter</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+A list
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Simulates coupled assimilation and stomatal conductance
+based on Farquhar and Ball-Berry.</p>
+  
+    </div>
+
+    <div class="Note">
+      <h2>Note</h2>
+
+      <p>~~further notes~~ ## Additional notes about assumptions</p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p>Farquhar (1980) Ball-Berry (1987)</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## Testing the c3photo function
+## First example: looking at the effect of changing Vcmax
+Qps &lt;- seq(0,2000,10)
+Tls &lt;- seq(0,55,5)
+rhs &lt;- c(0.7)
+dat1 &lt;- data.frame(expand.grid(Qp=Qps,Tl=Tls,RH=rhs))
+
+res1 &lt;- c3photo(dat1$Qp,dat1$Tl,dat1$RH) ## default Vcmax = 100
+res2 &lt;- c3photo(dat1$Qp,dat1$Tl,dat1$RH,vcmax=120)
+
+## Plot comparing alpha 0.04 vs. 0.06 for a range of conditions
+xyplot(res1$Assim + res2$Assim ~ Qp | factor(Tl) , data = dat1,
+            type=&#39;l&#39;,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2,
+            ylab=expression(paste(&#39;Assimilation (&#39;,
+                 mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+             xlab=expression(paste(&#39;Quantum flux (&#39;,
+                 mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+            key=list(text=list(c(&#39;Vcmax 100&#39;,&#39;Vcmax 120&#39;)),
+              lines=TRUE,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2))
+</div>
+<p><img src='c3photo-2.png' alt='' width='540' height='400' /></p>
+<div class='input'>
+## Second example: looking at the effect of changing Jmax
+## Plot comparing Jmax 300 vs. 100 for a range of conditions
+
+res1 &lt;- c3photo(dat1$Qp,dat1$Tl,dat1$RH) ## default Jmax = 300
+res2 &lt;- c3photo(dat1$Qp,dat1$Tl,dat1$RH,jmax=100)
+
+xyplot(res1$Assim + res2$Assim ~ Qp | factor(Tl) , data = dat1,
+           type=&#39;l&#39;,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2,
+            ylab=expression(paste(&#39;Assimilation (&#39;,
+                 mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+             xlab=expression(paste(&#39;Quantum flux (&#39;,
+                 mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+            key=list(text=list(c(&#39;Jmax 300&#39;,&#39;Jmax 100&#39;)),
+              lines=TRUE,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2))
+</div>
+<p><img src='c3photo-4.png' alt='' width='540' height='400' /></p>
+<div class='input'>
+## A/Ci curve
+
+Ca &lt;- seq(20,1000,length.out=50)
+dat2 &lt;- data.frame(Qp=rep(700,50), Tl=rep(25,50), rh=rep(0.7,50))
+res1 &lt;- c3photo(dat2$Qp, dat2$Tl, dat2$rh, Catm = Ca)
+res2 &lt;- c3photo(dat2$Qp, dat2$Tl, dat2$rh, Catm = Ca, vcmax = 70)
+
+xyplot(res1$Assim ~ res1$Ci,
+           lwd=2,
+           panel = function(x,y,...){
+                   panel.xyplot(x,y,type=&#39;l&#39;,col=&#39;blue&#39;,...)
+                   panel.xyplot(res2$Ci,res2$Assim, type=&#39;l&#39;, col =
+           &#39;green&#39;,...)
+           },
+            ylab=expression(paste(&#39;Assimilation (&#39;,
+                 mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)))
+</div>
+<p><img src='c3photo-6.png' alt='' width='540' height='400' /></p></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>c3photo</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+See Also <code><a href='Opc3photo.html'>Opc3photo</a></code>
+
+    
+    <h2>Author</h2>
+    
+Fernando E. Miguez
+
+    
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

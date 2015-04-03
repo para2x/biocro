@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>aci. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>A/Ci curves</h1>
+
+<div class="row">
+  <div class="span8">
+        
+    <div class="Format">
+      <h2>Format</h2>
+
+      <p>A data frame with 32 observations on the following 7 variables.
+<dl>
+<dt>list('ID')</dt><dd>Identification for each curve. a numeric
+vector</dd>
+ <dt>list('Photo')</dt><dd>Assimilation. a numeric vector</dd></p>
+  
+      <p><dt>list('PARi')</dt><dd>Incident Photosynthetic Active Radiation. a numeric
+vector</dd>
+ <dt>list('Tleaf')</dt><dd>Temperature of the leaf. a numeric vector</dd></p>
+  
+      <p><dt>list('RH_S')</dt><dd>Realtive humidity. a numeric vector</dd></p>
+  
+      <p><dt>list('Ci')</dt><dd>Intercellular CO2. a numeric vector</dd></p>
+  
+      <p><dt>list('CO2_R')</dt><dd>Reference CO2. a numeric vector</dd>
+ </dl></p>
+  
+    </div>
+
+    <div class="A/Ci curves">
+      <h2>A/Ci curves</h2>
+
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Four A/Ci (assimilation vs. intercellular CO2) curves.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>Measurements taken on Miscanthus x giganteus.</p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p>Dandan Wang</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>data(aci)
+plotAC(aci)
+</div>
+<strong class='warning'>Warning message:
+span too small.   fewer data values than degrees of freedom.</strong>
+<strong class='warning'>Warning message:
+at  299.5</strong>
+<strong class='warning'>Warning message:
+radius  0.25</strong>
+<strong class='warning'>Warning message:
+all data on boundary of neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+pseudoinverse used at 299.5</strong>
+<strong class='warning'>Warning message:
+neighborhood radius 0.5</strong>
+<strong class='warning'>Warning message:
+reciprocal condition number  1</strong>
+<strong class='warning'>Warning message:
+at  400.5</strong>
+<strong class='warning'>Warning message:
+radius  0.25</strong>
+<strong class='warning'>Warning message:
+all data on boundary of neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+There are other near singularities as well. 0.25</strong>
+<strong class='warning'>Warning message:
+zero-width neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+zero-width neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+span too small.   fewer data values than degrees of freedom.</strong>
+<strong class='warning'>Warning message:
+at  299.5</strong>
+<strong class='warning'>Warning message:
+radius  0.25</strong>
+<strong class='warning'>Warning message:
+all data on boundary of neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+pseudoinverse used at 299.5</strong>
+<strong class='warning'>Warning message:
+neighborhood radius 0.5</strong>
+<strong class='warning'>Warning message:
+reciprocal condition number  1</strong>
+<strong class='warning'>Warning message:
+at  400.5</strong>
+<strong class='warning'>Warning message:
+radius  0.25</strong>
+<strong class='warning'>Warning message:
+all data on boundary of neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+There are other near singularities as well. 0.25</strong>
+<strong class='warning'>Warning message:
+zero-width neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+zero-width neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+span too small.   fewer data values than degrees of freedom.</strong>
+<strong class='warning'>Warning message:
+at  299.5</strong>
+<strong class='warning'>Warning message:
+radius  0.25</strong>
+<strong class='warning'>Warning message:
+all data on boundary of neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+pseudoinverse used at 299.5</strong>
+<strong class='warning'>Warning message:
+neighborhood radius 0.5</strong>
+<strong class='warning'>Warning message:
+reciprocal condition number  1</strong>
+<strong class='warning'>Warning message:
+at  400.5</strong>
+<strong class='warning'>Warning message:
+radius  0.25</strong>
+<strong class='warning'>Warning message:
+all data on boundary of neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+There are other near singularities as well. 0.25</strong>
+<strong class='warning'>Warning message:
+zero-width neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+zero-width neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+span too small.   fewer data values than degrees of freedom.</strong>
+<strong class='warning'>Warning message:
+at  299.5</strong>
+<strong class='warning'>Warning message:
+radius  0.25</strong>
+<strong class='warning'>Warning message:
+all data on boundary of neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+pseudoinverse used at 299.5</strong>
+<strong class='warning'>Warning message:
+neighborhood radius 0.5</strong>
+<strong class='warning'>Warning message:
+reciprocal condition number  1</strong>
+<strong class='warning'>Warning message:
+at  400.5</strong>
+<strong class='warning'>Warning message:
+radius  0.25</strong>
+<strong class='warning'>Warning message:
+all data on boundary of neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+There are other near singularities as well. 0.25</strong>
+<strong class='warning'>Warning message:
+zero-width neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+zero-width neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+span too small.   fewer data values than degrees of freedom.</strong>
+<strong class='warning'>Warning message:
+at  299.5</strong>
+<strong class='warning'>Warning message:
+radius  0.25</strong>
+<strong class='warning'>Warning message:
+all data on boundary of neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+pseudoinverse used at 299.5</strong>
+<strong class='warning'>Warning message:
+neighborhood radius 0.5</strong>
+<strong class='warning'>Warning message:
+reciprocal condition number  1</strong>
+<strong class='warning'>Warning message:
+at  400.5</strong>
+<strong class='warning'>Warning message:
+radius  0.25</strong>
+<strong class='warning'>Warning message:
+all data on boundary of neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+There are other near singularities as well. 0.25</strong>
+<strong class='warning'>Warning message:
+zero-width neighborhood. make span bigger</strong>
+<strong class='warning'>Warning message:
+zero-width neighborhood. make span bigger</strong>
+<p><img src='aci-67.png' alt='' width='540' height='400' /></p></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>aci</li>
+    </ul>
+    <ul>
+      <li>datasets</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

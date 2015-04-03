@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>Opc3photo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="
+Fernando E. Miguez
+">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Optimize parameters of the C3 photosynthesis model.</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>Opc3photo(data, ivcmax&nbsp;=&nbsp;100, ijmax&nbsp;=&nbsp;180, iRd&nbsp;=&nbsp;1.1, Catm&nbsp;=&nbsp;380, O2&nbsp;=&nbsp;210, ib0&nbsp;=&nbsp;0.08, ib1&nbsp;=&nbsp;9.58, itheta&nbsp;=&nbsp;0.7, op.level&nbsp;=&nbsp;1, op.method&nbsp;=&nbsp;c("optim", "nlminb"), response&nbsp;=&nbsp;c("Assim", "StomCond"), level&nbsp;=&nbsp;0.95, hessian&nbsp;=&nbsp;TRUE, curve.kind&nbsp;=&nbsp;c("Ci", "Q"), op.ci&nbsp;=&nbsp;FALSE, ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>data</dt>
+      <dd>should be a <code>data.frame</code> or
+  <code>matrix</code> with x columns
+
+  col 1: measured assimilation (CO2 uptake) col 2:
+  Incomming PAR (photosynthetic active radiation) col 3:
+  Leaf temperature col 4: Relative humidity col 5:
+  Intercellular CO2 (for A/Ci curves) col 6: Reference CO2
+  level</dd>
+      <dt>ivcmax</dt>
+      <dd>Initial value for <code>vcmax</code>.</dd>
+      <dt>ijmax</dt>
+      <dd>Initial value for <code>jmax</code>.</dd>
+      <dt>iRd</dt>
+      <dd>Initial value for <code>Rd</code>.</dd>
+      <dt>Catm</dt>
+      <dd>Reference CO2.</dd>
+      <dt>O2</dt>
+      <dd>Reference level of O2.</dd>
+      <dt>ib0</dt>
+      <dd>Initial value for the intercept to the
+  Ball-Berry model.</dd>
+      <dt>ib1</dt>
+      <dd>Initial value for the slope to the Ball-Berry
+  model.</dd>
+      <dt>itheta</dt>
+      <dd>Initial value for <code>theta</code>.</dd>
+      <dt>op.level</dt>
+      <dd>Level 1 will optimize <code>Vcmax</code> and
+  <code>Jmax</code> and level 2 will optimize <code>Vcmax</code>,
+  <code>Jmax</code> and <code>Rd</code>.</dd>
+      <dt>op.method</dt>
+      <dd>optimization method. At the moment only
+  optim is implemented.</dd>
+      <dt>response</dt>
+      <dd><code>'Assim'</code> for assimilation and
+  <code>'StomCond'</code> for stomatal conductance.</dd>
+      <dt>level</dt>
+      <dd>Confidence interval level.</dd>
+      <dt>hessian</dt>
+      <dd>Whether the hessian should be computed</dd>
+      <dt>curve.kind</dt>
+      <dd>Whether an A/Ci curve is being
+  optimized or an A/Q curve.</dd>
+      <dt>op.ci</dt>
+      <dd>whether to optimize intercellular CO2.</dd>
+      <dt>...</dt>
+      <dd>Additioanl arguments to be passed to
+  <code><a href='http://www.inside-r.org/r-doc/stats/optim'>optim</a></code>.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+An object of class <code>Opc3photo</code>.</p>
+  
+      <p>The following components can be extracted:
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Applies the <code>optim</code> function to C3 photosynthesis.</p>
+  
+    </div>
+
+    <div class="Note">
+      <h2>Note</h2>
+
+      <p>~~further notes~~ Additional notes about the assumptions.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## Load fabricated data
+data(simA100)
+## Look at it
+head(simA100)
+</div>
+<div class='output'>          Assim   Qp Tl  RH        Ci    Vcmax     Jmax       Rd Catm
+[1,] -0.6944929 1500 25 0.7  4.653977 90.80678 205.9745 2.311849    0
+[2,] -0.6944929 1500 25 0.7  9.653877 90.80678 205.9745 2.311849    5
+[3,] -0.6944929 1500 25 0.7 14.653877 90.80678 205.9745 2.311849   10
+[4,] -0.6944929 1500 25 0.7 24.653877 90.80678 205.9745 2.311849   20
+[5,] -0.6944929 1500 25 0.7 34.653877 90.80678 205.9745 2.311849   30
+[6,]  0.4378667 1500 25 0.7 52.389158 90.80678 205.9745 2.311849   50
+</div>
+<div class='input'>
+op &lt;- Opc3photo(simA100[,1:5],Catm=simA100[,9], op.level = 2)
+
+## If faced with a difficult problem
+## This can give starting values
+op100 &lt;- Opc3photo(simA100[,1:5],Catm=simA100[,9],
+                   op.level = 2, method=&#39;SANN&#39;,
+                   hessian=FALSE)
+
+op100 &lt;- Opc3photo(simA100[,1:5],Catm = simA100[,9],
+                   op.level = 2,
+                   ivcmax = op100$bestVmax,
+                   ijmax = op100$bestJmax,
+                   iRd = op100$bestRd)
+op100
+</div>
+<div class='output'>
+Optimization of C3 photosynthesis
+
+		 95 %   Conf Int
+         best    lower   upper
+Vmax    90.63    90.09    91.2
+Jmax   170.67   169.95   171.4
+Rd       0.65     0.59     0.7
+
+ Corr  Vmax and Jmax: 0.2618421 
+
+ Resid Sums Sq: 0.09047036 
+
+Convergence:YES
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>Opc3photo</li><li>plot.Opc3photo</li><li>predict.Opc3photo</li><li>print.Opc3photo</li>
+    </ul>
+    <ul>
+      <li>optimize</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+See Also <code><a href='mOpc3photo.html'>mOpc3photo</a></code>
+
+    
+    <h2>Author</h2>
+    
+Fernando E. Miguez
+
+    
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

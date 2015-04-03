@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>mOpc4photo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="
+Fernando E. miguez
+">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Multiple optimization of C4 photosynthesis.</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>mOpc4photo(data, ID&nbsp;=&nbsp;NULL, ivmax&nbsp;=&nbsp;39, ialpha&nbsp;=&nbsp;0.04, iRd&nbsp;=&nbsp;0.8, iupperT&nbsp;=&nbsp;37.5, ilowerT&nbsp;=&nbsp;3, ikparm&nbsp;=&nbsp;0.7, itheta&nbsp;=&nbsp;0.83, ibeta&nbsp;=&nbsp;0.93, curve.kind&nbsp;=&nbsp;c("Q", "Ci"), op.level&nbsp;=&nbsp;1, op.ci&nbsp;=&nbsp;FALSE, verbose&nbsp;=&nbsp;FALSE, ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>data</dt>
+      <dd>observed assimilation data, which should be a
+  data frame or matrix. The first column should contain a
+  run or id.  The second column should be observed net
+  assimilation rate (<code class = 'eq'>\mu</code> mol <code class = 'eq'>m^{-2}</code>
+  <code class = 'eq'>s^{-1}</code>).  The third column should be the observed
+  quantum flux (<code class = 'eq'>\mu</code> mol <code class = 'eq'>m^{-2}</code> <code class = 'eq'>s^{-1}</code>).
+  The fourth column should be observed temperature of the
+  leaf (Celsius).  The fifth column should be the observed
+  relative humidity in proportion (e.g. 0.7). An optional
+  sixth column can contain atmospheric CO2.</dd>
+      <dt>ID</dt>
+      <dd>Optional vector with an alternative ID tothe
+  one used in data for runs. The length shoudl be equal to
+  the number of runs.</dd>
+      <dt>ivmax</dt>
+      <dd>Initial value for vmax. It can be a single
+  value or a vector of length equal to the number of runs.</dd>
+      <dt>ialpha</dt>
+      <dd>Initial value for alpha. It can be a single
+  value or a vector of length equal to the number of runs.</dd>
+      <dt>iRd</dt>
+      <dd>Initial value for vmax. It can be a single
+  value or a vector of length equal to the number of runs.</dd>
+      <dt>ikparm</dt>
+      <dd>Initial value for vmax. It can be a single
+  value or a vector of length equal to the number of runs.</dd>
+      <dt>itheta</dt>
+      <dd>Initial value for vmax. It can be a single
+  value or a vector of length equal to the number of runs.</dd>
+      <dt>ibeta</dt>
+      <dd>Initial value for vmax. It can be a single
+  value or a vector of length equal to the number of runs.</dd>
+      <dt>curve.kind</dt>
+      <dd>If <code>'Q'</code> a type of response which
+  mainly depends on light will be assumed. Typically used
+  to optimized light response curves or diurnals. Use
+  <code>'Ci'</code> for A/Ci curves (stomatal conductance could
+  also be optimized).</dd>
+      <dt>op.level</dt>
+      <dd>optimization level. If equal to 1
+  <code>vmax</code> and <code>alpha</code> will be optimized. If 2,
+  <code>vmax</code>, <code>alpha</code> and <code>Rd</code> will be
+  optimized. If 3, <code>vmax</code>, <code>alpha</code>, <code>theta</code>
+  and <code>Rd</code> will be optimized.</dd>
+      <dt>op.ci</dt>
+      <dd>Whether to optimize intercellular CO2.
+  Default is FALSE as 'fast-measured' light curves do not
+  provide reliable values of Ci.</dd>
+      <dt>verbose</dt>
+      <dd>Whether to display output about
+  convergence of each run.</dd>
+      <dt>...</dt>
+      <dd>Used to supply additional arguments to
+  <code>Opc4photo</code>.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+An object of class <code>mOpc4photo</code> 
+returned</p>
+  
+      <p></dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Wrapper function that allows for optimization of multiple
+A/Ci or A/Q curves.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>There are printing and plotting methods for the object
+created by this function. The plotting function has an
+argument that it is used to dsiplay either vmax or alpha
+(i.e. <code>parm=c('vmax','alpha')</code>). In both cases the
+optimized value plus confidence intervals will be displayed
+for each run.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>data(simAssim)
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>mOpc4photo</li><li>plot.mOpc4photo</li><li>print.mOpc4photo</li>
+    </ul>
+    <ul>
+      <li>optimize</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+<code><a href='Opc4photo.html'>Opc4photo</a></code> <code><a href='c4photo.html'>c4photo</a></code>
+<code><a href='http://www.inside-r.org/r-doc/stats/optim'>optim</a></code> 
+<code><a href='http://www.inside-r.org/packages/cran/devtools/docs/help'>help</a></code>, ~~~
+
+    
+    <h2>Author</h2>
+    
+Fernando E. miguez
+
+    
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

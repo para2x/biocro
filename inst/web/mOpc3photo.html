@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>mOpc3photo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="
+Fernando E. Miguez
+">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Multiple optimization of assimilation (or stomatal conductance) curves.</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>mOpc3photo(data, ID&nbsp;=&nbsp;NULL, iVcmax&nbsp;=&nbsp;100, iJmax&nbsp;=&nbsp;180, iRd&nbsp;=&nbsp;1.1, op.level&nbsp;=&nbsp;1, curve.kind&nbsp;=&nbsp;c("Ci", "Q"), verbose&nbsp;=&nbsp;FALSE, ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>data</dt>
+      <dd>should be a <code>data.frame</code> or
+  <code>matrix</code> with x columns
+
+  col 1: should be an ID for the different runs col 2:
+  measured assimilation (CO2 uptake) col 3: Incomming PAR
+  (photosynthetic active radiation) col 4: Leaf temperature
+  col 5: Relative humidity col 6: Intercellular CO2 (for
+  A/Ci curves) col 7: Reference CO2 level</dd>
+      <dt>ID</dt>
+      <dd>optional argument to include ids. should be of
+  length equal to the number of runs.</dd>
+      <dt>iVcmax</dt>
+      <dd>Single value or vector of length equal to
+  number of runs to supply starting values for the
+  optimization of <code>vcmax</code>.</dd>
+      <dt>iJmax</dt>
+      <dd>Single value or vector of length equal to
+  number of runs to supply starting values for the
+  optimization of <code>jmax</code>.</dd>
+      <dt>iRd</dt>
+      <dd>Single value or vector of length equal to
+  number of runs to supply starting values for the
+  optimization of <code>Rd</code>.</dd>
+      <dt>op.level</dt>
+      <dd>Level 1 will optimize <code>Vcmax</code> and
+  <code>Jmax</code> and level 2 will optimize <code>Vcmax</code>,
+  <code>Jmax</code> and <code>Rd</code>.</dd>
+      <dt>curve.kind</dt>
+      <dd>Whether an A/Ci curve is being
+  optimized or an A/Q curve.</dd>
+      <dt>verbose</dt>
+      <dd>Whether to print information about
+  progress.</dd>
+      <dt>...</dt>
+      <dd>Additional arguments to be passed to
+  <code><a href='Opc3photo.html'>Opc3photo</a></code></dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+an object of class 'mOpc3photo'</p>
+  
+      <p>if op.level equals 1 best Vcmax, Jmax and convergence</p>
+  
+      <p>if op.level equals 2 best Vcmax, Jmax, Rd and convergence</p>
+  
+      <p><dt>comp1 </dt><dd>Description of 'comp1'</dd></p>
+  
+      <p></dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>It is a wrapper for Opc3photo which allows for optimization
+of multiple runs of curves (A/Q or A/Ci).</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>Include more details about the data.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>data(simAssim)
+simAssim &lt;- cbind(simAssim[,1:6],Catm=simAssim[,10])
+simAssim &lt;- simAssim[simAssim[,1] &lt; 11,]
+
+plotAC(simAssim, trt.col=1)
+</div>
+<p><img src='mOpc3photo-2.png' alt='' width='540' height='400' /></p>
+<div class='input'>
+op.all &lt;- mOpc3photo(simAssim, op.level=1,
+                      verbose=TRUE)
+</div>
+<div class='output'>Run: 1 ... Converged YES 
+Run: 2 ... Converged YES 
+Run: 3 ... Converged YES 
+Run: 4 ... Converged YES 
+Run: 5 ... Converged YES 
+Run: 6 ... Converged YES 
+Run: 7 ... Converged YES 
+Run: 8 ... Converged YES 
+Run: 9 ... Converged YES 
+Run: 10 ... Converged YES 
+</div>
+<div class='input'>
+plot(op.all)
+</div>
+<p><img src='mOpc3photo-6.png' alt='' width='540' height='400' /></p>
+<div class='input'>plot(op.all, parm=&#39;jmax&#39;)
+</div>
+<p><img src='mOpc3photo-8.png' alt='' width='540' height='400' /></p></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>mOpc3photo</li>
+    </ul>
+    <ul>
+      <li>optimize</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+See also <code><a href='Opc3photo.html'>Opc3photo</a></code> 
+as <code><a href='http://www.inside-r.org/packages/cran/devtools/docs/help'>help</a></code>, ~~~
+
+    
+    <h2>Author</h2>
+    
+Fernando E. Miguez
+
+    
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

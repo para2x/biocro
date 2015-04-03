@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>wtrstr. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Simple function to illustrate soil water content effect on plant water
+stress.</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>wtrstr(precipt, evapo, cws, soildepth, fieldc, wiltp, phi1&nbsp;=&nbsp;0.01, phi2&nbsp;=&nbsp;10, wsFun&nbsp;=&nbsp;c("linear", "logistic", "exp", "none"))</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>precipt</dt>
+      <dd>Precipitation (mm).</dd>
+      <dt>evapo</dt>
+      <dd>Evaporation (Mg H2O ha-1 hr-1).</dd>
+      <dt>cws</dt>
+      <dd>current water content (fraction).</dd>
+      <dt>soildepth</dt>
+      <dd>Soil depth, typically 1m.</dd>
+      <dt>fieldc</dt>
+      <dd>Field capacity of the soil (fraction).</dd>
+      <dt>wiltp</dt>
+      <dd>Wilting point of the soil (fraction).</dd>
+      <dt>phi1</dt>
+      <dd>coefficient which controls the spread of the
+  logistic function.</dd>
+      <dt>phi2</dt>
+      <dd>coefficient which controls the effect on leaf
+  area expansion.</dd>
+      <dt>wsFun</dt>
+      <dd>option to control which method is used for
+  the water stress function.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+A list with components:
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>This is a very simple function which implements the
+'bucket' model for soil water content and it calculates a
+coefficient of plant water stress.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>This is a very simple function and the details can be seen
+in the code.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## Looking at the three possible models for the effect of soil moisture on water
+## stress
+
+aws &lt;- seq(0,0.4,0.001)
+wats.L &lt;- numeric(length(aws)) # linear
+wats.Log &lt;- numeric(length(aws)) # logistic
+wats.exp &lt;- numeric(length(aws)) # exp
+wats.none &lt;- numeric(length(aws)) # none
+for(i in 1:length(aws)){
+wats.L[i] &lt;- wtrstr(1,1,aws[i],0.5,0.37,0.2,2e-2,4)$wsPhoto
+wats.Log[i] &lt;- wtrstr(1,1,aws[i],0.5,0.37,0.2,2e-2,4,wsFun=&#39;logistic&#39;)$wsPhoto
+wats.exp[i] &lt;- wtrstr(1,1,aws[i],0.5,0.37,0.2,2e-2,4, wsFun=&#39;exp&#39;)$wsPhoto
+wats.none[i] &lt;- wtrstr(1,1,aws[i],0.5,0.37,0.2,2e-2,4, wsFun=&#39;none&#39;)$wsPhoto
+}
+
+xyplot(wats.L + wats.Log + wats.exp  + wats.none~ aws,
+       col=c(&#39;blue&#39;,&#39;green&#39;,&#39;purple&#39;,&#39;red&#39;),
+       type = &#39;l&#39;,
+       xlab=&#39;Soil Water&#39;,
+       ylab=&#39;Stress Coefficient&#39;,
+       key = list(text=list(c(&#39;linear&#39;,&#39;logistic&#39;,&#39;exp&#39;, &#39;none&#39;)),
+       col=c(&#39;blue&#39;,&#39;green&#39;,&#39;purple&#39;,&#39;red&#39;), lines = TRUE) )
+</div>
+<p><img src='wtrstr-2.png' alt='' width='540' height='400' /></p>
+<div class='input'>
+## This function is sensitive to the soil depth parameter
+
+SDepth &lt;- seq(0.05,2,0.05)
+
+wats &lt;- numeric(length(SDepth))
+
+for(i in 1:length(SDepth)){
+wats[i] &lt;- wtrstr(1,1,0.3,SDepth[i],0.37,0.2,2e-2,3)$wsPhoto
+}
+
+xyplot(wats ~ SDepth, ylab=&#39;Water Stress Coef&#39;,
+       xlab=&#39;Soil depth&#39;)
+</div>
+<p><img src='wtrstr-4.png' alt='' width='540' height='400' /></p>
+<div class='input'>
+## Difference between the effect on assimilation and leaf expansion rate
+
+aws &lt;- seq(0,0.4,0.001)
+wats.P &lt;- numeric(length(aws))
+wats.L &lt;- numeric(length(aws))
+for(i in 1:length(aws)){
+wats.P[i] &lt;- wtrstr(1,1,aws[i],0.5,0.37,0.2,2e-2,4)$wsPhoto
+wats.L[i] &lt;- wtrstr(1,1,aws[i],0.5,0.37,0.2,2e-2,4)$wsSpleaf
+}
+
+xyplot(wats.P + wats.L ~ aws,
+       xlab=&#39;Soil Water&#39;,
+       ylab=&#39;Stress Coefficient&#39;)
+</div>
+<p><img src='wtrstr-6.png' alt='' width='540' height='400' /></p>
+<div class='input'>
+
+## An example for wsRcoef
+## The scale parameter makes a big difference
+
+aws &lt;- seq(0.2,0.4,0.001)
+wats.1 &lt;- wsRcoef(aw=aws,fieldc=0.37,wiltp=0.2,phi1=1e-2,phi2=1, wsFun=&#39;logistic&#39;)$wsPhoto
+wats.2 &lt;- wsRcoef(aw=aws,fieldc=0.37,wiltp=0.2,phi1=2e-2,phi2=1, wsFun=&#39;logistic&#39;)$wsPhoto
+wats.3 &lt;- wsRcoef(aw=aws,fieldc=0.37,wiltp=0.2,phi1=3e-2,phi2=1, wsFun=&#39;logistic&#39;)$wsPhoto
+
+xyplot(wats.1 + wats.2 + wats.3 ~ aws,type=&#39;l&#39;,
+       col=c(&#39;blue&#39;,&#39;red&#39;,&#39;green&#39;),
+       ylab=&#39;Water Stress Coef&#39;,
+       xlab=&#39;SoilWater Content&#39;,
+       key=list(text=list(c(&#39;phi1 = 1e-2&#39;,&#39;phi1 = 2e-2&#39;,&#39;phi1 = 3e-2&#39;)),
+         lines=TRUE,col=c(&#39;blue&#39;,&#39;red&#39;,&#39;green&#39;)))
+</div>
+<p><img src='wtrstr-8.png' alt='' width='540' height='400' /></p></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>ws</li><li>wsRcoef</li><li>wtrstr</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+<code><a href='wsRcoef.html'>wsRcoef</a></code>
+
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

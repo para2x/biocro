@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>c3CanA. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="
+Fernando E. Miguez
+">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Simulates canopy assimilation for C3 canopies</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>c3CanA(lai, doy, hr, solar, temp, rh, windspeed, lat&nbsp;=&nbsp;40, nlayers&nbsp;=&nbsp;8, kd&nbsp;=&nbsp;0.1, heightFactor&nbsp;=&nbsp;3, c3photoControl&nbsp;=&nbsp;list(), lnControl&nbsp;=&nbsp;list(), StomWS&nbsp;=&nbsp;1)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>lai</dt>
+      <dd>leaf area index.</dd>
+      <dt>doy</dt>
+      <dd>day of the year, (1--365).</dd>
+      <dt>hr</dt>
+      <dd>hour of the day, (0--23).</dd>
+      <dt>solar</dt>
+      <dd>solar radiation (<code class = 'eq'>micro</code> mol
+  <code class = 'eq'>m-2</code> <code class = 'eq'>s-1</code>).</dd>
+      <dt>temp</dt>
+      <dd>temperature (Celsius).</dd>
+      <dt>rh</dt>
+      <dd>relative humidity (0--1).</dd>
+      <dt>windspeed</dt>
+      <dd>wind speed (m <code class = 'eq'>s-1</code>).</dd>
+      <dt>lat</dt>
+      <dd>latitude.</dd>
+      <dt>nlayers</dt>
+      <dd>number of layers in the simulation of the
+  canopy (max allowed is 50).</dd>
+      <dt>kd</dt>
+      <dd>Ligth extinction coefficient for diffuse
+  light.</dd>
+      <dt>heightFactor</dt>
+      <dd>Height Factor. Divide LAI by this
+  number to get the height of a crop.</dd>
+      <dt>c3photoControl</dt>
+      <dd>list that sets the photosynthesis
+  parameters for c3 plants through the c3photoParms
+  function</dd>
+      <dt>lnControl</dt>
+      <dd>list that sets the leaf nitrogen
+  parameters.
+
+  LeafN: Initial value of leaf nitrogen (g m-2).
+
+  kpLN: coefficient of decrease in leaf nitrogen during the
+  growing season. The equation is LN = iLeafN * exp(-kLN *
+  TTc).
+
+  lnFun: controls whether there is a decline in leaf
+  nitrogen with the depth of the canopy. 'none' means no
+  decline, 'linear' means a linear decline controlled by
+  the following two parameters.
+
+  lnb0: Intercept of the linear decline of leaf nitrogen in
+  the depth of the canopy.
+
+  lnb1: Slope of the linear decline of leaf nitrogen in the
+  depth of the canopy. The equation is 'vmax = leafN_lay *
+  lnb1 + lnb0'.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+<code><a href='http://www.inside-r.org/r-doc/base/list'>list</a></code></p>
+  
+      <p>returns a list with several elements</p>
+  
+      <p>CanopyAssim: hourly canopy assimilation (<code class = 'eq'>Mg/ha</code> <code class = 'eq'>per hour</code>)</p>
+  
+      <p>CanopyTrans: hourly canopy transpiration (<code class = 'eq'>Mg/ha</code> <code class = 'eq'>per hour</code>)</p>
+  
+      <p>CanopyCond: hourly canopy conductance (units ?)</p>
+  
+      <p>TranEpen: hourly canopy transpiration according to Penman
+(<code class = 'eq'>Mg ha^{-1}</code> <code class = 'eq'>per hour</code>)</p>
+  
+      <p>TranEpen: hourly canopy transpiration according to Priestly
+(<code class = 'eq'>Mg/ha</code> <code class = 'eq'>per hour</code>)</p>
+  
+      <p>LayMat: hourly by Layer matrix containing details of the
+calculations by layer (each layer is a row).  col1: Direct
+Irradiance col2: Diffuse Irradiance col3: Leaf area in the
+sun col4: Leaf area in the shade col5: Transpiration of
+leaf area in the sun col6: Transpiration of leaf area in
+the shade col7: Assimilation of leaf area in the sun col8:
+Assimilation of leaf area in the shade col9: Difference in
+temperature between the leaf and the air (i.e. TLeaf -
+TAir) for leaves in sun.  col10: Difference in temperature
+between the leaf and the air (i.e. TLeaf - TAir) for leaves
+in shade.  col11: Stomatal conductance for leaves in the
+sun col12: Stomatal conductance for leaves in the shade
+col13: Nitrogen concentration in the leaf (g m^-2) col14:
+Vmax value as depending on leaf nitrogen
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>It represents an integration of the photosynthesis function
+<code><a href='c3photo.html'>c3photo</a></code>, canopy evapo/transpiration and the
+multilayer canopy model <code><a href='sunML.html'>sunML</a></code>.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>The photosynthesis function is modeled after the version in
+WIMOVAC.  This is based on the well known Farquar model.</p>
+  
+    </div>
+
+    <div class="Note">
+      <h2>Note</h2>
+
+      <p></p>
+  
+      <p></p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p>Farquhar model 
+site here ~</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>data(doy124)
+tmp &lt;- numeric(24)
+
+for(i in 1:24){
+   lai &lt;- doy124[i,1]
+   doy &lt;- doy124[i,3]
+   hr  &lt;- doy124[i,4]
+ solar &lt;- doy124[i,5]
+  temp &lt;- doy124[i,6]
+    rh &lt;- doy124[i,7]
+    ws &lt;- doy124[i,8]
+
+  tmp[i] &lt;- c3CanA(lai,doy,hr,solar,temp,rh,ws)$CanopyAssim
+
+}
+
+plot(c(0:23),tmp,
+            type=&#39;l&#39;,lwd=2,
+            xlab=&#39;Hour&#39;,
+            ylab=expression(paste(&#39;Canopy assimilation (Mg  &#39;,
+            ha^-2,&#39; &#39;,h^-1,&#39;)&#39;)))
+</div>
+<p><img src='c3CanA-2.png' alt='' width='540' height='400' /></p></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>c3CanA</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+
+
+    
+    <h2>Author</h2>
+    
+Fernando E. Miguez
+
+    
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

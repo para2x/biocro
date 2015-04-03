@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>wsRcoef. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>R coefficient for water stress</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>wsRcoef(aw, fieldc, wiltp, phi1, phi2, wsFun&nbsp;=&nbsp;c("linear", "logistic", "exp", "none"))</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>aw</dt>
+      <dd>available water</dd>
+      <dt>fieldc</dt>
+      <dd>Field capacity of the soil (fraction).</dd>
+      <dt>wiltp</dt>
+      <dd>Wilting point of the soil (fraction).</dd>
+      <dt>phi1</dt>
+      <dd>coefficient which controls the spread of the
+  logistic function.</dd>
+      <dt>phi2</dt>
+      <dd>coefficient which controls the effect on leaf
+  area expansion.</dd>
+      <dt>wsFun</dt>
+      <dd>option to control which method is used for
+  the water stress function.</dd>
+    </dl>
+    
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>determines whether the argument wsFun is linear, logistic,
+exponential, or something else and calculates a value for
+wsPhoto based on that.</p>
+  
+    </div>
+      </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>wsRcoef</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

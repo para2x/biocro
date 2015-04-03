@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>willowGro. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>willowmass crops growth simulation</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>willowGro(WetDat, day1&nbsp;=&nbsp;120, dayn&nbsp;=&nbsp;300, timestep&nbsp;=&nbsp;1, iRhizome&nbsp;=&nbsp;1, lat&nbsp;=&nbsp;40, iPlant&nbsp;=&nbsp;1, irtl&nbsp;=&nbsp;1e-04, canopyControl&nbsp;=&nbsp;list(), seneControl&nbsp;=&nbsp;list(), photoControl&nbsp;=&nbsp;list(), willowphenoControl&nbsp;=&nbsp;list(), soilControl&nbsp;=&nbsp;list(), nitroControl&nbsp;=&nbsp;list(), iPlantControl&nbsp;=&nbsp;list(), centuryControl&nbsp;=&nbsp;list())</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>WetDat</dt>
+      <dd>weather data as produced by the
+  <code><a href='weach.html'>weach</a></code> function.</dd>
+      <dt>day1</dt>
+      <dd>first day of the growing season, (1--365).</dd>
+      <dt>dayn</dt>
+      <dd>last day of the growing season, (1--365, but
+  larger than <code>day1</code>). See details.</dd>
+      <dt>timestep</dt>
+      <dd>Simulation timestep, the default of 1
+  requires houlry weather data. A value of 3 would require
+  weather data every 3 hours.  This number should be a
+  divisor of 24.</dd>
+      <dt>lat</dt>
+      <dd>latitude, default 40.</dd>
+      <dt>iRhizome</dt>
+      <dd>initial dry biomass of the Rhizome (Mg
+  <code class = 'eq'>ha^{-1}</code>).</dd>
+      <dt>irtl</dt>
+      <dd>Initial rhizome proportion that becomes leaf.
+  This should not typically be changed, but it can be used
+  to indirectly control the effect of planting density.</dd>
+      <dt>canopyControl</dt>
+      <dd>List that controls aspects of the
+  canopy simulation. It should be supplied through the
+  <code>canopyParms</code> function.
+
+  <code>Sp</code> (specific leaf area) here the units are ha
+  <code class = 'eq'>Mg^{-1}</code>.  If you have data in <code class = 'eq'>m^2</code> of leaf per
+  kg of dry matter (e.g. 15) then divide by 10 before
+  inputting this coefficient.
+
+  <code>nlayers</code> (number of layers of the canopy) Maximum
+  50. To increase the number of layers (more than 50) the
+  <code>C</code> source code needs to be changed slightly.
+
+  <code>kd</code> (extinction coefficient for diffuse light)
+  between 0 and 1.
+
+  <code>mResp</code> (maintenance respiration) a vector of length
+  2 with the first component for leaf and stem and the
+  second component for rhizome and root.</dd>
+      <dt>seneControl</dt>
+      <dd>List that controls aspects of
+  senescence simulation. It should be supplied through the
+  <code>seneParms</code> function.
+
+  <code>senLeaf</code> Thermal time at which leaf senescence will
+  start.
+
+  <code>senStem</code> Thermal time at which stem senescence will
+  start.
+
+  <code>senRoot</code> Thermal time at which root senescence will
+  start.
+
+  <code>senRhizome</code> Thermal time at which rhizome
+  senescence will start.</dd>
+      <dt>photoControl</dt>
+      <dd>List that controls aspects of
+  photosynthesis simulation. It should be supplied through
+  the <code>photoParms</code> function.
+
+  <code>vmax</code> Vmax passed to the <code><a href='c3photo.html'>c3photo</a></code>
+  function.
+
+  <code>alpha</code> alpha parameter passed to the
+  <code><a href='c3photo.html'>c3photo</a></code> function.
+
+  <code>theta</code> theta parameter passed to the
+  <code><a href='c3photo.html'>c3photo</a></code> function.
+
+  <code>beta</code> beta parameter passed to the
+  <code><a href='c3photo.html'>c3photo</a></code> function.
+
+  <code>Rd</code> Rd parameter passed to the
+  <code><a href='c3photo.html'>c3photo</a></code> function.
+
+  <code>Catm</code> Catm parameter passed to the
+  <code><a href='c3photo.html'>c3photo</a></code> function.
+
+  <code>b0</code> b0 parameter passed to the
+  <code><a href='c3photo.html'>c3photo</a></code> function.
+
+  <code>b1</code> b1 parameter passed to the
+  <code><a href='c3photo.html'>c3photo</a></code> function.</dd>
+      <dt>phenoControl</dt>
+      <dd>List that controls aspects of the
+  crop phenology. It should be supplied through the
+  <code>phenoParms</code> function.
+
+  <code>tp1-tp6</code> thermal times which determine the time
+  elapsed between phenological stages. Between 0 and tp1 is
+  the juvenile stage. etc.
+
+  <code>kLeaf1-6</code> proportion of the carbon that is
+  allocated to leaf for phenological stages 1 through 6.
+
+  <code>kStem1-6</code> proportion of the carbon that is
+  allocated to stem for phenological stages 1 through 6.
+
+  <code>kRoot1-6</code> proportion of the carbon that is
+  allocated to root for phenological stages 1 through 6.
+
+  <code>kRhizome1-6</code> proportion of the carbon that is
+  allocated to rhizome for phenological stages 1 through 6.
+
+  <code>kGrain1-6</code> proportion of the carbon that is
+  allocated to grain for phenological stages 1 through 6.
+  At the moment only the last stage (i.e. 6 or
+  post-flowering) is allowed to be larger than zero. An
+  error will be returned if kGrain1-5 are different from
+  zero.</dd>
+      <dt>soilControl</dt>
+      <dd>List that controls aspects of the soil
+  environment. It should be supplied through the
+  <code>soilParms</code> function.
+
+  <code>FieldC</code> Field capacity. This can be used to
+  override the defaults possible from the soil types (see
+  <code><a href='BioGro.html'>showSoilType</a></code>).
+
+  <code>WiltP</code> Wilting point.  This can be used to override
+  the defaults possible from the soil types (see
+  <code><a href='BioGro.html'>showSoilType</a></code>).
+
+  <code>phi1</code> Parameter which controls the spread of the
+  logistic function. See <code><a href='wtrstr.html'>wtrstr</a></code> for more
+  details.
+
+  <code>phi2</code> Parameter which controls the reduction of the
+  leaf area growth due to water stress. See
+  <code><a href='wtrstr.html'>wtrstr</a></code> for more details.
+
+  <code>soilDepth</code> Maximum depth of the soil that the roots
+  have access to (i.e. rooting depth).
+
+  <code>iWatCont</code> Initial water content of the soil the
+  first day of the growing season. It can be a single value
+  or a vector for the number of layers specified.
+
+  <code>soilType</code> Soil type, default is 6 (a more typical
+  soil would be 3). To see details use the function
+  <code><a href='BioGro.html'>showSoilType</a></code>.
+
+  <code>soilLayer</code> Integer between 1 and 50. The default is
+  5. If only one soil layer is used the behavior can be
+  quite different.
+
+  <code>soilDepths</code> Intervals for the soil layers.
+
+  <code>wsFun</code> one of 'logistic','linear','exp' or 'none'.
+  Controls the method for the relationship between soil
+  water content and water stress factor.
+
+  <code>scsf</code> stomatal conductance sensitivity factor
+  (default = 1). This is an empirical coefficient that
+  needs to be adjusted for different species.
+
+  <code>rfl</code> Root factor lambda. A Poisson distribution is
+  used to simulate the distribution of roots in the soil
+  profile and this parameter can be used to change the
+  lambda parameter of the Poisson.
+
+  <code>rsec</code> Radiation soil evaporation coefficient.
+  Empirical coefficient used in the incidence of direct
+  radiation on soil evaporation.
+
+  <code>rsdf</code> Root soil depth factor. Empirical coefficient
+  used in calculating the depth of roots as a function of
+  root biomass.</dd>
+      <dt>nitroControl</dt>
+      <dd>List that controls aspects of the
+  nitrogen environment. It should be supplied through the
+  <code>nitrolParms</code> function.
+
+  <code>iLeafN</code> initial value of leaf nitrogen (g m-2).
+
+  <code>kLN</code> coefficient of decrease in leaf nitrogen
+  during the growing season. The equation is LN = iLeafN *
+  (Stem + Leaf)^-kLN .
+
+  <code>Vmax.b1</code> slope which determines the effect of leaf
+  nitrogen on Vmax.
+
+  <code>alpha.b1</code> slope which controls the effect of leaf
+  nitrogen on alpha.</dd>
+      <dt>centuryControl</dt>
+      <dd>List that controls aspects of the
+  Century model for carbon and nitrogen dynamics in the
+  soil. It should be supplied through the
+  <code>centuryParms</code> function.
+
+  <code>SC1-9</code> Soil carbon pools in the soil.  SC1:
+  Structural surface litter. SC2: Metabolic surface litter.
+  SC3: Structural root litter.  SC4: Metabolic root litter.
+  SC5: Surface microbe.  SC6: Soil microbe.  SC7: Slow
+  carbon. SC8: Passive carbon.  SC9: Leached carbon.
+
+  <code>LeafL.Ln</code> Leaf litter lignin content.
+
+  <code>StemL.Ln</code> Stem litter lignin content.
+
+  <code>RootL.Ln</code> Root litter lignin content.
+
+  <code>RhizomeL.Ln</code> Rhizome litter lignin content.
+
+  <code>LeafL.N</code> Leaf litter nitrogen content.
+
+  <code>StemL.N</code> Stem litter nitrogen content.
+
+  <code>RootL.N</code> Root litter nitrogen content.
+
+  <code>RhizomeL.N</code> Rhizome litter nitrogen content.
+
+  <code>Nfert</code> Nitrogen from a fertilizer source.
+
+  <code>iMinN</code> Initial value for the mineral nitrogen pool.
+
+  <code>Litter</code> Initial values of litter (leaf, stem, root,
+  rhizome).
+
+  <code>timestep</code> currently either week (default) or day.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+a <code><a href='http://www.inside-r.org/r-doc/base/list'>list</a></code> structure with components
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Simulates dry biomass growth during an entire growing
+season.  It represents an integration of the photosynthesis
+function <code><a href='c3photo.html'>c3photo</a></code>, canopy evapo/transpiration
+<code><a href='CanA.html'>CanA</a></code>, the multilayer canopy model
+<code><a href='sunML.html'>sunML</a></code> and a dry biomass partitioning calendar
+and senescence. It also considers, carbon and nitrogen
+cycles and water and nitrogen limitations.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## &lt;strong&gt;Not run&lt;/strong&gt;: 
+# data(weather05)
+# 
+# res0 &lt;- willowGro(weather05)
+# 
+# plot(res0)
+# 
+# ## Looking at the soil model
+# 
+# res1 &lt;- willowGro(weather05, soilControl = soilParms(soilLayers = 6))
+# plot(res1, plot.kind=&#39;SW&#39;) ## Without hydraulic distribution
+# res2 &lt;- willowGro(weather05, soilControl = soilParms(soilLayers = 6, hydrDist=TRUE))
+# plot(res2, plot.kind=&#39;SW&#39;) ## With hydraulic distribution
+# 
+# 
+# ## Example of user defined soil parameters.
+# ## The effect of phi2 on yield and soil water content
+# 
+# ll.0 &lt;- soilParms(FieldC=0.37,WiltP=0.2,phi2=1)
+# ll.1 &lt;- soilParms(FieldC=0.37,WiltP=0.2,phi2=2)
+# ll.2 &lt;- soilParms(FieldC=0.37,WiltP=0.2,phi2=3)
+# ll.3 &lt;- soilParms(FieldC=0.37,WiltP=0.2,phi2=4)
+# 
+# ans.0 &lt;- willowGro(weather05,soilControl=ll.0)
+# ans.1 &lt;- willowGro(weather05,soilControl=ll.1)
+# ans.2 &lt;- willowGro(weather05,soilControl=ll.2)
+# ans.3 &lt;-willowGro(weather05,soilControl=ll.3)
+# 
+# xyplot(ans.0$SoilWatCont +
+#        ans.1$SoilWatCont +
+#        ans.2$SoilWatCont +
+#        ans.3$SoilWatCont ~ ans.0$DayofYear,
+#        type=&#39;l&#39;,
+#        ylab=&#39;Soil water Content (fraction)&#39;,
+#        xlab=&#39;DOY&#39;)
+# 
+# ## Compare LAI
+# 
+# xyplot(ans.0$LAI +
+#        ans.1$LAI +
+#        ans.2$LAI +
+#        ans.3$LAI ~ ans.0$DayofYear,
+#        type=&#39;l&#39;,
+#        ylab=&#39;Leaf Area Index&#39;,
+#        xlab=&#39;DOY&#39;)
+# 
+# 
+# 
+# ## &lt;strong&gt;End(Not run)&lt;/strong&gt;
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>SoilType</li><li>canopyParms</li><li>centuryParms</li><li>nitroParms</li><li>phenoParms</li><li>photoParms</li><li>print.willowGro</li><li>seneParms</li><li>showSoilType</li><li>soilParms</li><li>willowGro</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

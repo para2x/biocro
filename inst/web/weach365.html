@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>weach365. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>if the function CheckLeapYear returns 0 this function will be used</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>weach365(X, lati, ts&nbsp;=&nbsp;1, temp.units&nbsp;=&nbsp;c("Farenheit", "Celsius"), rh.units&nbsp;=&nbsp;c("percent", "fraction"), ws.units&nbsp;=&nbsp;c("mph", "mps"), pp.units&nbsp;=&nbsp;c("in", "mm"), ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>X</dt>
+      <dd>a matrix (or data frame) containing weather
+  information.  The input format is strict but it is meant
+  to be used with the data usually obtained from weather
+  stations in Illinois. The data frame should have 11
+  columns (see details).</dd>
+      <dt>lati</dt>
+      <dd>latitude at the specific location</dd>
+      <dt>ts</dt>
+      <dd>timestep for the simulation of sub-daily data
+  from daily. For example a value of 3 would return data
+  every 3 hours. Only divisors of 24 work (i.e. 1,2,3,4,
+  etc.).</dd>
+      <dt>temp.units</dt>
+      <dd>Option to specify the units in which
+  the temperature is entered. Default is Farenheit.</dd>
+      <dt>rh.units</dt>
+      <dd>Option to specify the units in which the
+  relative humidity is entered. Default is percent.</dd>
+      <dt>ws.units</dt>
+      <dd>Option to specify the units in which the
+  wind speed is entered. Default is miles per hour.</dd>
+      <dt>pp.units</dt>
+      <dd>Option to specify the units in which the
+  precipitation is entered. Default is inches.</dd>
+      <dt>list()</dt>
+      <dd>additional arguments to be passed to
+  <code><a href='lightME.html'>lightME</a></code></dd>
+    </dl>
+    
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>if the function CheckLeapYear returns 0 this function will
+be used</p>
+  
+    </div>
+      </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>weach365</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

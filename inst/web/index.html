@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>Index. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Fernando Miguez &lt;femiguez@iastate.edu&gt;,
+Deepak Jaiswal &lt;djaiswal@illinois.edu&gt;,
+Dan Wang &lt;dwng@illinois.edu&gt;,
+David LeBauer &lt;dlebauer@illinois.edu&gt;">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <div class="row">
+  <div class="span8">
+    <h2>BioCro</h2>
+
+<p>BioCro is a detailed model that scales from leaf-level photosynthesis to ecosystem level carbon and water balance. </p>
+
+<p>BioCro is a plant production model adapted from WIMOVAC, relying on the key physiological and biophysical processes underlying plant production (Humphries &amp; Long, 1995). BioCro has previously been used for predicting biomass yield and LAI of switchgrass and  Miscanthus (Miguez et al., 2009). Sugarcane, coppice willow, arundo, and soy modules are under development and will be released following publication.</p>
+
+<p>Recent development has coupled DayCent (Parton et al 1998) to BioCro, expanding the ability of BioCro to predict ecosystem functioning beyond yields, including the production of greenhouse gases and storage of carbon in the soil. BioCro has also been integrated into a suite of tools which link the model directly with crop trait and yield data, streamlining the entire modeling and data collection workflow (LeBauer et al, 2013). The Predictive Ecosystem Analyzer <a href="https://github.com/PecanProject/pecan">(PEcAn)</a> couples BioCro to the <a href="https://www.betydb.org">Biofuel Ecophysiological Traits and Yields database</a>, enabling model parameterization and optimization, targeted data collection optimized to reduce uncertainty in model predictions, and the management of informatics and HPC computing resources. </p>
+
+<h3>Inputs:</h3>
+
+<ul>
+<li>species-specific plant physiological traits 
+** Photosynthetic Parameters
+** Phenological stages
+** Biomass partitioning</li>
+<li>soil physical properties:
+** (water holding capacity, wilting point, sand, silt, clay, organic matter, rooting depth). </li>
+<li>meteorological data (daily or hourly) 
+** precipitation
+** solar radiation
+** wind speed
+** temperature
+** humidity</li>
+</ul>
+
+<h3>Outputs</h3>
+
+<ul>
+<li>Yield, NPP, Biomass (leaf, root, storage)</li>
+<li>Evapotranspiration</li>
+<li>Leaf Area Index</li>
+<li>many more</li>
+</ul>
+
+<h2>References</h2>
+
+<p>Humphries S and Long SP (1995) WIMOVAC - a software package for modeling the dynamics of the plant leaf and canopy photosynthesis. Computer Applications in the Bioscience 11(4):361-371</p>
+
+<p>Miguez FE, Zhu XG, Humphries S, Bollero GA, Long SP (2009) A semimechanistic model predicting the growth and production of the bioenergy crop Miscanthus × giganteus: description, parameterization and validation.  Global Change Biology Bioenergy 1: 282-296</p>
+
+
+    <h2>Help topics</h2>
+
+    <h3></h3>
+    
+    
+    <ul class="index">
+        
+      <li>
+        <code><a href="aci.html">aci</a></code><br />A/Ci curves</li>
+            
+      <li>
+        <code><a href="annualDB.html">annualDB</a></code>(annualDB2)<br />Miscanthus dry biomass data.</li>
+            
+      <li>
+        <code><a href="aq.html">aq</a></code><br />A/Q curves</li>
+            
+      <li>
+        <code><a href="ardBuck.html">ardBuck</a></code><br />Arden Buck Equation from Buck Research Manual (1996)
+</li>
+            
+      <li>
+        <code><a href="BioGro.html">BioGro</a></code>(SoilType, canopyParms, centuryParms, nitroParms, phenoParms, photoParms, print.BioGro, seneParms, showSoilType, soilParms)<br />Biomass crops growth simulation</li>
+            
+      <li>
+        <code><a href="c3CanA.html">c3CanA</a></code><br />Simulates canopy assimilation for C3 canopies</li>
+            
+      <li>
+        <code><a href="c3photo.html">c3photo</a></code><br />Simulates C3 photosynthesis</li>
+            
+      <li>
+        <code><a href="c4photo.html">c4photo</a></code><br />Coupled photosynthesis-stomatal conductance simulation</li>
+            
+      <li>
+        <code><a href="CanA.html">CanA</a></code>(lnParms)<br />Simulates canopy assimilation</li>
+            
+      <li>
+        <code><a href="caneGro.html">caneGro</a></code><br />Simulation of cane, Growth, LAI, Photosynthesis and phenology</li>
+            
+      <li>
+        <code><a href="Century.html">Century</a></code>(CenturyC)<br />This function implements the Century model from Parton.</li>
+            
+      <li>
+        <code><a href="CenturyC.html">CenturyC</a></code><br />C version of the Century function</li>
+            
+      <li>
+        <code><a href="CheckLeapYear.html">CheckLeapYear</a></code><br />This fuction checks if year is a leap year. If yes, then returns 1 or 0.</li>
+            
+      <li>
+        <code><a href="cmi0506.html">cmi0506</a></code><br />Weather data</li>
+            
+      <li>
+        <code><a href="cmiWet.html">cmiWet</a></code><br />Weather data</li>
+            
+      <li>
+        <code><a href="CropGro.html">CropGro</a></code>(BioGro, SoilType, canopyParms, centuryParms, nitroParms, phenoParms, photoParms, print.BioGro, seneParms, showSoilType, soilParms)<br />Biomass crops growth simulation</li>
+            
+      <li>
+        <code><a href="doy124.html">doy124</a></code><br />Weather data</li>
+            
+      <li>
+        <code><a href="eC4photo.html">eC4photo</a></code><br />C4 photosynthesis simulation (von Caemmerer model)</li>
+            
+      <li>
+        <code><a href="eCanA.html">eCanA</a></code><br />Simulates canopy assimilation (von Caemmerer model)</li>
+            
+      <li>
+        <code><a href="EngWea94i.html">EngWea94i</a></code><br />Weather data corresponding to a paper by Clive Beale (see source).</li>
+            
+      <li>
+        <code><a href="EngWea94rf.html">EngWea94rf</a></code><br />Weather data corresponding to a paper by Clive Beale (see source).</li>
+            
+      <li>
+        <code><a href="flow.html">flow</a></code><br />Returns values based on if kno is less than, equal to, or greater than three.</li>
+            
+      <li>
+        <code><a href="FmLcFun.html">FmLcFun</a></code><br />Returns values for Fm and Lc</li>
+            
+      <li>
+        <code><a href="fnpsvp.html">fnpsvp</a></code><br />The Goff Gratch equation from Smithsonian Tables, 1984.
+</li>
+            
+      <li>
+        <code><a href="idbp.html">idbp</a></code><br />Initial Dry Biomass Partitioning Coefficients</li>
+            
+      <li>
+        <code><a href="idbpm.html">idbpm</a></code><br />idpm</li>
+            
+      <li>
+        <code><a href="LayET.html">LayET</a></code><br />Weather data</li>
+            
+      <li>
+        <code><a href="lightME.html">lightME</a></code><br />Simulates the light macro environment</li>
+            
+      <li>
+        <code><a href="MaizeGro.html">MaizeGro</a></code><br />Simulation of Maize, Growth, LAI, Photosynthesis and phenology</li>
+            
+      <li>
+        <code><a href="MaizePhenoParms.html">MaizePhenoParms</a></code><br />Lists values for phenology parameters</li>
+            
+      <li>
+        <code><a href="MaizeSeneParms.html">MaizeSeneParms</a></code><br />Lists values for senecence parameters</li>
+            
+      <li>
+        <code><a href="MCMCBioGro.html">MCMCBioGro</a></code>(print.MCMCBioGro)<br />Simulated annealing and MCMC  function</li>
+            
+      <li>
+        <code><a href="MCMCc4photo.html">MCMCc4photo</a></code>(print.MCMCc4photo)<br />Markov chain Monte Carlo for C4 photosynthesis parameters</li>
+            
+      <li>
+        <code><a href="MCMCEc4photo.html">MCMCEc4photo</a></code><br />Markov chain Monte Carlo for C4 photosynthesis parameters</li>
+            
+      <li>
+        <code><a href="mOpc3photo.html">mOpc3photo</a></code><br />Multiple optimization of assimilation (or stomatal conductance) curves.</li>
+            
+      <li>
+        <code><a href="mOpc4photo.html">mOpc4photo</a></code>(plot.mOpc4photo, print.mOpc4photo)<br />Multiple optimization of C4 photosynthesis.</li>
+            
+      <li>
+        <code><a href="obsBea.html">obsBea</a></code><br />Miscanthus assimilation field data</li>
+            
+      <li>
+        <code><a href="obsBeaC.html">obsBeaC</a></code><br />Complete Miscanthus assimilation field data</li>
+            
+      <li>
+        <code><a href="obsNaid.html">obsNaid</a></code><br />Miscanthus assimilation data</li>
+            
+      <li>
+        <code><a href="OpBioGro.html">OpBioGro</a></code>(constrOpBioGro, summary.OpBioGro)<br />Optimization of dry biomass partitioning coefficients.</li>
+            
+      <li>
+        <code><a href="Opc3photo.html">Opc3photo</a></code>(plot.Opc3photo, predict.Opc3photo, print.Opc3photo)<br />Optimize parameters of the C3 photosynthesis model.</li>
+            
+      <li>
+        <code><a href="Opc4photo.html">Opc4photo</a></code>(plot.Opc4photo, plotAQ, predict.Opc4photo, print.Opc4photo, print.summary.Opc4photo, summary.Opc4photo)<br />Optimization of C4 photosynthesis parameters</li>
+            
+      <li>
+        <code><a href="OpEC4photo.html">OpEC4photo</a></code>(summary.OpEC4photo)<br />Optimization of C4 photosynthesis parameters (von Caemmerer model)</li>
+            
+      <li>
+        <code><a href="OpMaizeGro.html">OpMaizeGro</a></code><br />Optimization of dry biomass partitioning coefficients.</li>
+            
+      <li>
+        <code><a href="plotAC.html">plotAC</a></code><br />plot A/Ci curve</li>
+            
+      <li>
+        <code><a href="plotAQ.html">plotAQ</a></code><br />plot A/Q curve</li>
+            
+      <li>
+        <code><a href="plot.BioGro.html">plot.BioGro</a></code><br />Plotting function for BioGro objects</li>
+            
+      <li>
+        <code><a href="plot.MaizeGro.html">plot.MaizeGro</a></code><br />Plotting function for MaizeGro objects</li>
+            
+      <li>
+        <code><a href="plot.MCMCBioGro.html">plot.MCMCBioGro</a></code><br />Plotting function fo the MCMCBioGro class</li>
+            
+      <li>
+        <code><a href="plot.MCMCc4photo.html">plot.MCMCc4photo</a></code><br />Plotting function for MCMCc4photo objects</li>
+            
+      <li>
+        <code><a href="plot.MCMCEc4photo.html">plot.MCMCEc4photo</a></code><br />Plottin function for MCMCEc4photo objects</li>
+            
+      <li>
+        <code><a href="plot.mOpc3photo.html">plot.mOpc3photo</a></code><br />Plotting method</li>
+            
+      <li>
+        <code><a href="plot.mOpc4photo.html">plot.mOpc4photo</a></code><br />Plotting method</li>
+            
+      <li>
+        <code><a href="plot.willowGro.html">plot.willowGro</a></code><br />Plotting function for willowGro objects</li>
+            
+      <li>
+        <code><a href="predict.Opc3photo.html">predict.Opc3photo</a></code><br />Predict method</li>
+            
+      <li>
+        <code><a href="predict.Opc4photo.html">predict.Opc4photo</a></code><br />Predict method</li>
+            
+      <li>
+        <code><a href="print.BioGro.html">print.BioGro</a></code><br />printing method for BioGro</li>
+            
+      <li>
+        <code><a href="print.MaizeGro.html">print.MaizeGro</a></code><br />printing method for MaizeGro</li>
+            
+      <li>
+        <code><a href="print.MCMCBioGro.html">print.MCMCBioGro</a></code><br />printing method for MCMCBioGro</li>
+            
+      <li>
+        <code><a href="print.MCMCc4photo.html">print.MCMCc4photo</a></code><br />Function for printing the MCMCc4photo objects</li>
+            
+      <li>
+        <code><a href="print.MCMCEc4photo.html">print.MCMCEc4photo</a></code><br />Print an MCMCEc4photo object</li>
+            
+      <li>
+        <code><a href="print.mOpc3photo.html">print.mOpc3photo</a></code><br />Printing method</li>
+            
+      <li>
+        <code><a href="print.mOpc4photo.html">print.mOpc4photo</a></code><br />Printing method</li>
+            
+      <li>
+        <code><a href="print.OpBioGro.html">print.OpBioGro</a></code><br />Print an OpBioGro object</li>
+            
+      <li>
+        <code><a href="print.Opc3photo.html">print.Opc3photo</a></code><br />Display methods for Opc4photo and OpEC4photo</li>
+            
+      <li>
+        <code><a href="print.Opc4photo.html">print.Opc4photo</a></code><br />Display methods for Opc4photo and OpEC4photo</li>
+            
+      <li>
+        <code><a href="print.OpEC4photo.html">print.OpEC4photo</a></code><br />Print an OpEC4photo object</li>
+            
+      <li>
+        <code><a href="Rmiscanmod.html">Rmiscanmod</a></code><br />RUE-based model to calculate miscanthus growth and yield.</li>
+            
+      <li>
+        <code><a href="rootDist.html">rootDist</a></code><br />Finds rootDist for the soilML function</li>
+            
+      <li>
+        <code><a href="RsqC4photo.html">RsqC4photo</a></code><br />R-squared for C4 photosynthesis simulation (Collatz model)</li>
+            
+      <li>
+        <code><a href="RsqEC4photo.html">RsqEC4photo</a></code><br />R-squared for C4 photosynthesis simulation (von Caemmerer model)</li>
+            
+      <li>
+        <code><a href="RssBioGro.html">RssBioGro</a></code><br />Residual sum of squares for BioGro.</li>
+            
+      <li>
+        <code><a href="RssMaizeGro.html">RssMaizeGro</a></code><br />Very simple function to compare the distance between simulated
+</li>
+            
+      <li>
+        <code><a href="RUEmod.html">RUEmod</a></code><br />Radiation use efficiency based model</li>
+            
+      <li>
+        <code><a href="RUEmodMY.html">RUEmodMY</a></code><br />Radiation use efficiency based model</li>
+            
+      <li>
+        <code><a href="showSoilType.html">showSoilType</a></code><br />the function that deinfes the soil types</li>
+            
+      <li>
+        <code><a href="simDat2.html">simDat2</a></code><br />Simulated biomass data.</li>
+            
+      <li>
+        <code><a href="SoilEvapo.html">SoilEvapo</a></code><br />Soil Evaporation</li>
+            
+      <li>
+        <code><a href="soilML.html">soilML</a></code>(rootDist)<br />soil multi-layered</li>
+            
+      <li>
+        <code><a href="SoilType.html">SoilType</a></code><br />takes an interger from 0 to 10 that coresponds to a specifically defined soil type  and returns the composition of the soil in a list.</li>
+            
+      <li>
+        <code><a href="summary.OpBioGro.html">summary.OpBioGro</a></code><br />This function will implement simple calculations
+</li>
+            
+      <li>
+        <code><a href="summary.Opc4photo.html">summary.Opc4photo</a></code><br />This function will implement simple calculations
+</li>
+            
+      <li>
+        <code><a href="summary.OpEC4photo.html">summary.OpEC4photo</a></code><br />This function will implement simple calculations
+</li>
+            
+      <li>
+        <code><a href="sunML.html">sunML</a></code><br />Sunlit shaded multi-layer model</li>
+            
+      <li>
+        <code><a href="TempToDdryA.html">TempToDdryA</a></code><br />Returns a value for TempToDdryA</li>
+            
+      <li>
+        <code><a href="TempToLHV.html">TempToLHV</a></code><br />Returns a value for TempToLHV</li>
+            
+      <li>
+        <code><a href="TempToSFS.html">TempToSFS</a></code><br />Returns a value for SlopeFS from a function of temperature</li>
+            
+      <li>
+        <code><a href="TempToSWVC.html">TempToSWVC</a></code><br />Returns a value for TempToSWC</li>
+            
+      <li>
+        <code><a href="valid_dbp.html">valid_dbp</a></code><br />Validate dry biomass partitioning coefficients</li>
+            
+      <li>
+        <code><a href="WD1979.html">WD1979</a></code><br />Randomly picked dataset from the Illinois area from 1979</li>
+            
+      <li>
+        <code><a href="weach.html">weach</a></code><br />Simulates the hourly conditions from daily</li>
+            
+      <li>
+        <code><a href="weach365.html">weach365</a></code><br />if the function CheckLeapYear returns 0 this function will be used</li>
+            
+      <li>
+        <code><a href="weach366.html">weach366</a></code><br />if the function CheckLeapYear returns 1 this function will be used</li>
+            
+      <li>
+        <code><a href="weachDT.html">weachDT</a></code><br />weachDT</li>
+            
+      <li>
+        <code><a href="weach_imn.html">weach_imn</a></code><br />Weather change Iowa Mesonet</li>
+            
+      <li>
+        <code><a href="weachNEW.html">weachNEW</a></code><br />algorithm that decides weather weach365 or weach366 will be used based on the output of CheckLeapYear</li>
+            
+      <li>
+        <code><a href="weather05.html">weather05</a></code>(weather04)<br />Weather data</li>
+            
+      <li>
+        <code><a href="weather06.html">weather06</a></code><br />Weather data</li>
+            
+      <li>
+        <code><a href="willowCent.html">willowCent</a></code>(SoilType, canopyParms, centuryParms, nitroParms, phenoParms, photoParms, print.willowGro, seneParms, showSoilType, soilParms, willowGro)<br />willowmass crops growth simulation</li>
+            
+      <li>
+        <code><a href="willowGro.html">willowGro</a></code>(SoilType, canopyParms, centuryParms, nitroParms, phenoParms, photoParms, print.willowGro, seneParms, showSoilType, soilParms)<br />willowmass crops growth simulation</li>
+            
+      <li>
+        <code><a href="wsRcoef.html">wsRcoef</a></code><br />R coefficient for water stress</li>
+            
+      <li>
+        <code><a href="wtrstr.html">wtrstr</a></code>(ws, wsRcoef)<br />Simple function to illustrate soil water content effect on plant water
+</li>
+    
+    </ul>
+  </div>
+  
+  <div class="span3 offset1">
+        
+    <h2>Dependencies</h2>
+    <ul>
+      <li><strong>Depends</strong>: lattice, data.table</li>
+      <li><strong>Imports</strong>: stats, lattice, data.table</li>
+      <li><strong>Suggests</strong>: coda, knitr</li>
+      <li><strong>Extends</strong>: </li>
+    </ul>
+    <h2>Authors</h2>
+    <ul>
+    </ul>
+
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

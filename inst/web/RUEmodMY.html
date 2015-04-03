@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>RUEmodMY. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Radiation use efficiency based model</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>RUEmodMY(weatherdatafile, doy.s&nbsp;=&nbsp;91, doy.f&nbsp;=&nbsp;227, ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>weatherdatafile</dt>
+      <dd>weather data file (see example).</dd>
+      <dt>doy.s</dt>
+      <dd>first day of the growing season, default
+  91.</dd>
+      <dt>doy.f</dt>
+      <dd>last day of the growing season, default
+  227.</dd>
+      <dt>...</dt>
+      <dd>additional arguments to be passed to the
+  <code><a href='RUEmod.html'>RUEmod</a></code> function.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+a <code><a href='http://www.inside-r.org/r-doc/base/data.frame'>data.frame</a></code> structure with components
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Same as <code><a href='RUEmod.html'>RUEmod</a></code> but it handles multiple years.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## weather data from Champaign, IL
+data(cmiWet)
+tmp1 &lt;- RUEmodMY(cmiWet)
+
+xyplot(AG.cum ~ doy | factor(year), type=&#39;l&#39;, data = tmp1,
+       lwd=2,
+       ylab=expression(paste(&#39;dry biomass (Mg &#39;,ha^-1,&#39;)&#39;)),
+       xlab=&#39;DOY&#39;)
+</div>
+<p><img src='RUEmodMY-2.png' alt='' width='540' height='400' /></p></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>RUEmodMY</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

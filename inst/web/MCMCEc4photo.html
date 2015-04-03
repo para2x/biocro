@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>MCMCEc4photo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Markov chain Monte Carlo for C4 photosynthesis parameters</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>MCMCEc4photo(obsDat, niter&nbsp;=&nbsp;30000, iCa&nbsp;=&nbsp;380, iOa&nbsp;=&nbsp;210, iVcmax&nbsp;=&nbsp;60, iVpmax&nbsp;=&nbsp;120, iVpr&nbsp;=&nbsp;80, iJmax&nbsp;=&nbsp;400, thresh&nbsp;=&nbsp;0.01, scale&nbsp;=&nbsp;1)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>obsDat</dt>
+      <dd>observed assimilation data, which should be
+  a data frame or matrix.  The first column should be
+  observed net assimilation rate (<code class = 'eq'>\mu</code> mol
+  <code class = 'eq'>m^{-2}</code> <code class = 'eq'>s^{-1}</code>).  The second column should be
+  the observed quantum flux (<code class = 'eq'>\mu</code> mol <code class = 'eq'>m^{-2}</code>
+  <code class = 'eq'>s^{-1}</code>).  The third column should be observed
+  temperature of the leaf (Celsius).  The fourth column
+  should be the observed relative humidity in proportion
+  (e.g. 0.7).</dd>
+      <dt>niter</dt>
+      <dd>number of iterations to run the chain for
+  (default = 30000).</dd>
+      <dt>iCa</dt>
+      <dd>CO2 atmospheric concentration (ppm or
+  <code class = 'eq'>\mu</code>bar).</dd>
+      <dt>iOa</dt>
+      <dd>O2 atmospheric concentration (mbar).</dd>
+      <dt>iVcmax</dt>
+      <dd>initial value for Vcmax (default = 60).</dd>
+      <dt>iVpmax</dt>
+      <dd>initial value for Vpmax (default = 120).</dd>
+      <dt>iVpr</dt>
+      <dd>initial value for Vpr (default = 80).</dd>
+      <dt>iJmax</dt>
+      <dd>initial value for Jmax (default = 400).</dd>
+      <dt>thresh</dt>
+      <dd>this is a threshold that determines the
+  ``convergence'' of the initial burn-in period. The
+  convergence of the whole chain can be evaluated by
+  running the model with different starting values for
+  Vcmax and alpha. The chain should convergence, but for
+  this, runs with similar thresholds should be compared.
+  This threshold reflects the fact that for any given data
+  the model will not be able to simulate it perfectly so it
+  represents a compromise between computability and fit.</dd>
+      <dt>scale</dt>
+      <dd>This scale parameter controls the size of
+  the standard deviations which generate the moves in the
+  chain. Decrease it to increase the acceptance rate and
+  viceversa.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+a <code><a href='http://www.inside-r.org/r-doc/base/list'>list</a></code> structure with components
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>This function attempts to implement Markov chain Monte
+Carlo methods for models with no likelihoods. In this case
+it is done for the von Caemmerer C4 photosynthesis model.
+The method implemented is based on a paper by Marjoram et
+al. (2003).  The method is described in Miguez (2007). The
+chain is constructed using a Gaussian random walk. This is
+definitely a beta version of this function and more testing
+and improvements are needed. The value of this function is
+in the possibility of examining the empirical posterior
+distribution (i.e. vectors) of the Vcmax and alpha
+parameters. Notice that you will get different results each
+time you run it.</p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p>P. Marjoram, J. Molitor, V. Plagnol, S. Tavare, Markov
+chain monte carlo without likelihoods, PNAS 100 (26) (2003)
+15324--15328.</p>
+  
+      <p>Miguez (2007) Miscanthus x giganteus production:
+meta-analysis, field study and mathematical modeling. PhD
+Thesis. University of Illinois at Urbana-Champaign.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## &lt;strong&gt;Not run&lt;/strong&gt;: 
+# ## This is an example for the MCMCEc4photo
+# ## evaluating the convergence of the chain
+# ## Notice that if a parameter does not seem
+# ## to converge this does not mean that the method
+# ## doesn&#39;t work. Careful examination is needed
+# ## in order to evaluate the validity of the results
+# data(obsNaid)
+# res1 &lt;- MCMCEc4photo(obsNaid,100000,thresh=0.007)
+# res1
+# 
+# ## Run it a few more times
+# ## and test the stability of the method
+# res2 &lt;- MCMCEc4photo(obsNaid,100000,thresh=0.007)
+# res3 &lt;- MCMCEc4photo(obsNaid,100000,thresh=0.007)
+# 
+# ## Now plot it
+# plot(res1,res2,res3)
+# plot(res1,res2,res3,type=&#39;density&#39;)
+# ## &lt;strong&gt;End(Not run)&lt;/strong&gt;
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>MCMCEc4photo</li>
+    </ul>
+    <ul>
+      <li>optimize</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

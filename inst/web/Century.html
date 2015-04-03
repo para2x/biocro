@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>Century. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="
+Fernando E. Miguez
+">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>This function implements the Century model from Parton.</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>Century(LeafL, StemL, RootL, RhizL, smoist, stemp, precip, leachWater, centuryControl&nbsp;=&nbsp;list(), verbose&nbsp;=&nbsp;FALSE)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>LeafL</dt>
+      <dd>Leaf litter.</dd>
+      <dt>StemL</dt>
+      <dd>Stem litter.</dd>
+      <dt>RootL</dt>
+      <dd>Root litter.</dd>
+      <dt>RhizL</dt>
+      <dd>Rhizome litter.</dd>
+      <dt>smoist</dt>
+      <dd>Soil moisture.</dd>
+      <dt>stemp</dt>
+      <dd>Soil temperature.</dd>
+      <dt>precip</dt>
+      <dd>Precipitation.</dd>
+      <dt>leachWater</dt>
+      <dd>Leached water.</dd>
+      <dt>centuryControl</dt>
+      <dd>See <code><a href='BioGro.html'>centuryParms</a></code>.</dd>
+      <dt>verbose</dt>
+      <dd>Only used in the R version for debugging.</dd>
+      <dt>soilType</dt>
+      <dd>See <code><a href='BioGro.html'>showSoilType</a></code>.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+A list with,
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Calculates flows of soil organic carbon and nitrogen based
+on the Century model. There are two versions one written in
+R (Century) and one in C (CenturyC) they should give the
+same result. The C version only runs at weekly timesteps.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>Most of the details can be found in the papers by Parton et
+al. (1987, 1988, 1993)</p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p>~put references to the literature/web site here ~</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>Century(0,0,0,0,0.3,5,2,2)$Resp
+</div>
+<div class='output'>[1] 0.001369228
+</div>
+<div class='input'>Century(0,0,0,0,0.3,5,2,2)$MinN
+</div>
+<div class='output'>[1] 0.03343858
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>Century</li><li>CenturyC</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+    
+    <h2>Author</h2>
+    
+Fernando E. Miguez
+
+    
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

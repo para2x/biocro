@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>weach_imn. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="
+Fernando E. Miguez
+">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Weather change Iowa Mesonet</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>weach_imn(data, lati, ts&nbsp;=&nbsp;1, temp.units&nbsp;=&nbsp;c("Fahrenheit", "Celsius"), rh.units&nbsp;=&nbsp;c("percent", "fraction"), ws.units&nbsp;=&nbsp;c("mph", "mps"), pp.units&nbsp;=&nbsp;c("in", "mm"), ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>data</dt>
+      <dd>data as obtained from the Iowa Mesonet (see
+  details)</dd>
+      <dt>lati</dt>
+      <dd>Latitude, not used at the moment</dd>
+      <dt>ts</dt>
+      <dd>Time step, not used at the moment</dd>
+      <dt>temp.units</dt>
+      <dd>Temperature units</dd>
+      <dt>rh.units</dt>
+      <dd>Relative humidity units</dd>
+      <dt>ws.units</dt>
+      <dd>wind speed units</dd>
+      <dt>pp.units</dt>
+      <dd>precipitation units</dd>
+      <dt>...</dt>
+      <dd></dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+It will return a data frame in the same format as the
+<code><a href='weach.html'>weach</a></code> function.
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Manipulates weather data in the format obtained from Iowa
+Mesonet (see link below) and returns the format and units
+needed for most functions in this package. This function
+should be used for one year at a time.  It takes and
+returns hourly weather information only.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>This function should be used to transform data from the
+Iowa Mesonet at hourly intervals from here:</p>
+  
+      <p>http://mesonet.agron.iastate.edu/agclimate/hist/hourlyRequest.php</p>
+  
+      <p>When selecting to download variables: Air Temperature
+(Fahrenheit) Solar Radiation (kilocalories per meter
+squared) Precipitation (inches) Relative humidity (percent)
+Wind Speed (mph)</p>
+  
+      <p>You can read the data directly as it is downloaded making
+sure you skip the first 6 lines (This includes the title
+row).</p>
+  
+      <p>The imported data frame should have 9 columns with:</p>
+  
+      <p><ol>
+<li>site ID </li>
+<li>site name </li>
+<li>date in format
+"year-month-day", e.g. '2010-3-25' </li>
+<li>hour in format
+"hour:minute", e.g. '15:00' </li>
+<li>temperature
+(Fahrenheit) </li>
+<li>solar radiation (kilocalories per meter
+squared) </li>
+<li>precipitation (inches) </li>
+<li>relative
+humidity (%). </li>
+<li>wind speed (mph) </li>
+</ol></p>
+  
+      <p>above~~</p>
+  
+    </div>
+
+    <div class="Note">
+      <h2>Note</h2>
+
+      <p></p>
+  
+      <p></p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p>Iowa Mesonet http://mesonet.agron.iastate.edu/index.phtml</p>
+  
+      <p></p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## Read an example data set from my website
+url &lt;- &quot;http://www.agron.iastate.edu/miguezlab/teaching/CropSoilModel/ames_2010-iowamesonet.txt&quot;
+ames.wea &lt;- read.table(url, skip = 6)
+ames.wea2 &lt;- weach_imn(ames.wea)
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>weach_imn</li>
+    </ul>
+    <ul>
+      <li>datagen</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+<code><a href='weach.html'>weach</a></code> 
+<code><a href='http://www.inside-r.org/packages/cran/devtools/docs/help'>help</a></code>, ~~~
+
+    
+    <h2>Author</h2>
+    
+Fernando E. Miguez
+
+    
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>
