@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>plot.MCMCc4photo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Plotting function for MCMCc4photo objects</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>"plot"(x, x2&nbsp;=&nbsp;NULL, x3&nbsp;=&nbsp;NULL, plot.kind&nbsp;=&nbsp;c("trace", "density"), type&nbsp;=&nbsp;c("l", "p"), burnin&nbsp;=&nbsp;1, cols&nbsp;=&nbsp;c("blue", "green", "purple"), prior&nbsp;=&nbsp;FALSE, pcol&nbsp;=&nbsp;"black", ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>x</dt>
+      <dd><code><a href='MCMCc4photo.html'>MCMCc4photo</a></code> object.</dd>
+      <dt>x2</dt>
+      <dd>optional additional <code><a href='MCMCc4photo.html'>MCMCc4photo</a></code>
+  object.</dd>
+      <dt>x3</dt>
+      <dd>optional additional <code><a href='MCMCc4photo.html'>MCMCc4photo</a></code>
+  object.</dd>
+      <dt>plot.kind</dt>
+      <dd>'trace' plots the iteration history and
+  'density' plots the kernel density.</dd>
+      <dt>type</dt>
+      <dd>only the options for line and point are
+  offered.</dd>
+      <dt>burnin</dt>
+      <dd>this will remove part of the chain that can
+  be considered burn-in period.  The plots will no include
+  this part.</dd>
+      <dt>cols</dt>
+      <dd>Argument to pass colors to the line or points
+  being plotted.</dd>
+      <dt>prior</dt>
+      <dd>Whether to plot the prior density. It only
+  works when x2 = NULL and x3 = NULL. Default is FALSE.</dd>
+      <dt>pcol</dt>
+      <dd>Color used for plotting the prior density.</dd>
+      <dt>...</dt>
+      <dd>Optional arguments.</dd>
+    </dl>
+    
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>By default it prints the trace of the four parameters being
+estimated by the <code><a href='MCMCc4photo.html'>MCMCc4photo</a></code> function. As an
+option the density can be plotted.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>This function uses internally
+<code><a href='http://www.inside-r.org/r-doc/lattice/xyplot'>xyplot</a></code>,
+<code><a href='http://www.inside-r.org/r-doc/lattice/histogram'>densityplot</a></code> and
+<code><a href='http://www.inside-r.org/r-doc/lattice/panel.functions'>panel.mathdensity</a></code> both in the
+'lattice' package.</p>
+  
+    </div>
+      </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>plot.MCMCc4photo</li>
+    </ul>
+    <ul>
+      <li>hplot</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+<code><a href='MCMCc4photo.html'>MCMCc4photo</a></code>
+
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

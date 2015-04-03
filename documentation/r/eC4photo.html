@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>eC4photo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>C4 photosynthesis simulation (von Caemmerer model)</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>eC4photo(Qp, airtemp, rh, ca&nbsp;=&nbsp;380, oa&nbsp;=&nbsp;210, vcmax&nbsp;=&nbsp;60, vpmax&nbsp;=&nbsp;120, vpr&nbsp;=&nbsp;80, jmax&nbsp;=&nbsp;400)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>Qp</dt>
+      <dd>quantum flux (<code class = 'eq'>micro</code> mol
+  <code class = 'eq'>m-2</code> <code class = 'eq'>s-1</code>).</dd>
+      <dt>airtemp</dt>
+      <dd>air temperature (Celsius).</dd>
+      <dt>rh</dt>
+      <dd>relative humidity in proportion (e.g. 0.7).</dd>
+      <dt>ca</dt>
+      <dd>atmospheric carbon dioxide concentration (ppm
+  or <code class = 'eq'>micro</code>bar) (e.g. 380).</dd>
+      <dt>oa</dt>
+      <dd>atmospheric oxygen concentration (mbar) (e.g.
+  210).</dd>
+      <dt>vcmax</dt>
+      <dd>Maximum rubisco activity (<code class = 'eq'>micro</code>
+  mol <code class = 'eq'>m-2</code> <code class = 'eq'>s-1</code>).</dd>
+      <dt>vpmax</dt>
+      <dd>Maximum PEP carboxylase activity
+  (<code class = 'eq'>micro</code> mol <code class = 'eq'>m-2</code>
+  <code class = 'eq'>s-1</code>).</dd>
+      <dt>vpr</dt>
+      <dd>PEP regeneration rate (<code class = 'eq'>micro</code> mol
+  <code class = 'eq'>m-2</code> <code class = 'eq'>s-1</code>).</dd>
+      <dt>jmax</dt>
+      <dd>Maximal electron transport rate
+  (<code class = 'eq'>micro</code>mol electrons <code class = 'eq'>m-2</code>
+  <code class = 'eq'>s-1</code>).</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+results of call to C function eC4photo_sym</p>
+  
+      <p>a <code><a href='http://www.inside-r.org/r-doc/base/list'>list</a></code> structure with components
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Simulation of C4 photosynthesis based on the equations
+proposed by von Caemmerer (2000).  At this point
+assimilation and stomatal conductance are not coupled and
+although, for example a lower relative humidity will lower
+stomatal conductance it will not affect assimilation.
+Hopefully, this will be improved in the future.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>The equations are taken from von Caemmerer (2000) for the
+assimilation part and stomatal conductance is based on
+FORTRAN code by Joe Berry (translated to C).</p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p>Susanne von Caemmerer (2000) Biochemical Models of Leaf
+Photosynthesis. CSIRO Publishing. (In particular chapter
+4).</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## &lt;strong&gt;Not run&lt;/strong&gt;: 
+# ## A simple example for the use of eC4photo
+# ## This is the model based on von Caemmerer
+# ## First we can compare the effect of varying
+# ## Jmax. Notice that this is different from
+# ## varying alpha in the Collatz model
+# 
+# Qps &lt;- seq(0,2000,10)
+# Tls &lt;- seq(0,55,5)
+# rhs &lt;- c(0.7)
+# dat1 &lt;- data.frame(expand.grid(Qp=Qps,Tl=Tls,RH=rhs))
+# res1 &lt;- eC4photo(dat1$Qp,dat1$Tl,dat1$RH)
+# res2 &lt;- eC4photo(dat1$Qp,dat1$Tl,dat1$RH,jmax=700)
+# 
+# ## Plot comparing Jmax 400 vs. 700 for a range of conditions
+# xyplot(res1$Assim + res2$Assim ~ Qp | factor(Tl) , data = dat1,
+#             type=&#39;l&#39;,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2,
+#             ylab=expression(paste(&#39;Assimilation (&#39;,
+#                  mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#              xlab=expression(paste(&#39;Quantum flux (&#39;,
+#                  mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#             key=list(text=list(c(&#39;Jmax 400&#39;,&#39;Jmax 700&#39;)),
+#               lines=TRUE,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2))
+# 
+# ## Second example is the effect of varying Vcmax
+# 
+# Qps &lt;- seq(0,2000,10)
+# Tls &lt;- seq(0,35,5)
+# rhs &lt;- 0.7
+# vcmax &lt;- seq(0,40,5)
+# dat1 &lt;- data.frame(expand.grid(Qp=Qps,Tl=Tls,RH=rhs,vcmax=vcmax))
+# res1 &lt;- numeric(nrow(dat1))
+# for(i in 1:nrow(dat1)){
+# res1[i] &lt;- eC4photo(dat1$Qp[i],dat1$Tl[i],dat1$RH[i],vcmax=dat1$vcmax[i])$Assim
+# }
+# 
+# ## Plot comparing different Vcmax
+# cols &lt;- rev(heat.colors(9))
+# xyplot(res1 ~ Qp | factor(Tl) , data = dat1,col=cols,
+#             groups=vcmax,
+#             type=&#39;l&#39;,lwd=2,
+#             ylab=expression(paste(&#39;Assimilation (&#39;,
+#                  mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#              xlab=expression(paste(&#39;Quantum flux (&#39;,
+#                  mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#             key=list(text=list(as.character(vcmax)),
+#               lines=TRUE,col=cols,lwd=2))
+# 
+# 
+# ## &lt;strong&gt;End(Not run)&lt;/strong&gt;
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>eC4photo</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,331 @@
+.TH "/home/dlebauer/dev/biocro/src/c4photo.h" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/c4photo.h \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBc4_str\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBC4PHOTO_H\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "double \fBfnpsvp\fP (double Tkelvin)"
+.br
+.ti -1c
+.RI "double \fBballBerry\fP (double Amu, double Cappm, double Temp, double RelH, double beta0, double beta1)"
+.br
+.ti -1c
+.RI "struct \fBc4_str\fP \fBc4photoC\fP (double Qp, double Tl, double RH, double vmax, double alpha, double kparm, double theta, double beta, double Rd, double bb0, double bb1, double StomaWS, double Ca, int ws, double upperT, double lowerT)"
+.br
+.ti -1c
+.RI "double \fBRSS_C4photo\fP (double oAssim[\fBnObs\fP], double oQp[\fBnObs\fP], double oTemp[\fBnObs\fP], double oRH[\fBnObs\fP], double vmax, double alpha, double kparm, double theta, double beta, double Rd, double Catm, double b0, double b1, double StomWS, int ws, double upperT, double lowerT)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "int \fBnObs\fP"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define C4PHOTO_H"
+
+.SH "Function Documentation"
+.PP 
+.SS "double ballBerry (doubleAmu, doubleCappm, doubleTemp, doubleRelH, doublebeta0, doublebeta1)"
+
+.PP
+.nf
+107 {
+108 
+109         const double gbw = 1\&.2; /* According to Collatz et al\&. (1992) pg\&. 526*/
+110         const double ptotPa = 101325; /* Atmospheric pressure */
+111 
+112         double pwaPa, leafTk, Camf, assimn;
+113         double wa, pwi, wi, gswmol, Cs, acs;
+114         double aaa, bbb, ccc, ddd;
+115         double gsmol;
+116         double hs;
+117 
+118         leafTk = Temp + 273\&.15;
+119         pwi = fnpsvp(leafTk);
+120         pwaPa = RelH * pwi;
+121         Camf = Cappm * 1e-6;
+122         assimn = Amu * 1e-6;
+123   
+124         /* Calculate mole fraction (mixing ratio) of water vapor in */
+125         /* atmosphere from partial pressure of water in the atmosphere and*/
+126         /* the total air pressure */
+127         wa  = pwaPa / ptotPa;
+128         /* Get saturation vapor pressure for water in the leaf based on */
+129         /* current idea of the leaf temperature in Kelvin*/
+130         /* Already calculated above */
+131         /* Calculate mole fraction of water vapor in leaf interior */
+132         wi  = pwi / ptotPa;
+133 
+134         if(assimn < 0\&.0){
+135                 /* Set stomatal conductance to the minimum value, beta0*/
+136                 gswmol = beta0 ;
+137                 /* Calculate leaf surface relative humidity, hs, (as fraction)*/
+138                 /* for when C assimilation rate is <= 0*/
+139                 /* hs = (beta0 + (wa/wi)*gbw)/(beta0 + gbw); ! unused here??*/
+140         }
+141         else{
+142                 /* leaf surface CO2, mole fraction */
+143                 Cs  = Camf - (1\&.4/gbw)*assimn;
+144                 if(Cs < 0\&.0)
+145                         Cs = 1;
+146                 /* Constrain the ratio assimn/cs to be > 1\&.e-6*/
+147                 acs = assimn/Cs;
+148 
+149                 if(acs < 1e-6)  acs = 1e-6;             
+150 
+151                 /* Calculate leaf surface relative humidity, hs, from quadratic */
+152                 /* equation: aaa*hs^2 + bbb*hs + ccc = 0 */
+153                 /*  aaa= beta1 * assimn / cs */
+154                 aaa = beta1 * acs;
+155                 /*      bbb= beta0 + gbw - (beta1 * assimn / cs)*/
+156                 bbb = beta0 + gbw - (beta1 * acs);
+157                 ccc = -(wa / wi) * gbw - beta0;
+158 
+159                 /* Solve the quadratic equation for leaf surface relative humidity */
+160                 /* (as fraction) */
+161                 ddd = bbb * bbb - 4*aaa*ccc;
+162 
+163                 hs  = (-bbb + sqrt(ddd)) / (2* aaa);
+164 
+165                 /* Ball-Berry equation (Collatz'91, eqn 1) */
+166                 gswmol = beta1 * hs * acs + beta0;
+167         }
+168         gsmol = gswmol * 1000; /* converting to mmol */
+169 
+170         if(gsmol <= 0) gsmol = 1e-5;
+171 
+172         return(gsmol);
+173 }
+.fi
+.SS "struct \fBc4_str\fP c4photoC (doubleQp, doubleTl, doubleRH, doublevmax, doublealpha, doublekparm, doubletheta, doublebeta, doubleRd, doublebb0, doublebb1, doubleStomaWS, doubleCa, intws, doubleupperT, doublelowerT)"
+
+.PP
+.nf
+198 {
+199 
+200         struct c4_str tmp;
+201         /* Constants */
+202         const double AP = 101325; /*Atmospheric pressure According to wikipedia (Pa)*/
+203         const double P = AP / 1e3; /* kPa */
+204         /*const double PS = 38;   Atmospheric pressure of CO2 */
+205         const double Q10 = 2;  /* Q10 increase in a reaction by 10 C temp */
+206         /* Defining biochemical variables */
+207 
+208         double Csurface ;
+209         double InterCellularCO2 ;
+210         double KQ10 , kT ;
+211         double Vtn , Vtd , VT ;
+212         double Rtn , Rtd , RT ;
+213         double b0 , b1 , b2 ;
+214         double M1 , M2 , M ;
+215         int iterCounter ;
+216         double Quada , Quadb , Quadc ;
+217         double a2 , Assim ,GrossAssim;
+218         double csurfaceppm ;
+219         double Gs , miC = 0\&.0 ;
+220         double diff, OldAssim = 0\&.0, Tol = 0\&.1;
+221         double kT_IC_P;
+222 
+223 /* When the method does not converge I do not use the iterative solution*/
+224         double Assim0 = 0\&.0;
+225         double Gs0 = 0\&.0;
+226         double IntCO2 = 0\&.0;
+227         /* partial pressure of CO2 at the leaf surface */
+228   
+229         /* if(StomaWS < 0\&.5) ws = 0; */
+230 
+231         Csurface = (Ca * 1e-6) * AP ;
+232   
+233         InterCellularCO2 = Csurface * 0\&.4; /* Initial guestimate */
+234 
+235         KQ10 =  pow(Q10,((Tl - 25\&.0) / 10\&.0));
+236 
+237         kT = kparm * KQ10;
+238 
+239         /* First chunk of code see Collatz (1992) */
+240 //      Vtn = vmax * pow(2,((Tl-25\&.0)/10\&.0));
+241 //      Vtd = ( 1 + exp(0\&.3 * (3\&.0-Tl)) ) * (1 + exp( 0\&.3*(Tl-37\&.5) ));
+242 //      VT  = Vtn / Vtd;
+243 
+244 //       This is the code implementing temperature limitations
+245          Vtn = vmax * pow(2,((Tl-25\&.0)/10\&.0));
+246          Vtd = ( 1 + exp(0\&.3 * (lowerT-Tl)) ) * (1 + exp( 0\&.3*(Tl-upperT) ));
+247          VT  = Vtn / Vtd;
+248 
+249 
+250         /* Second chunk of code see Collatz (1992) */
+251         Rtn = Rd * pow(2 , (Tl-25)/10 ) ;
+252         Rtd =  1 + exp( 1\&.3 * (Tl-55) ) ;
+253         RT = Rtn / Rtd ; 
+254 
+255         /* Third chunk of code again see Collatz (1992) */
+256         b0 = VT * alpha  * Qp ;
+257         b1 = VT + alpha  * Qp ;
+258         b2 = theta ;
+259 
+260         /* Calculate the 2 roots */
+261         M1 = (b1 + sqrt(b1*b1 - (4 * b0 * b2)))/(2*b2) ;
+262         M2 = (b1 - sqrt(b1*b1 - (4 * b0 * b2)))/(2*b2) ;
+263 
+264         /* This piece of code selects the smalles root */
+265         if(M1 < M2)
+266                 M = M1;
+267         else
+268                 M = M2;
+269 
+270         /* Here the iterations will start */
+271         iterCounter = 0;
+272 
+273         while(iterCounter < 50)
+274         {
+275 
+276                 kT_IC_P = kT * (InterCellularCO2 / P*1000);
+277                 Quada = M * kT_IC_P;
+278                 Quadb = M + kT_IC_P;
+279                 Quadc = beta ;
+280 
+281                 a2 = (Quadb - sqrt(Quadb*Quadb - (4 * Quada * Quadc))) / (2 * Quadc);
+282 
+283                 Assim = a2 - RT;
+284 
+285                 if(ws == 0) Assim *= StomaWS; 
+286 
+287                 /* milimole per meter square per second*/
+288                 csurfaceppm = Csurface * 10 ;
+289 
+290                 /* Need to create the Ball-Berry function */
+291                 Gs =  ballBerry(Assim,csurfaceppm, Tl, RH, bb0, bb1) ;
+292                 if(ws == 1) Gs *= StomaWS; 
+293 
+294                 InterCellularCO2 = Csurface - (Assim * 1e-6 * 1\&.6 * AP) / (Gs * 0\&.001);
+295 
+296                 if(InterCellularCO2 < 0)
+297                         InterCellularCO2 = 1e-5;
+298 
+299                 if(iterCounter == 0){
+300                         Assim0 = Assim;
+301                         Gs0 = Gs;
+302                         IntCO2 = InterCellularCO2;
+303                 }
+304 
+305                 diff = OldAssim - Assim;
+306                 if(diff < 0) diff = -diff;
+307                 if(diff < Tol){
+308                         break;
+309                 }else{
+310                         OldAssim = Assim;
+311                 }
+312 
+313                 iterCounter++;
+314 
+315         }
+316 
+317 /* This would ignore the optimization due to the iterative procedure
+318  * when it does not converge\&. It is turned off now*/
+319 
+320 
+321         /* if(diff > Tol){ */
+322         /*      Assim = Assim0; */
+323         /*      Gs = Gs0; */
+324         /*      InterCellularCO2 = IntCO2; */
+325         /* } */
+326 
+327         /* if(diff > Tol){ */
+328         /*      Rprintf("iter %\&.i diff %\&.3f \n",iterCounter,diff); */
+329         /*      Rprintf("%\&.2f %\&.2f %\&.2f %\&.2f \n", Qp, Tl, RH, StomaWS); */
+330         /*      Rprintf("StomWS %\&.2f \n",StomaWS); */
+331         /*      Rprintf("InterCellular CO2 %\&.2f \n",InterCellularCO2); */
+332         /*      Rprintf("Assim %\&.2f \n",Assim); */
+333         /*      Rprintf("miC %\&.2f \n",(InterCellularCO2/AP)*1e6); */
+334         /*      Rprintf("vmax %\&.1f alpha %\&.3f \n", vmax, alpha); */
+335         /*      Rprintf("kparm %\&.3f theta %\&.3f \n", kparm, theta); */
+336         /*      Rprintf("beta %\&.3f Rd %\&.3f \n", beta, Rd); */
+337         /*      Rprintf("bb0 %\&.3f bb1 %\&.3f \n", bb0, bb1); */
+338         /*      Rprintf("Ca %\&.1f ws %i \n", Ca, ws); */
+339         /*      error("Did not converge \n"); */
+340         /* } */
+341 
+342         miC = (InterCellularCO2 / AP) * 1e6 ;
+343 
+344         if(Gs > 600)
+345           Gs = 600;
+346   GrossAssim=Assim+RT;
+347         tmp\&.Assim = Assim;
+348         tmp\&.Gs = Gs;
+349         tmp\&.Ci = miC;
+350   tmp\&.GrossAssim=GrossAssim;
+351         return(tmp);
+352 }
+.fi
+.SS "double fnpsvp (doubleTkelvin)"
+
+.PP
+.nf
+176                              {
+177         /* water boiling point = 373\&.16 oK*/
+178 /* This is the Arden Buck Equation 
+179 http://en\&.wikipedia\&.org/wiki/Arden_Buck_equation
+180  */
+181         double u, v;
+182         double tmp, esat;
+183 
+184         tmp = Tkelvin - 273\&.15;
+185         u = (18\&.678 - tmp/234\&.5)*tmp;
+186         v = 257\&.14 + tmp;
+187         esat = 6\&.1121 * exp(u/v);
+188         esat /= 10;
+189 
+190         return(esat);
+191 }
+.fi
+.SS "double RSS_C4photo (doubleoAssim[nObs], doubleoQp[nObs], doubleoTemp[nObs], doubleoRH[nObs], doublevmax, doublealpha, doublekparm, doubletheta, doublebeta, doubleRd, doubleCatm, doubleb0, doubleb1, doubleStomWS, intws, doubleupperT, doublelowerT)"
+
+.PP
+.nf
+489                                                                                                                    { /*\ref{eqn:Rd}*/
+490         extern int nObs;
+491         struct c4_str tmp;
+492         int i;
+493         double RSS = 0\&.0, diff = 0\&.0;
+494 
+495         for(i = 0;i < nObs; i++){
+496 
+497                 tmp = c4photoC(oQp[i],oTemp[i],oRH[i],vmax,alpha,kparm,theta, beta, Rd,b0,b1,StomWS,Catm,ws,upperT,lowerT);
+498                 diff = oAssim[i] - tmp\&.Assim;
+499                 RSS += diff * diff;
+500 
+501         }
+502         return(RSS);
+503 }
+.fi
+.SH "Variable Documentation"
+.PP 
+.SS "int nObs"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

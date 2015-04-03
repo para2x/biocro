@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>OpEC4photo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Optimization of C4 photosynthesis parameters (von Caemmerer model)</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>OpEC4photo(obsDat, iVcmax&nbsp;=&nbsp;60, iVpmax&nbsp;=&nbsp;120, iVpr&nbsp;=&nbsp;80, iJmax&nbsp;=&nbsp;400, co2&nbsp;=&nbsp;380, o2&nbsp;=&nbsp;210, level&nbsp;=&nbsp;0.95)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>obsDat</dt>
+      <dd>observed assimilation data, which should be
+  a data frame or matrix.  The first column should be
+  observed net assimilation rate (<code class = 'eq'>\mu</code> mol
+  <code class = 'eq'>m^{-2}</code> <code class = 'eq'>s^{-1}</code>).  The second column should be
+  the observed quantum flux (<code class = 'eq'>\mu</code> mol <code class = 'eq'>m^{-2}</code>
+  <code class = 'eq'>s^{-1}</code>).  The third column should be observed
+  temperature of the leaf (Celsius).  The fourth column
+  should be the observed relative humidity in proportion
+  (e.g. 0.7).</dd>
+      <dt>iVcmax</dt>
+      <dd>initial value for Vcmax (default = 60).</dd>
+      <dt>iVpmax</dt>
+      <dd>initial value for Vpmax (default = 120).</dd>
+      <dt>iVpr</dt>
+      <dd>initial value for Vpr (default = 80).</dd>
+      <dt>iJmax</dt>
+      <dd>initial value for Jmax (default = 400).</dd>
+      <dt>co2</dt>
+      <dd>atmospheric CO2 concentration (ppm), default =
+  380.</dd>
+      <dt>o2</dt>
+      <dd>atmospheric O2 concentration (mmol/mol),
+  default = 210.</dd>
+      <dt>level</dt>
+      <dd>level for the confidence intervals.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+an object of class <code><a href='OpEC4photo.html'>OpEC4photo</a></code>. Notice that
+these are the new-style S4 classes.
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Optimization method for the von Caemmerer C4 photosynthesis
+model.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>data(obsNaid)
+## These data are from Naidu et al. (2003)
+## in the correct format
+res &lt;- OpEC4photo(obsNaid)
+## Other example using Beale, Bint and Long (1996)
+data(obsBea)
+resB &lt;- OpEC4photo(obsBea)
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>OpEC4photo</li><li>summary.OpEC4photo</li>
+    </ul>
+    <ul>
+      <li>optimize</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

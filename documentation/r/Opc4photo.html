@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>Opc4photo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Optimization of C4 photosynthesis parameters</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>Opc4photo(data, ivmax&nbsp;=&nbsp;39, ialpha&nbsp;=&nbsp;0.04, iRd&nbsp;=&nbsp;0.8, ikparm&nbsp;=&nbsp;0.7, itheta&nbsp;=&nbsp;0.83, ibeta&nbsp;=&nbsp;0.93, Catm&nbsp;=&nbsp;380, ib0&nbsp;=&nbsp;0.08, ib1&nbsp;=&nbsp;3, iStomWS&nbsp;=&nbsp;1, ws&nbsp;=&nbsp;c("gs", "vmax"), iupperT&nbsp;=&nbsp;37.5, ilowerT&nbsp;=&nbsp;3, response&nbsp;=&nbsp;c("Assim", "StomCond"), curve.kind&nbsp;=&nbsp;c("Q", "Ci"), op.level&nbsp;=&nbsp;1, level&nbsp;=&nbsp;0.95, hessian&nbsp;=&nbsp;TRUE, op.ci&nbsp;=&nbsp;FALSE, ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>data</dt>
+      <dd>observed assimilation data, which should be a
+  data frame or matrix.  The first column should be
+  observed net assimilation rate (<code class = 'eq'>\mu</code> mol
+  <code class = 'eq'>m^{-2}</code> <code class = 'eq'>s^{-1}</code>).  The second column should be
+  the observed quantum flux (<code class = 'eq'>\mu</code> mol <code class = 'eq'>m^{-2}</code>
+  <code class = 'eq'>s^{-1}</code>).  The third column should be observed
+  temperature of the leaf (Celsius).  The fourth column
+  should be the observed relative humidity in proportion
+  (e.g. 0.7). An optional fifth column can contain
+  intercellular CO2. The reference level of CO2 should be
+  supplied to the function using the <code>Catm</code> argument.</dd>
+      <dt>ivmax</dt>
+      <dd>initial value for Vcmax (default = 39).</dd>
+      <dt>ialpha</dt>
+      <dd>initial value for alpha (default = 0.04).</dd>
+      <dt>iRd</dt>
+      <dd>initial value for dark respiration (default =
+  0.8).</dd>
+      <dt>ikparm</dt>
+      <dd>initial value for k (default = 0.7).</dd>
+      <dt>itheta</dt>
+      <dd>initial value for theta (default = 0.83).</dd>
+      <dt>ibeta</dt>
+      <dd>initial value for beta (default = 0.93).</dd>
+      <dt>Catm</dt>
+      <dd>Atmospheric CO2 in ppm (or
+  <code class = 'eq'>\mu</code>mol/mol).</dd>
+      <dt>ib0</dt>
+      <dd>initial value for the Ball-Berry intercept.</dd>
+      <dt>ib1</dt>
+      <dd>initial value for the Ball-Berry slope.</dd>
+      <dt>iStomWS</dt>
+      <dd>initial value for the stomata water stress
+  factor.</dd>
+      <dt>ws</dt>
+      <dd><code>ws</code> flag. See <code><a href='c4photo.html'>c4photo</a></code>.</dd>
+      <dt>response</dt>
+      <dd>Use <code>'Assim'</code> if you want to
+  optimize assimilation data and use <code>'StomCond'</code> if
+  you want to optimize stomatal conductance data. The
+  parameters optimized will be different.</dd>
+      <dt>curve.kind</dt>
+      <dd>If <code>'Q'</code> a type of response which
+  mainly depends on light will be assumed. Typically used
+  to optimized light response curves or diurnals. Use
+  <code>'Ci'</code> for A/Ci curves (stomatal conductance could
+  also be optimized).</dd>
+      <dt>op.level</dt>
+      <dd>optimization level. If equal to 1
+  <code>vmax</code> and <code>alpha</code> will be optimized. If 2,
+  <code>vmax</code>, <code>alpha</code> and <code>Rd</code> will be
+  optimized. If 3, <code>vmax</code>, <code>alpha</code>, <code>theta</code>
+  and <code>Rd</code> will be optimized.</dd>
+      <dt>level</dt>
+      <dd>level for the confidence intervals.</dd>
+      <dt>hessian</dt>
+      <dd>Whether the hessian matrix should be
+  computed. See <code><a href='http://www.inside-r.org/r-doc/stats/optim'>optim</a></code>.</dd>
+      <dt>op.ci</dt>
+      <dd>Whether to optimize intercellular CO2.
+  Default is FALSE as 'fast-measured' light curves do not
+  provide reliable values of Ci.</dd>
+      <dt>list()</dt>
+      <dd>Additional arguments passed to the
+  <code><a href='http://www.inside-r.org/r-doc/stats/optim'>optim</a></code> in particular if a lower or upper
+  bound is desired this could be achieved by adding
+  <code>lower=c(0,0)</code> this will impose a lower bound on
+  <code>vmax</code> and <code>alpha</code> of zero so preventing
+  negative values from being returned. When the lower
+  argument is added the optimization method changes from
+  Nelder-Mead to BFGS.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+An object of class <code>Opc4photo</code> a <code><a href='http://www.inside-r.org/r-doc/base/list'>list</a></code>
+with components</p>
+  
+      <p>If <code>op.level</code> 2 <code>bestRd</code> will also be supplied.
+If <code>op.level</code> 3 <code>theta</code> and <code>bestRd</code> will
+also be supplied.</p>
+  
+      <p>If <code>op.level</code> 2 <code>ciRd</code> will also be supplied.  If
+<code>op.level</code> 3 <code>ciTheta</code> and <code>ciRd</code> will also
+be supplied.
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Optimization method for the Collatz C4 photosynthesis
+model.  At the moment Vcmax and alpha are optimized only.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>data(aq)
+## Select data for a single AQ optimization
+aqd &lt;- data.frame(aq[aq[,1] == 6,-c(1:2)],Catm=400)
+res &lt;- Opc4photo(aqd, Catm=aqd$Catm)
+res
+</div>
+<div class='output'>
+Optimization of C4 photosynthesis
+
+		 95 %   Conf Int
+          best    lower    upper
+Vmax    31.326   30.815   31.838
+alpha    0.054    0.052    0.056
+
+ Corr  Vmax and alpha: -0.4754783 
+
+ Resid Sums Sq: 0.9731662 
+
+Convergence:YES
+</div>
+<div class='input'>
+plot(res, plot.kind = &#39;OandF&#39;, type=&#39;o&#39;)
+</div>
+<p><img src='Opc4photo-4.png' alt='' width='540' height='400' /></p></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>Opc4photo</li><li>plot.Opc4photo</li><li>plotAQ</li><li>predict.Opc4photo</li><li>print.Opc4photo</li><li>print.summary.Opc4photo</li><li>summary.Opc4photo</li>
+    </ul>
+    <ul>
+      <li>optimize</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+<code><a href='c4photo.html'>c4photo</a></code> <code><a href='http://www.inside-r.org/r-doc/stats/optim'>optim</a></code>
+
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

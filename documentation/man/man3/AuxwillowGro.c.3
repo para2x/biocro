@@ -1,0 +1,339 @@
+.TH "/home/dlebauer/dev/biocro/src/AuxwillowGro.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/AuxwillowGro.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'c3photo\&.h'\fP
+.br
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+\fC#include 'BioCro\&.h'\fP
+.br
+\fC#include 'AuxwillowGro\&.h'\fP
+.br
+\fC#include 'c3canopy\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBcreateCanopy\fP (struct \fBcanopy\fP *\fBcanopy\fP, int Nlayers, double LAItotal)"
+.br
+.ti -1c
+.RI "void \fBdiscretizeCanopy\fP (struct \fBcanopy\fP *\fBcanopy\fP)"
+.br
+.ti -1c
+.RI "void \fBgetcanopylightme\fP (struct \fBcanopy\fP *\fBcanopy\fP, double lat, double DOY, int td, double solarR)"
+.br
+.ti -1c
+.RI "void \fBgetCanopysunML\fP (struct \fBcanopy\fP *\fBcanopy\fP, double kd, double chil, double heightf)"
+.br
+.ti -1c
+.RI "void \fBgetcanopyWINDprofile\fP (struct \fBcanopy\fP *\fBcanopy\fP, double WindSpeed)"
+.br
+.ti -1c
+.RI "void \fBgetcanopyRHprof\fP (struct \fBcanopy\fP *\fBcanopy\fP, double RH)"
+.br
+.ti -1c
+.RI "void \fBgetcanopyLNprof\fP (struct \fBcanopy\fP *\fBcanopy\fP, double LeafN, double kpLN)"
+.br
+.ti -1c
+.RI "void \fBfreecanopy\fP (struct \fBcanopy\fP *\fBcanopy\fP)"
+.br
+.ti -1c
+.RI "struct \fBCan_Str\fP \fBc3CanAC\fP (double LAI, int DOY, int hr, double solarR, double Temp, double RH, double WindSpeed, double lat, int nlayers, double Vmax, double Jmax, double Rd, double Catm, double o2, double b0, double b1, double theta, double kd, double heightf, double leafN, double kpLN, double lnb0, double lnb1, int lnfun, double StomWS, int ws)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "struct \fBCan_Str\fP c3CanAC (doubleLAI, intDOY, inthr, doublesolarR, doubleTemp, doubleRH, doubleWindSpeed, doublelat, intnlayers, doubleVmax, doubleJmax, doubleRd, doubleCatm, doubleo2, doubleb0, doubleb1, doubletheta, doublekd, doubleheightf, doubleleafN, doublekpLN, doublelnb0, doublelnb1, intlnfun, doubleStomWS, intws)"
+
+.SS "void createCanopy (struct \fBcanopy\fP *canopy, intNlayers, doubleLAItotal)"
+
+.PP
+.nf
+40 {
+41   /**********************************************
+42    * Purpose:
+43    * creare a NULL canopy structure
+44    * allocate memory based on number of layers
+45    * initialize all the components of canopy structure
+46    * ***********************************************/
+47   int i;
+48   canopy->Nlayers=Nlayers;
+49   canopy->Idirtop=0\&.0;
+50   canopy->Idifftop=0\&.0;
+51   canopy->CosZenithAngle =0\&.0;
+52   canopy->LAItotal= LAItotal;
+53   canopy->ENV =  malloc((Nlayers+1)*sizeof(*canopy->ENV));
+54   canopy->Leaf = malloc((Nlayers+1)*sizeof(*canopy->Leaf));
+55   canopy->OUT = malloc((Nlayers+1)*sizeof(*canopy->OUT));
+56   for (i =0; i<Nlayers; i++)
+57   {
+58       canopy->ENV[i]\&.Idir=0\&.0;
+59       canopy->ENV[i]\&.Idiff=0\&.0;
+60       canopy->ENV[i]\&.Itotal=0\&.0;
+61       canopy->ENV[i]\&.RH=0\&.0;
+62       canopy->ENV[i]\&.windspeed=0\&.0;
+63       canopy->ENV[i]\&.Catm=0\&.0;
+64       canopy->ENV[i]\&.Temp=0\&.0;   
+65     
+66       canopy->Leaf[i]\&.LAI=0\&.0;
+67       canopy->Leaf[i]\&.LeafN=0\&.0;
+68       canopy->Leaf[i]\&.pLeafsun=0\&.0;
+69       canopy->Leaf[i]\&.pLeafshade=0\&.0;   
+70       canopy->Leaf[i]\&.heightf=0\&.0;  
+71 
+72       canopy->OUT[i]\&.sunlittemp=0\&.0;
+73       canopy->OUT[i]\&.shadedtemp=0\&.0;
+74       canopy->OUT[i]\&.TotalAnet=0\&.0;
+75       canopy->OUT[i]\&.TotalAgross=0\&.0;
+76       canopy->OUT[i]\&.TotalTrans=0\&.0;
+77       canopy->OUT[i]\&.shadedAnet=0\&.0;
+78       canopy->OUT[i]\&.shadedAgross=0\&.0;
+79       canopy->OUT[i]\&.sunlitAnet=0\&.0;
+80       canopy->OUT[i]\&.sunlitAgross=0\&.0;
+81       canopy->OUT[i]\&.shadedTemp=0\&.0;
+82       canopy->OUT[i]\&.sunlitTemp=0\&.0;
+83       canopy->OUT[i]\&.shadedTranspiration=0\&.0;
+84       canopy->OUT[i]\&.sunlitTranspiration=0\&.0;
+85   }
+86   return;
+87 }
+.fi
+.SS "void discretizeCanopy (struct \fBcanopy\fP *canopy)"
+
+.PP
+.nf
+90 {
+91   /******************************************************************************
+92    * Purpose:
+93    * This function discretize the canopy  by assigning total LAI into each canopy layer equally
+94    * In Future, this function can be changed to accomodate Leaf Area Density
+95    ******************************************************************************/
+96   int i;
+97   
+98   for (i=0;i<(canopy->Nlayers);i++)
+99   {
+100     canopy->Leaf[i]\&.LAI=canopy->LAItotal/canopy->Nlayers;
+101   }
+102   return;
+103 }
+.fi
+.SS "void freecanopy (struct \fBcanopy\fP *canopy)"
+
+.PP
+.nf
+288 {
+289   free(canopy->ENV);
+290   free(canopy->Leaf);
+291   free(canopy->OUT);
+292   return;
+293 }
+.fi
+.SS "void getcanopylightme (struct \fBcanopy\fP *canopy, doublelat, doubleDOY, inttd, doublesolarR)"
+
+.PP
+.nf
+106 {
+107   
+108   /***********************************************************************
+109    * Purpose: To calculate direct and diffused sunlight at the top of the canopy
+110    * Input
+111    * lat:- Latitude
+112    * DOY:- Day of Year
+113    * td= Time of day
+114    * solarR :- Incoming Solar Radiation
+115    * Output:
+116    * canopy structure is updated for the following variables
+117    * Idirtop :- direct light at the top of the canopy
+118    * Idifftop:- Diffused light at the top of the canopy
+119    * CosZenithAngle:- Zenith Angle, to be used in the subsequent calculations
+120    * Reference:
+121    * Humphries Thesis
+122    * page 51
+123    * ***********************************************************************/
+124         double omega, delta0, delta, deltaR;
+125         double tf, SSin, CCos, PPo;
+126         double CosZenithAngle, CosHour;
+127         double CosHourDeg;
+128         double Idir, Idiff, propIdir, propIdiff;
+129         const double DTR = M_PI/180;
+130         const double tsn = 12\&.0;
+131         const double alpha = 0\&.85;
+132         const double SolarConstant = 2650;
+133         const double atmP = 1e5;
+134 
+135         omega = lat * DTR;
+136         delta0 = 360\&.0 * ((DOY + 10)/365\&.0);
+137         delta = -23\&.5 * cos(delta0*DTR);
+138         deltaR = delta * DTR;
+139 
+140         tf = (15\&.0*(td - tsn))*DTR;
+141         SSin = sin(deltaR) * sin(omega);
+142         CCos = cos(deltaR) * cos(omega);
+143 
+144         CosZenithAngle = SSin + CCos * cos(tf);
+145         if(CosZenithAngle < pow(10,-10))
+146                 CosZenithAngle = pow(10,-10);
+147 
+148         CosHour = -tan(omega) * tan(deltaR);
+149         CosHourDeg = (1/DTR)*CosHour;
+150         if(CosHourDeg < -57)
+151                 CosHour = -0\&.994;
+152 
+153         PPo = 1e5 / atmP;
+154         Idir = SolarConstant * (pow(alpha,(PPo/CosZenithAngle)));
+155         Idiff = 0\&.3 * SolarConstant *(1 - pow(alpha,(PPo/CosZenithAngle))) * CosZenithAngle ;
+156 
+157         propIdir = Idir / (Idir + Idiff);
+158         propIdiff = Idiff / (Idir + Idiff);
+159         
+160         canopy->Idirtop=propIdir*solarR;
+161         canopy->Idifftop= propIdiff*solarR ;
+162         canopy->CosZenithAngle =CosZenithAngle;
+163         return;
+164 }
+.fi
+.SS "void getcanopyLNprof (struct \fBcanopy\fP *canopy, doubleLeafN, doublekpLN)"
+
+.PP
+.nf
+264 {
+265   /*******************************************************************
+266    * This function calculates Leaf N distrivution of different canopy layers
+267    * Leaf N will subsequently be used in calculation of photosynthesis parameters
+268    * Input parameters
+269    * Leaf N: Leaf N at the top of the canopy
+270    * kpLN: Extinction coefficient for exponential decline in leaf N with LAI
+271    * ************************************************************************/
+272    
+273    
+274         int i;
+275         double leafNla,CumLAI;
+276 
+277         CumLAI=0\&.0;
+278         for(i=0;i<(canopy->Nlayers);i++)
+279         {
+280                 canopy->Leaf[i]\&.LeafN= LeafN * exp(-kpLN * CumLAI);
+281                 CumLAI = CumLAI+canopy->Leaf[i]\&.LAI;
+282         }
+283         return;
+284 }
+.fi
+.SS "void getcanopyRHprof (struct \fBcanopy\fP *canopy, doubleRH)"
+
+.PP
+.nf
+245 {
+246        int i;
+247         double kh, hsla, j;
+248 
+249         kh = 1 - RH;
+250        
+251         for(i=0;i<(canopy->Nlayers);i++)
+252         {
+253                 j = i + 1;
+254                 hsla = RH * exp(kh * (j/canopy->Nlayers));
+255 //              /*hsla = RH * exp(-kh * (j/nlayers));  /*new simpler version from Joe Iverson*/
+256                 if(hsla > 1) hsla = 0\&.99; 
+257                 canopy->ENV[i]\&.RH = hsla;
+258         }
+259         return;
+260 }
+.fi
+.SS "void getCanopysunML (struct \fBcanopy\fP *canopy, doublekd, doublechil, doubleheightf)"
+
+.PP
+.nf
+168 {
+169   /****************************************************************************************************
+170    * Purpose:
+171    * Calculate fraction of shaded and sunlit leaves  in each of the canopy layers
+172    * Also, Calculate Direct, diffused and Scattered Light for each of the canopy layer
+173    * 
+174    * Input
+175    * Direct Sun Light at the Top of the Canopy
+176    * Diffused Light at the TOp of the Canopy
+177    * LAI Total Leaf Area Index of the Canopy
+178    * Nlayers Number of Canopy Layers
+179    * cosTheta: Cosine of Zenith Angel
+180    * Chil: Factor determining leaf angle distribtion of the canopy
+181    * heightF: Height Factor of the Canopy
+182    * 
+183    * Output
+184    * Fraction of Sunlit Leaves in Each Layer
+185    * Fraction of Shaded leaves in Each layer
+186    * Amount of Light (Direct + Diffuses+Scattered) on the sunlit leaves of each layer
+187    * Amount of Light (Diffused+Scattered) on the shaded leaves of each layer
+188    * *****************************************************************************************/
+189         int i;
+190         double k0, k1, k;
+191         double LAIi, CumLAI;
+192         double Isolar, Idiffuse, Ibeam, Iscat, Itotal,alphascatter;
+193         double Ls, Ld;
+194         double Fsun, Fshade;
+195         alphascatter=0\&.8;
+196         k0 = sqrt(pow(chil ,2) + pow(tan(acos(canopy->CosZenithAngle)),2));
+197         k1 = chil + 1\&.744*pow((chil+1\&.183),-0\&.733);
+198         k = k0/k1;
+199         if(k<0)
+200                 k = -k;
+201 
+202         LAIi = canopy->LAItotal / canopy->Nlayers;
+203 
+204         for(i=0;i<canopy->Nlayers;i++)
+205         {
+206                 CumLAI = LAIi * (i+0\&.5);          
+207                 Ibeam=canopy->Idirtop*canopy->CosZenithAngle;
+208                 Iscat = Ibeam * exp(-k *sqrt(alphascatter)* CumLAI)-Ibeam * exp(-k * CumLAI);     
+209                 Isolar = Ibeam*k;
+210                 Idiffuse = canopy->Idifftop * exp(-kd * CumLAI) + Iscat;                
+211                 Ls = (1-exp(-k*LAIi))*exp(-k*CumLAI)/k;
+212                 Ld=LAIi-Ls;
+213                 Fsun=Ls/(Ls+Ld);
+214                 Fshade=Ld/(Ls+Ld);
+215                 canopy->Leaf[i]\&.pLeafsun=Fsun;
+216                 canopy->Leaf[i]\&.pLeafshade=Fshade;
+217                 canopy->Leaf[i]\&.heightf = CumLAI/heightf;
+218                 /*fraction intercepted*/
+219                 Itotal =(Fsun*Isolar + Idiffuse) * (1-exp(-k*LAIi))/k;
+220                 /* collecting the results */
+221                 canopy->ENV[i]\&.Idir= Isolar+Idiffuse ;
+222                 canopy->ENV[i]\&.Idiff = Idiffuse;
+223                 canopy->ENV[i]\&.Itotal = Itotal;                
+224         }
+225         return;
+226 }
+.fi
+.SS "void getcanopyWINDprofile (struct \fBcanopy\fP *canopy, doubleWindSpeed)"
+
+.PP
+.nf
+230 {
+231         int i;
+232         double k=0\&.7;
+233         double CumLAI;
+234         
+235           CumLAI=0\&.0;
+236         for(i=0;i<(canopy->Nlayers);i++)
+237         {
+238                canopy->ENV[i]\&.windspeed= WindSpeed * exp(-k * CumLAI);
+239                CumLAI+=canopy->Leaf[i]\&.LAI;
+240         }
+241         return;
+242 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

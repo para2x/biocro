@@ -1,0 +1,120 @@
+.TH "/home/dlebauer/dev/biocro/src/pi_funcs.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/pi_funcs.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <math\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBPI\fP   3\&.14159265359"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "double \fBf_allometric\fP (double x, double A[])"
+.br
+.ti -1c
+.RI "double \fBf_arctangent\fP (double x, double A[])"
+.br
+.ti -1c
+.RI "double \fBf_exponential\fP (double x, double A[])"
+.br
+.ti -1c
+.RI "double \fBf_gen_gompertz\fP (double x, double A[])"
+.br
+.ti -1c
+.RI "double \fBf_logistic\fP (double x, double A[])"
+.br
+.ti -1c
+.RI "double \fBf_gen_poisson_density\fP (double x, double A[])"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define PI   3\&.14159265359"
+
+.SH "Function Documentation"
+.PP 
+.SS "double f_allometric (doublex, doubleA[])"
+
+.PP
+.nf
+56     {
+57       return x <= 0\&.0 ? 0\&.0 : A[0] * pow(x, A[1]);
+58     }
+.fi
+.SS "double f_arctangent (doublex, doubleA[])"
+
+.PP
+.nf
+72     {
+73       return(A[1] + (A[2] / PI) *
+74              atan(PI * A[3] * (x - A[0])));
+75     }
+.fi
+.SS "double f_exponential (doublex, doubleA[])"
+
+.PP
+.nf
+89     {
+90       return(A[0] * exp((A[1] * x)));
+91     }
+.fi
+.SS "double f_gen_gompertz (doublex, doubleA[])"
+
+.PP
+.nf
+109     {
+110       double tmp1, tmp2;      /* temp values */
+111 
+112       if (A[1] <= 0\&.0) {
+113         return 0\&.0;
+114       }
+115 
+116       tmp1 = pow(A[1], (A[3] * x));
+117       tmp2 = pow(A[1], A[2] / tmp1);
+118 
+119       return(A[0] / tmp2);
+120     }
+.fi
+.SS "double f_gen_poisson_density (doublex, doubleA[])"
+
+.PP
+.nf
+152     {
+153       double tmp1, tmp2, tmp3;
+154 
+155       if (A[1] == A[0]) {
+156         return(0\&.0);
+157       }
+158 
+159       tmp1 = ((A[1] - x) / (A[1] - A[0]));
+160       if (tmp1 <= 0\&.0) {
+161         return 0\&.0;
+162       }
+163 
+164       tmp2 = 1\&.0 - pow(tmp1, A[3]);
+165       tmp3 = pow(tmp1, A[2]);
+166       return (exp(A[2] * tmp2 / A[3]) * tmp3);
+167     }
+.fi
+.SS "double f_logistic (doublex, doubleA[])"
+
+.PP
+.nf
+136     {
+137       return(A[0] / (1\&.0 + A[1] / exp((A[2] * x))));
+138     }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

@@ -1,0 +1,155 @@
+.TH "/home/dlebauer/dev/biocro/src/getsoilprop.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/getsoilprop.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include <stdlib\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBNCLASS\fP   14"
+.br
+.ti -1c
+.RI "#define \fBCOARSE\fP   1                /* texture type for sandy soil */"
+.br
+.ti -1c
+.RI "#define \fBMEDIUM\fP   2                /* texture type for medium (loamy) soil */"
+.br
+.ti -1c
+.RI "#define \fBFINE\fP   3                  /* texture type for fine soil */"
+.br
+.ti -1c
+.RI "#define \fBVERYFINE\fP   4              /* texture type for volcanic soil */"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBgetsoilprop\fP (double *asand, double *asilt, double *aclay, double *bulkden, double *fieldcap, int *texture, int *soilclassification)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define COARSE   1                /* texture type for sandy soil */"
+
+.SS "#define FINE   3                  /* texture type for fine soil */"
+
+.SS "#define MEDIUM   2                /* texture type for medium (loamy) soil */"
+
+.SS "#define NCLASS   14"
+
+.SS "#define VERYFINE   4              /* texture type for volcanic soil */"
+
+.SH "Function Documentation"
+.PP 
+.SS "void getsoilprop (double *asand, double *asilt, double *aclay, double *bulkden, double *fieldcap, int *texture, int *soilclassification)"
+
+.PP
+.nf
+75     {
+76       static double satcond[NCLASS] = {0\&.0, 0\&.000176, 0\&.0001563,
+77                                       0\&.00003467, 0\&.0000072, 0\&.00000695,
+78                                       0\&.0000063, 0\&.0000017, 0\&.00000245,
+79                                       0\&.000002167, 0\&.000001033,
+80                                       0\&.000001283, 0\&.0000080, 0\&.0000080};
+81       static double bulk_density[NCLASS] = {0\&.0, 1\&.55, 1\&.50, 1\&.43, 1\&.36,
+82                                            1\&.39, 1\&.35, 1\&.24, 1\&.30, 1\&.28,
+83                                            1\&.19, 1\&.15, 1\&.40, 0\&.75};
+84       static double field_capacity[NCLASS] = {0\&.0, 0\&.14, 0\&.18, 0\&.22, 0\&.32,
+85                                              0\&.29, 0\&.28, 0\&.40, 0\&.36,
+86                                              0\&.36, 0\&.46, 0\&.45, 0\&.33,
+87                                              0\&.70};
+88       int   soil_indx;
+89       double ksat;
+90       double sand, silt, clay;
+91 
+92       sand = *asand * 100;
+93       silt = *asilt * 100;
+94       clay = *aclay * 100;
+95 
+96       if ((sand > 100 || sand < 0) || (silt > 100 || silt < 0) ||
+97           (clay > 100 || clay < 0)) {
+98         fprintf(stderr, "Invalid texture in getsoilprop: sand = %f,", sand);
+99         fprintf(stderr, " silt = %f, clay = %f\n", silt, clay);
+100         exit(1);
+101       }
+102 
+103       if (*texture == VERYFINE) {
+104         /* volcanic */
+105         soil_indx = 13;
+106       } else if ((sand >= 85) && ((-2\&.0/3\&.0)*silt - clay + 10 >= 0)) {
+107         /* sand */
+108         soil_indx = 1;
+109       } else if (((-2\&.0/3\&.0)*silt - clay + 10 <= 0) &&
+110                  (-0\&.5*silt - clay + 15 >= 0)) {
+111         /* loamy sand */
+112         soil_indx = 2;
+113       } else if (((-0\&.5*silt-clay+15 <= 0) && (clay <= 20) && (sand >= 52)) ||
+114                  ((sand <= 52) && (silt <= 50) && (clay <= 7))) {
+115         /* sandy loam */
+116         soil_indx = 3;
+117       } else if ((sand <= 50) && (silt >= 50) && (clay <= 27)) {
+118         if ((sand <= 20) && (clay <= 10)) {
+119           /* silt */
+120           soil_indx = 12;
+121         } else {
+122           /* silt loam */
+123           soil_indx = 4;
+124         }
+125       } else if ((sand >= 23 && sand <= 52) && (silt >= 28 && silt <= 50) &&
+126                  (clay >= 7 && clay <= 27)) {
+127         /* loam */
+128         soil_indx = 5;
+129       } else if ((sand >= 45 && sand <= 80) && (silt <= 28) &&
+130                  (clay >= 20 && clay <= 35)) {
+131         /* sandy clay loam */
+132         soil_indx = 6;
+133       } else if ((sand <= 20) && (clay >= 27 && clay <= 40)) {
+134         /* silty clay loam */
+135         soil_indx = 7;
+136       } else if ((sand >= 20 && sand <= 45) && (clay >= 27 && clay <= 40)) {
+137         /* clay loam */
+138         soil_indx = 8;
+139       } else if ((sand >= 45 && sand <= 65) && (silt <= 20) &&
+140                  (clay >= 35 && clay <= 55)) {
+141         /* sandy clay */
+142         soil_indx = 9;
+143       } else if ((sand <= 20) && (silt >= 40 && silt <= 60) &&
+144                  (clay >= 40 && clay <= 60)) {
+145         /* silty clay */
+146         soil_indx = 10;
+147       } else if ((sand <= 45) && (silt <= 40) && (clay >= 40)) {
+148         /* clay */
+149         soil_indx = 11;
+150       } else {
+151         fprintf(stderr, "Unknown texture type: sand = %f, silt = %f,", sand,
+152                 silt);
+153         fprintf(stderr, " clay = %f\n", clay);
+154         exit(1);
+155       }
+156 
+157       *bulkden = bulk_density[soil_indx];
+158       *fieldcap = field_capacity[soil_indx];
+159       ksat = satcond[soil_indx]*100\&.0;    /* Convert m/sec to cm/sec */
+160       *soilclassification=soil_indx-1;
+161 
+162 /*      printf("Soil classification = %1d\n", soil_indx);
+163       printf("standard_bulkden = %10\&.6lf\n", *bulkden);
+164       printf("standard_fieldcap = %10\&.6lf\n", *fieldcap);
+165       printf("standard_ksat = %10\&.6lf\n", ksat); */
+166 
+167       return;
+168     }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

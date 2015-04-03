@@ -1,0 +1,788 @@
+.TH "/home/dlebauer/dev/biocro/src/AuxCropGro.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/AuxCropGro.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+\fC#include 'Century\&.h'\fP
+.br
+\fC#include 'BioCro\&.h'\fP
+.br
+\fC#include 'AuxcaneGro\&.h'\fP
+.br
+\fC#include 'crocent\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBcreateNULLmiscanthus\fP (struct \fBmiscanthus\fP *\fBmiscanthus\fP, int vecsize)"
+.br
+.ti -1c
+.RI "double \fBgetThermaltime\fP (double temp, double Tbase)"
+.br
+.ti -1c
+.RI "double \fBgetThermalSenescence\fP (double criticalTT, double currentTT, double biomass, double dailyfractionalloss)"
+.br
+.ti -1c
+.RI "double \fBgetFrostdamage\fP (double T0, double T100, double T, double biomass)"
+.br
+.ti -1c
+.RI "double \fBcanopyNsenescence\fP (struct \fBleaf\fP *\fBleaf\fP, double SLA, double kN, double leafNsen)"
+.br
+.ti -1c
+.RI "double \fBgetLeafSenescence\fP (struct \fBleaf\fP *\fBleaf\fP, double criticalTT, double senefraction, double Temp, struct \fBfrostParms\fP *frostparms, double TT, struct \fBcanopyparms\fP *canopyparm)"
+.br
+.ti -1c
+.RI "double \fBgetStemSenescence\fP (struct \fBstem\fP *\fBstem\fP, double criticalTT, double senefracion, double Temp, struct \fBfrostParms\fP *frostparms, double TT)"
+.br
+.ti -1c
+.RI "double \fBgetRootSenescence\fP (struct \fBroot\fP *\fBroot\fP, double criticalTT, double senefracion, double Temp, struct \fBfrostParms\fP *frostparms, double TT)"
+.br
+.ti -1c
+.RI "double \fBgetRhizomeSenescence\fP (struct \fBrhizome\fP *\fBrhizome\fP, double criticalTT, double senefracion, double Temp, struct \fBfrostParms\fP *frostparms, double TT)"
+.br
+.ti -1c
+.RI "void \fBupdatedailyvec\fP (struct \fBdailyvec\fP *\fBdailyvec\fP, double \fBnewbiomass\fP, double newlitter, int N, double delTT)"
+.br
+.ti -1c
+.RI "void \fBupdatebiomass\fP (double *res, double toadd, double toremove)"
+.br
+.ti -1c
+.RI "double \fBnewbiomass\fP (double AcanopyNet, double k, double GrowthRespCoeff)"
+.br
+.ti -1c
+.RI "void \fBgetfrostparms\fP (struct \fBfrostParms\fP *frostparms)"
+.br
+.ti -1c
+.RI "void \fBgetsenescenceparms\fP (struct \fBsenthermaltemp\fP *senparms)"
+.br
+.ti -1c
+.RI "double \fBCalculateGrowthResp\fP (double \fBnewbiomass\fP, double growthRespCoeff)"
+.br
+.ti -1c
+.RI "void \fBdailymiscanthus\fP (struct \fBmiscanthus\fP *\fBmiscanthus\fP, double coefs[25], double TherPrds[6], double TherTime, double Temp, double dailynetassim, struct \fBsenthermaltemp\fP *senparms, struct \fBcanopyparms\fP *\fBcanopyparms\fP, struct \fBfrostParms\fP *frostparms, int N, double delTT, struct \fBrespirationParms\fP *RESP, int emergence)"
+.br
+.ti -1c
+.RI "void \fBUpdateStandingbiomass\fP (double *standing, double \fBnewbiomass\fP)"
+.br
+.ti -1c
+.RI "void \fBUpdateStandingLeaf\fP (struct \fBleaf\fP *\fBleaf\fP, double \fBnewbiomass\fP, double deadleaf, double remobFactor)"
+.br
+.ti -1c
+.RI "void \fBUpdateStandingStem\fP (struct \fBstem\fP *\fBstem\fP, double \fBnewbiomass\fP, double deadstem, double remobFactor)"
+.br
+.ti -1c
+.RI "void \fBUpdateStandingRoot\fP (struct \fBroot\fP *\fBroot\fP, double \fBnewbiomass\fP, double deadroot, double remobFactor)"
+.br
+.ti -1c
+.RI "void \fBUpdateStandingRhizome\fP (struct \fBrhizome\fP *\fBrhizome\fP, double \fBnewbiomass\fP, double deadrhizome, double remobFactor)"
+.br
+.ti -1c
+.RI "int \fBCheckEmergence\fP (struct \fBdailyclimate\fP *\fBdailyclimate\fP, double EmergTemperature)"
+.br
+.ti -1c
+.RI "void \fBgetdailyclimate\fP (struct \fBdailyclimate\fP *\fBdailyclimate\fP, int *doy, double *solar, double *temp, double *rh, double *windspeed, double *precip, int currenthour, int vecsize)"
+.br
+.ti -1c
+.RI "void \fBdailymiscanthusupdate\fP (struct \fBmiscanthus\fP *\fBmiscanthus\fP, struct \fBmiscanthus\fP *deltamiscanthus)"
+.br
+.ti -1c
+.RI "void \fBupdatedormantstage\fP (struct \fBmiscanthus\fP *\fBmiscanthus\fP)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "double CalculateGrowthResp (doublenewbiomass, doublegrowthRespCoeff)"
+
+.PP
+.nf
+457 {
+458   double tmp;
+459   tmp=(newbiomass>0\&.0)?newbiomass*growthRespCoeff:0\&.0;
+460   return(tmp);
+461 }
+.fi
+.SS "double canopyNsenescence (struct \fBleaf\fP *leaf, doubleSLA, doublekN, doubleleafNsen)"
+
+.PP
+.nf
+263 {
+264   /*****************************************************
+265    * Purpose:
+266    * 
+267    * Purpose of this function is to calculate additional N senescence due to N deficiency
+268    * It uses current value of average canopy N, use this and an exponential coefficient to
+269    * determine vertical distribution of leaf N canopy\&.
+270    * If this vertical distrbution results in leaf N of lower canopy which is less than a threshold value
+271    *  then an leaf biomass (equivalent to LAI which is having lower than threshold leaf N conc\&.) is senesced
+272    * Input
+273    * leaf: pointer to leaf structure
+274    * SLA: specific leaf area (in ha/Mg)
+275    * kN:  coefficient determining exponentially declining leaf N conc (dimensionless)
+276    * leafNsen: any leaf with leaf N conc lower than leafNsen will be senesced (mmol N m-2)
+277    * Output/return
+278    * Senesced leaf biomass (Mg/ha)
+279    * ***************************************************/
+280   double tmp;
+281   double laimax,laicurrent;
+282   double leafN;
+283   leafN=leaf->biomassE\&.CN;
+284   laimax=(1/kN)*log(1+(kN*leafN/leafNsen));
+285   laicurrent=leaf->biomass*SLA;
+286   if(laicurrent<=laimax)
+287   {
+288     tmp=0\&.0;
+289   }
+290   else
+291   {
+292     tmp=(laicurrent-laimax)/SLA;
+293   }
+294   return(tmp);
+295 }
+.fi
+.SS "int CheckEmergence (struct \fBdailyclimate\fP *dailyclimate, doubleEmergTemperature)"
+
+.PP
+.nf
+674 {
+675   int flag;
+676   if(((dailyclimate->minimumTemp)>EmergTemperature)&&((dailyclimate->doy)>90)&&((dailyclimate->doy)<270)){
+677     flag =1;
+678   }
+679   else
+680   {
+681     flag = 0;
+682   }
+683   return(flag);
+684 }
+.fi
+.SS "void createNULLmiscanthus (struct \fBmiscanthus\fP *miscanthus, intvecsize)"
+
+.PP
+.nf
+12 {
+13    int i;
+14    miscanthus->leafvec=malloc((vecsize+1)*sizeof(*miscanthus->leafvec));
+15    miscanthus->stemvec=malloc((vecsize+1)*sizeof(*miscanthus->stemvec));
+16    miscanthus->rootvec=malloc((vecsize+1)*sizeof(*miscanthus->rootvec));
+17    miscanthus->rhizomevec=malloc((vecsize+1)*sizeof(*miscanthus->rhizomevec));
+18   
+19    for (i = 0; i<=vecsize;i++)
+20    {
+21       miscanthus->leafvec[i]\&.newbiomass=0\&.0;
+22       miscanthus->leafvec[i]\&.newlitter=0\&.0;
+23        miscanthus->leafvec[i]\&.ageinTT=0\&.0;
+24        miscanthus->stemvec[i]\&.newbiomass=0\&.0;
+25       miscanthus->stemvec[i]\&.newlitter=0\&.0;
+26        miscanthus->stemvec[i]\&.ageinTT=0\&.0;
+27        miscanthus->rootvec[i]\&.newbiomass=0\&.0;
+28       miscanthus->rootvec[i]\&.newlitter=0\&.0;
+29        miscanthus->rootvec[i]\&.ageinTT=0\&.0;
+30        miscanthus->rhizomevec[i]\&.newbiomass=0\&.0;
+31       miscanthus->rhizomevec[i]\&.newlitter=0\&.0;
+32        miscanthus->rhizomevec[i]\&.ageinTT=0\&.0;
+33        
+34    }
+35    
+36    miscanthus->leaf\&.biomass=0\&.0;
+37    miscanthus->stem\&.biomass=0\&.0;
+38    miscanthus->root\&.biomass=0\&.0;
+39    miscanthus->rhizome\&.biomass=0\&.0;
+40    miscanthus->leaf\&.litter=0\&.0;
+41    miscanthus->stem\&.litter=0\&.0;
+42    miscanthus->root\&.litter=0\&.0;
+43    miscanthus->rhizome\&.litter=0\&.0;
+44    miscanthus->rhizome\&.carbohydratefraction=0\&.6; // Lets assume that in the beginning carbohydrate fraction of dry biomass is  60%
+45    return;
+46 }
+.fi
+.SS "void dailymiscanthus (struct \fBmiscanthus\fP *miscanthus, doublecoefs[25], doubleTherPrds[6], doubleTherTime, doubleTemp, doubledailynetassim, struct \fBsenthermaltemp\fP *senparms, struct \fBcanopyparms\fP *canopyparms, struct \fBfrostParms\fP *frostparms, intN, doubledelTT, struct \fBrespirationParms\fP *RESP, intemergence)"
+
+.PP
+.nf
+467 {
+468 
+469   double remobStem,remobRoot,remobRhiz;
+470   remobStem=canopyparms->remobFac;
+471   remobRoot=canopyparms->remobFac;
+472   remobRhiz=canopyparms->remobFac;
+473   double deadleaf,deadstem,deadroot,deadrhiz;
+474   double dailysenesced;
+475   double remobilized;
+476   double totalassimilate;
+477   struct crop_phenology cropdbp;
+478   double newleaf,newstem,newrhiz,newroot;
+479   double kLeaf,kStem,kRoot,kRhizome;
+480   double newLeaf,newStem,newRhizome,newRoot;
+481   double newLeaflitter,newStemlitter,newRhizomelitter,newRootlitter;
+482   double totalmaintenance;
+483   double RemobilizedFromLitter,RemobilizedFromRhizome;
+484   double SumofKpart,Dailybalance;
+485 
+486 // double getStemSenescence(struct stem *stem, struct littervec *littervec, double criticalTT, double Temp, double remobfa, struct frostParms *frostparms, int N)
+487  // calculate senescing biomass for today based on Thermal Time, N conce\&. and Frost conditions 
+488  
+489    getfrostparms(frostparms);
+490    getsenescenceparms(senparms);
+491    
+492    
+493    if(emergence ==1)
+494    {
+495           cropcent_dbp(coefs,TherPrds,TherTime, &cropdbp);
+496           kLeaf = cropdbp\&.DBP\&.kLeaf;
+497           kStem = cropdbp\&.DBP\&.kStem;
+498           kRoot = cropdbp\&.DBP\&.kRoot;
+499           kRhizome = cropdbp\&.DBP\&.kRhiz;
+500 
+501            // calculate senescence, Remobilization due to senescece will contribute to growth of new plant organs
+502           deadleaf=getLeafSenescence(&miscanthus->leaf,senparms->leafcriticalT,senparms->leaffr, Temp, frostparms,TherTime,canopyparms);
+503           deadstem=getStemSenescence(&miscanthus->stem,senparms->stemcriticalT,senparms->stemfr, Temp, frostparms,TherTime);
+504           deadroot=getRootSenescence(&miscanthus->root, senparms->rootcriticalT,senparms->rootfr, Temp, frostparms,TherTime);
+505           deadrhiz=getRhizomeSenescence(&miscanthus->rhizome,senparms->rhizomecriticalT,senparms->rhizomefr, Temp, frostparms,TherTime);    
+506           dailysenesced=deadleaf+deadstem+deadroot+deadrhiz;
+507           //Calculate how much of dead biomass is remobilized based on a remobilization factor
+508           RemobilizedFromLitter = dailysenesced*canopyparms->remobFac; // assuming all the dead organs remobilizes same fraction
+509          
+510          // Check and calculate whether carbohydrate in Rhizome is being remobilized baksed on K(negative value of partitioning coefficient)
+511          if(kRhizome>=0)
+512           {
+513             RemobilizedFromRhizome=0;          
+514           }
+515           else
+516           {
+517             // I need to multiply by (-1) because kRhizome is negative
+518             RemobilizedFromRhizome=(-1)*kRhizome*miscanthus->rhizome\&.biomass;
+519           }
+520           
+521           // Total maintenance respiration, which is a temperature dependet function of existing biomass
+522           totalmaintenance=miscanthus->autoresp\&.stemmaint+miscanthus->autoresp\&.rootmaint+miscanthus->autoresp\&.rhizomemaint;
+523           // Total assimilate includes net canopy assimilation and remobilization from litter and rhizome, also it must satisfy total maintenance respiration
+524           totalassimilate=dailynetassim+RemobilizedFromLitter+RemobilizedFromRhizome-totalmaintenance;
+525           
+526           // If total assimilate for growth (& growth respiration) is negative then this is provided by rhizome only (storage carb\&.) leaving other parts intacts
+527           if(totalassimilate<=0\&.0)
+528           {
+529           newLeaf=0\&.0;
+530           miscanthus->autoresp\&.stemgrowth=0\&.0;
+531           newStem=0\&.0;
+532           miscanthus->autoresp\&.rootgrowth=0\&.0;
+533           newRoot=0\&.0;
+534           miscanthus->autoresp\&.rhizomegrowth=0\&.0;
+535           // New rhizome must provide for total negative assimilate\&. Also we need to update remobilization
+536           newRhizome=totalassimilate+RemobilizedFromRhizome;
+537           miscanthus->autoresp\&.rhizomegrowth=0\&.0;
+538           }
+539           else
+540           {
+541           SumofKpart=((kLeaf>0)?kLeaf:0)+((kStem>0)?kStem:0)+((kRoot>0)?kRoot:0)+((kRhizome>0)?kRhizome:0);
+542             if(SumofKpart!=1)
+543             {
+544             error("Sum of Positive partitioning coefficient is not one");
+545             }
+546           newLeaf=newbiomass(totalassimilate,kLeaf,0\&.0);          
+547           newStem=newbiomass(totalassimilate,kStem,RESP->growth\&.stem);
+548           miscanthus->autoresp\&.stemgrowth=CalculateGrowthResp(newStem,RESP->growth\&.stem);
+549           newRoot=newbiomass(totalassimilate,kRoot,RESP->growth\&.root);
+550           miscanthus->autoresp\&.rootgrowth=CalculateGrowthResp(newRoot,RESP->growth\&.stem);
+551           // Make sure that remobilization termis taken care of in the calculation of newRhizome
+552           newRhizome=(kRhizome>0)?newbiomass(totalassimilate,kRhizome,RESP->growth\&.rhizome):(-1)*RemobilizedFromRhizome;
+553           
+554           miscanthus->autoresp\&.rhizomegrowth=CalculateGrowthResp(newRhizome,RESP->growth\&.stem);
+555           }
+556            
+557          // Now we know growth respiration of each component & we can update total autotrophic respiration
+558           miscanthus->autoresp\&.total=miscanthus->autoresp\&.leafdarkresp+totalmaintenance+miscanthus->autoresp\&.stemgrowth+miscanthus->autoresp\&.rootgrowth+miscanthus->autoresp\&.rhizomegrowth;
+559          // Here, we are updating net primary productivity
+560          miscanthus->NPP=miscanthus->GPP-miscanthus->autoresp\&.total;
+561           
+562         // Here, we are evaluating new litter, This is fraction of dead biomass which was not remobilized  
+563           newLeaflitter=(deadleaf>0)?deadleaf*(1-canopyparms->remobFac):0\&.0;
+564           newStemlitter=(deadleaf>0)?deadstem*(1-canopyparms->remobFac):0\&.0;
+565           newRootlitter=(deadroot>0)?deadroot*(1-canopyparms->remobFac):0\&.0;
+566           newRhizomelitter=(deadrhiz>0)?deadrhiz*(1-canopyparms->remobFac):0\&.0;
+567           
+568 
+569           Dailybalance=newLeaf- deadleaf+newRoot- deadroot+newStem- deadstem+newRhizome- deadrhiz+newLeaflitter+newStemlitter+newRootlitter + newRhizomelitter;
+570          Dailybalance=Dailybalance-miscanthus->NPP;
+571          if(Dailybalance>1e-10)
+572           {
+573           Rprintf("\nNPP and Daily Change inBiomass is not matching & difference is %f\n", Dailybalance);
+574           Rprintf("Thermal Time = %f, GPP = %f, Autotrophic Respiration = %f, NPP = %f, Remobilized from Litter = %f, Remobilized from Rhizome = %f \n", TherTime,miscanthus->GPP, miscanthus->autoresp\&.total,miscanthus->NPP,RemobilizedFromLitter,RemobilizedFromRhizome);
+575           Rprintf("kLeaf=%f, kstem=%f, kRoot=%f, kRhizome=%f \n", kLeaf, kStem, kRoot,kRhizome);
+576           Rprintf("NewLeaf = %f Dead Leaf=%f, newLeafLitter=%f\n",newLeaf, deadleaf,newLeaflitter); 
+577           Rprintf("NewStem = %f Dead Stem=%f, newStemLitter=%f\n",newStem, deadstem,newStemlitter);
+578           Rprintf("NewRoot = %f Dead Root=%f, newRootLitter=%f\n",newRoot, deadroot,newRootlitter);
+579           Rprintf("NewRhizome = %f Dead Rhizome=%f, newRhizomeLitter=%f\n",newRhizome, deadrhiz,newRhizomelitter);
+580           Rprintf("LeafDarkResp=%f, Total maintenance (ExceptLeaf) = %f, StemGrowthResp=%f, RootGrowthResp=%f, RhizGrowthResp=%f\n",miscanthus->autoresp\&.leafdarkresp,totalmaintenance,miscanthus->autoresp\&.stemgrowth,miscanthus->autoresp\&.rootgrowth,miscanthus->autoresp\&.rhizomegrowth);
+581               Rprintf("Daily Biomas Balance Gain = %f", Dailybalance);
+582               Rprintf("--------Emergence= %i-, N= %i---------------------\n",emergence, N);
+583           }
+584 
+585           // Adding new biomass of green components
+586           UpdateStandingbiomass(&miscanthus->leaf\&.biomass, newLeaf);
+587           UpdateStandingbiomass(&miscanthus->stem\&.biomass, newStem);
+588           UpdateStandingbiomass(&miscanthus->root\&.biomass, newRoot);
+589           UpdateStandingbiomass(&miscanthus->rhizome\&.biomass, newRhizome);
+590           
+591           // Subtracting dead biomass from the green components
+592           // before thant I must multiply all the dead leaf components by -1, so I can still use 
+593           // Updatestandingbiomass function for SUBTRACTING instead of ADDING
+594           
+595           deadleaf*=(-1);
+596           deadstem*=(-1);
+597           deadroot*=(-1);
+598           deadrhiz*=(-1);
+599           
+600           UpdateStandingbiomass(&miscanthus->leaf\&.biomass, deadleaf);
+601           UpdateStandingbiomass(&miscanthus->stem\&.biomass, deadstem);
+602           UpdateStandingbiomass(&miscanthus->root\&.biomass, deadroot);
+603           UpdateStandingbiomass(&miscanthus->rhizome\&.biomass, deadrhiz);
+604           
+605           
+606           // Updating standing biomass of litter  components
+607           UpdateStandingbiomass(&miscanthus->leaf\&.litter, newLeaflitter);
+608           UpdateStandingbiomass(&miscanthus->stem\&.litter, newStemlitter);
+609           UpdateStandingbiomass(&miscanthus->root\&.litter, newRootlitter);
+610           UpdateStandingbiomass(&miscanthus->rhizome\&.litter, newRhizomelitter);
+611           
+612         
+613           
+614    }
+615    else // Dormant stange simulation, where rhizome provides for respiration loss
+616    {
+617           miscanthus->stem\&.biomass=0\&.0;
+618           miscanthus->autoresp\&.stemgrowth=0;
+619           miscanthus->leaf\&.biomass=0\&.0;
+620           miscanthus->autoresp\&.leafdarkresp=0\&.0;
+621           
+622           //Perhaps I can implement senescence rate of belowground components during dormant stage?
+623 //          miscanthus->root\&.biomass=0\&.0;
+624           miscanthus->autoresp\&.rootgrowth=0;
+625 //          miscanthus->rhizome\&.biomass=0\&.0;
+626           miscanthus->autoresp\&.rhizomegrowth=0;
+627           
+628           totalmaintenance=miscanthus->autoresp\&.stemmaint+miscanthus->autoresp\&.rootmaint+miscanthus->autoresp\&.rhizomemaint;
+629           miscanthus->autoresp\&.total=miscanthus->autoresp\&.leafdarkresp+totalmaintenance+miscanthus->autoresp\&.stemgrowth+miscanthus->autoresp\&.rootgrowth+miscanthus->autoresp\&.rhizomegrowth;
+630           miscanthus->NPP=miscanthus->GPP-miscanthus->autoresp\&.total;
+631           newRhizome=(-1)* miscanthus->autoresp\&.total;
+632           UpdateStandingbiomass(&miscanthus->rhizome\&.biomass, newRhizome);
+633           if(miscanthus->rhizome\&.biomass <0)error("rhizome has become negative");
+634    } 
+635     return;
+636 }
+.fi
+.SS "void dailymiscanthusupdate (struct \fBmiscanthus\fP *miscanthus, struct \fBmiscanthus\fP *deltamiscanthus)"
+
+.PP
+.nf
+730 {
+731   double toadd,toremove;
+732   
+733   toadd=deltamiscanthus->leaf\&.biomass;
+734   toremove=deltamiscanthus->leaf\&.litter;
+735   updatebiomass(&miscanthus->leaf\&.biomass,toadd,toremove);
+736   updatebiomass(&miscanthus->leaf\&.litter,toremove,0\&.0);
+737   
+738   toadd=deltamiscanthus->stem\&.biomass;
+739   toremove=deltamiscanthus->stem\&.litter;
+740   updatebiomass(&miscanthus->stem\&.biomass,toadd,toremove);
+741   updatebiomass(&miscanthus->stem\&.litter,toremove,0\&.0);
+742   
+743   toadd=deltamiscanthus->root\&.biomass;
+744   toremove=deltamiscanthus->root\&.litter;
+745   updatebiomass(&miscanthus->root\&.biomass,toadd,toremove);
+746   updatebiomass(&miscanthus->root\&.litter,toremove,0\&.0);
+747   
+748   toadd=deltamiscanthus->rhizome\&.biomass;
+749   toremove=deltamiscanthus->rhizome\&.litter;
+750   updatebiomass(&miscanthus->rhizome\&.biomass,toadd,toremove);
+751   updatebiomass(&miscanthus->rhizome\&.litter,toremove,0\&.0);
+752    return;
+753 }
+.fi
+.SS "void getdailyclimate (struct \fBdailyclimate\fP *dailyclimate, int *doy, double *solar, double *temp, double *rh, double *windspeed, double *precip, intcurrenthour, intvecsize)"
+
+.PP
+.nf
+688 {
+689   //For the first hour after planting
+690   int i,indx;
+691   if ((currenthour==0)||(currenthour==vecsize))
+692       {
+693          dailyclimate->doy=*(doy+currenthour);
+694          dailyclimate->solar=*(solar+currenthour);
+695          dailyclimate->temp=*(temp+currenthour);
+696          dailyclimate->rh=*(rh+currenthour);
+697          dailyclimate->windspeed=*(windspeed+currenthour);
+698          dailyclimate->precip=*(precip+currenthour);
+699          dailyclimate->minimumTemp=*(temp+currenthour);
+700       }
+701    else
+702       {
+703         dailyclimate->solar=0\&.0;
+704         dailyclimate->temp=0\&.0;
+705         dailyclimate->minimumTemp=*(temp+currenthour);
+706         dailyclimate->rh=0\&.0;
+707         dailyclimate->windspeed=0\&.0;
+708         dailyclimate->precip=0\&.0;
+709           for(i=1;i<=24;i++)
+710             {
+711               indx = currenthour-i+1;      
+712               dailyclimate->solar+=*(solar+indx);
+713               dailyclimate->temp+=*(temp+indx);
+714               dailyclimate->rh+=*(rh+indx);
+715               dailyclimate->windspeed+=*(windspeed+indx);
+716               dailyclimate->precip+=*(precip+indx);
+717               dailyclimate->minimumTemp=(dailyclimate->minimumTemp>(*(temp+indx)))?(*(temp+indx)):dailyclimate->minimumTemp;
+718             }
+719             dailyclimate->solar=dailyclimate->solar/24\&.0;
+720             dailyclimate->temp=dailyclimate->temp/24\&.0;
+721             dailyclimate->rh=dailyclimate->rh/24\&.0;
+722             dailyclimate->windspeed= dailyclimate->windspeed/24\&.0;
+723             dailyclimate->doy=*(doy+currenthour);
+724       }
+725      return;     
+726 }
+.fi
+.SS "double getFrostdamage (doubleT0, doubleT100, doubleT, doublebiomass)"
+
+.PP
+.nf
+241 {
+242    /*************************************
+243    * Purpose
+244    * To calculate senescence as a fraction of exisiting biomass due to frost
+245    * Input:
+246    * T0: This is maximum temperature when frost damage occurs, This also represent Temperature 
+247    * damage will be zero percentage of exisiting biomass
+248    * T100: This is minimum temperature where all the existing biomass senescee (i\&.e\&. 100% senescence)
+249    * biomass: Exisiting biomass
+250    *
+251    * Output:
+252    * 
+253    * Returns senesced biomass
+254    * 
+255    * **********************************/
+256   double temp,fraction;
+257   fraction = (T0-T)/(T0-T100);
+258   temp = fraction>1\&.0? 1\&.0:(fraction <0\&.0? 0\&.0:fraction);
+259   return(temp*biomass);
+260 }
+.fi
+.SS "void getfrostparms (struct \fBfrostParms\fP *frostparms)"
+
+.PP
+.nf
+431 {
+432    frostparms->leafT0=0\&.0;
+433    frostparms->leafT100=-5\&.0;
+434    frostparms->stemT0=0\&.0;
+435    frostparms->stemT100=-10\&.0;
+436    frostparms->rootT0=-200\&.0;
+437    frostparms->rootT100=-200\&.0;
+438    frostparms->rhizomeT0=-200\&.0;
+439    frostparms->rhizomeT100=-200\&.0;
+440    return;
+441 }
+.fi
+.SS "double getLeafSenescence (struct \fBleaf\fP *leaf, doublecriticalTT, doublesenefraction, doubleTemp, struct \fBfrostParms\fP *frostparms, doubleTT, struct \fBcanopyparms\fP *canopyparm)"
+
+.PP
+.nf
+299 {
+300   /******************************************************
+301    * Purpose:
+302    * This function calculates Leaf Senescence
+303    * 
+304    * Input Arguments:
+305    * stem : is a pointer to stem structure
+306    * criticalTT: is critical value of accumulated thermal time where senesence begins
+307    * Temp: minimum daily temperature
+308    * frostparms: is a pointer to structure containing parameters to somulate damage due to frost
+309    * TT: is current [daily] value of accumutaed thermal time
+310    * 
+311    * Output/Returns
+312    * Biomass  to be semesced due to aging (thermal time) and frost, together
+313    * ****************************************************/
+314   double ttsen, frostsen, Nsen;
+315   double totalsen;
+316   Nsen=0\&.0;
+317   ttsen=getThermalSenescence(criticalTT,TT,leaf->biomass,senefraction);
+318 //  Rprintf("TSEN=%f,critcalT=%f, TT=%f, biomass=%f, senfraction=%f \n",ttsen,criticalTT, TT,leaf->biomass,senefraction);
+319   frostsen=getFrostdamage(frostparms->leafT0,frostparms->leafT100, Temp,leaf->biomass);
+320   // Nsen=canopyNsenescence(leaf, canopyparm->SLA, canopyparm->kN,canopyparm->leafNsen);
+321   totalsen=ttsen+frostsen+Nsen;
+322   totalsen= (totalsen>(leaf->biomass))?(leaf->biomass):totalsen;
+323   return(totalsen);
+324 }
+.fi
+.SS "double getRhizomeSenescence (struct \fBrhizome\fP *rhizome, doublecriticalTT, doublesenefracion, doubleTemp, struct \fBfrostParms\fP *frostparms, doubleTT)"
+
+.PP
+.nf
+379 {
+380   /******************************************************
+381    * Purpose:
+382    * This function calculates Root Senescence
+383    * 
+384    * Input Arguments:
+385    * stem : is a pointer to stem structure
+386    * criticalTT: is critical value of accumulated thermal time where senesence begins
+387    * Temp: minimum daily temperature
+388    * frostparms: is a pointer to structure containing parameters to somulate damage due to frost
+389    * TT: is current [daily] value of accumutaed thermal time
+390    * 
+391    * Output/Returns
+392    * Biomass  to be senesced due to aging (thermal time) and frost, together
+393    * ****************************************************/
+394   double ttsen, frostsen;
+395   double totalsen;
+396   frostsen=0\&.0;
+397   ttsen=getThermalSenescence(criticalTT,TT,rhizome->biomass,senefracion);
+398   frostsen=getFrostdamage(frostparms->rhizomeT0, frostparms->rhizomeT100, Temp,rhizome->biomass);
+399   totalsen=ttsen+frostsen;
+400   totalsen= (totalsen>(rhizome->biomass))?(rhizome->biomass):totalsen;
+401   return(totalsen);
+402 }
+.fi
+.SS "double getRootSenescence (struct \fBroot\fP *root, doublecriticalTT, doublesenefracion, doubleTemp, struct \fBfrostParms\fP *frostparms, doubleTT)"
+
+.PP
+.nf
+353 {
+354   /******************************************************
+355    * Purpose:
+356    * This function calculates Root Senescence
+357    * 
+358    * Input Arguments:
+359    * stem : is a pointer to stem structure
+360    * criticalTT: is critical value of accumulated thermal time where senesence begins
+361    * Temp: minimum daily temperature
+362    * frostparms: is a pointer to structure containing parameters to somulate damage due to frost
+363    * TT: is current [daily] value of accumutaed thermal time
+364    * 
+365    * Output/Returns
+366    * Biomassto be semesced due to aging (thermal time) and frost, together
+367    * ****************************************************/
+368   double ttsen, frostsen;
+369   double totalsen;
+370   frostsen=0\&.0;
+371   ttsen=getThermalSenescence(criticalTT,TT,root->biomass,senefracion);
+372   frostsen=getFrostdamage(frostparms->rootT0, frostparms->rootT100, Temp,root->biomass);
+373   totalsen=ttsen+frostsen;
+374   totalsen= (totalsen>(root->biomass))?(root->biomass):totalsen;
+375   return(totalsen);
+376 }
+.fi
+.SS "void getsenescenceparms (struct \fBsenthermaltemp\fP *senparms)"
+
+.PP
+.nf
+443 {
+444     senparms->leafcriticalT = 3600;
+445     senparms->leaffr=0\&.05;
+446     senparms->stemcriticalT = 3600;
+447     senparms->stemfr=0\&.02;
+448     senparms->rootcriticalT = 3600;
+449     senparms->rootfr=0\&.05;
+450     senparms->rhizomecriticalT = 3600;
+451     senparms->rhizomefr=0\&.001;
+452   return;
+453 }
+.fi
+.SS "double getStemSenescence (struct \fBstem\fP *stem, doublecriticalTT, doublesenefracion, doubleTemp, struct \fBfrostParms\fP *frostparms, doubleTT)"
+
+.PP
+.nf
+327 {
+328   /******************************************************
+329    * Purpose:
+330    * This function calculates Stem Senescence
+331    * 
+332    * Input Arguments:
+333    * stem : is a pointer to stem structure
+334    * criticalTT: is critical value of accumulated thermal time where senesence begins
+335    * Temp: minimum daily temperature
+336    * frostparms: is a pointer to structure containing parameters to somulate damage due to frost
+337    * TT: is current [daily] value of accumutaed thermal time
+338    * 
+339    * Output/Returns
+340    * Biomass to be semesced due to aging (thermal time) and frost, together
+341    * ****************************************************/
+342   double ttsen, frostsen;
+343   double totalsen;
+344   frostsen=0\&.0;
+345   ttsen=getThermalSenescence(criticalTT,TT,stem->biomass,senefracion);
+346   frostsen=getFrostdamage(frostparms->stemT0, frostparms->stemT100, Temp,stem->biomass);
+347   totalsen=ttsen+frostsen;
+348   totalsen= (totalsen>(stem->biomass))?(stem->biomass):totalsen;
+349   return(totalsen);
+350 }
+.fi
+.SS "double getThermalSenescence (doublecriticalTT, doublecurrentTT, doublebiomass, doubledailyfractionalloss)"
+
+.PP
+.nf
+214 {
+215   /*************************************
+216    * Purpose
+217    * To calculate senescence as a constant fraction of exisiting biomass after a critical threshold temperature
+218    * Input:
+219    * criticalTT: This is critical Thermal temperature, beyond which senescence begins
+220    * currentTT: Current thermal TT or phenological stage
+221    * biomass: Exisiting biomass
+222    * dailyfractionalloss: Fraction of biomass which will be lost
+223    * Output:
+224    * 
+225    * Returns senesced biomass
+226    * 
+227    * **********************************/
+228    double tmp;
+229   if(currentTT <= criticalTT)
+230   {
+231    tmp=0\&.0;
+232   }
+233   else
+234   {
+235    tmp=biomass*dailyfractionalloss;
+236   }
+237   return(tmp);
+238 }
+.fi
+.SS "double getThermaltime (doubletemp, doubleTbase)"
+
+.PP
+.nf
+206 {
+207   double res;
+208   res =(temp<=Tbase)? 0\&.0:(temp-Tbase);
+209   return(res);
+210 }
+.fi
+.SS "double newbiomass (doubleAcanopyNet, doublek, doubleGrowthRespCoeff)"
+
+.PP
+.nf
+423 {
+424   double tmp;
+425   
+426   tmp=(k>=0\&.0)?AcanopyNet*k/(1+GrowthRespCoeff):0\&.0;
+427   return(tmp);
+428 }
+.fi
+.SS "void updatebiomass (double *res, doubletoadd, doubletoremove)"
+
+.PP
+.nf
+417 {
+418   *res=*res+toadd-toremove;
+419   return;
+420 }
+.fi
+.SS "void updatedailyvec (struct \fBdailyvec\fP *dailyvec, doublenewbiomass, doublenewlitter, intN, doubledelTT)"
+
+.PP
+.nf
+405 {
+406   int i;
+407   for (i=0; i<=N;i++)
+408   {
+409      dailyvec[i]\&.ageinTT+=delTT;
+410   }
+411   dailyvec[N]\&.newbiomass=newbiomass;
+412   dailyvec[N]\&.newlitter=newlitter;
+413   return;
+414 }
+.fi
+.SS "void updatedormantstage (struct \fBmiscanthus\fP *miscanthus)"
+
+.PP
+.nf
+759 {
+760   double LostinRespiration,availablecarb,newcarb;
+761   LostinRespiration=miscanthus->autoresp\&.stemmaint + miscanthus->autoresp\&.rootmaint +  miscanthus->autoresp\&.rhizomemaint;
+762   // This loss will occur at the expense of carbohydrate fraction of rhizome, resulting in change in the carbohydrate fraction of the rhizome
+763   availablecarb= miscanthus->rhizome\&.biomass*miscanthus->rhizome\&.carbohydratefraction;
+764   newcarb=availablecarb-LostinRespiration;
+765   miscanthus->rhizome\&.biomass= miscanthus->rhizome\&.biomass- LostinRespiration;
+766  
+767   if((miscanthus->rhizome\&.carbohydratefraction)<0\&.05)miscanthus->rhizome\&.carbohydratefraction=0\&.05;
+768   if(miscanthus->rhizome\&.biomass <0)error("rhizome has become negative");
+769 
+770 
+771   miscanthus->autoresp\&.stemgrowth=0;
+772   miscanthus->autoresp\&.rootgrowth=0;
+773   miscanthus->autoresp\&.rhizomegrowth=0;
+774   miscanthus->autoresp\&.leafdarkresp=0\&.0;
+775   miscanthus->autoresp\&.total= LostinRespiration;
+776   miscanthus->NPP=miscanthus->GPP-miscanthus->autoresp\&.total;
+777   // Do i need to specify root death rate ? or probably Ican simply kill the roots at the time of harvest
+778   
+779 }
+.fi
+.SS "void UpdateStandingbiomass (double *standing, doublenewbiomass)"
+
+.PP
+.nf
+639 {
+640   *standing= *standing +newbiomass;
+641    return;
+642 }
+.fi
+.SS "void UpdateStandingLeaf (struct \fBleaf\fP *leaf, doublenewbiomass, doubledeadleaf, doubleremobFactor)"
+
+.PP
+.nf
+646 {
+647   leaf->biomass+=newbiomass-deadleaf;
+648   leaf->litter+=deadleaf*(1-remobFactor);
+649   return;
+650 }
+.fi
+.SS "void UpdateStandingRhizome (struct \fBrhizome\fP *rhizome, doublenewbiomass, doubledeadrhizome, doubleremobFactor)"
+
+.PP
+.nf
+667 {
+668   rhizome->biomass+=newbiomass-deadrhizome;
+669   rhizome->litter+=deadrhizome*(1-remobFactor);
+670   return;
+671 }
+.fi
+.SS "void UpdateStandingRoot (struct \fBroot\fP *root, doublenewbiomass, doubledeadroot, doubleremobFactor)"
+
+.PP
+.nf
+660 {
+661   root->biomass+=newbiomass-deadroot;
+662   root->litter+=deadroot*(1-remobFactor);
+663   return;
+664 }
+.fi
+.SS "void UpdateStandingStem (struct \fBstem\fP *stem, doublenewbiomass, doubledeadstem, doubleremobFactor)"
+
+.PP
+.nf
+653 {
+654   stem->biomass+=newbiomass-deadstem;
+655   stem->litter+=deadstem*(1-remobFactor);
+656   return;
+657 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

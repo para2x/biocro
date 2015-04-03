@@ -1,0 +1,123 @@
+.TH "/home/dlebauer/dev/biocro/src/AuxMaizeGro.h" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/AuxMaizeGro.h \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBlai_str\fP"
+.br
+.ti -1c
+.RI "struct \fBmaize_dbp_str\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBMAXLEAFNUMBER\fP   30"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "double \fBAei\fP (double leafnumber, double Ax, double LNx, double a1, double a2)"
+.br
+.ti -1c
+.RI "double \fBAlogistic\fP (double time, double A, double kei, double tei)"
+.br
+.ti -1c
+.RI "struct \fBmaize_dbp_str\fP \fBmaize_sel_dbp_coef\fP (double dbpCoefs[13], double phenoStage)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define MAXLEAFNUMBER   30"
+
+.SH "Function Documentation"
+.PP 
+.SS "double Aei (doubleleafnumber, doubleAx, doubleLNx, doublea1, doublea2)"
+
+.PP
+.nf
+206                                             {
+207 /* Eq 4 in Lizaso 2003 */
+208 
+209         double res1, res2, res3, res;
+210 
+211         res1 = (leafnumber - LNx)/(LNx - 1);
+212         res2 = res1 * res1;
+213         res3 = res2 * res1;
+214 
+215         res = Ax * exp(a1 * res2 + a2 * res3);
+216 
+217         return(res);
+218 
+219 }
+.fi
+.SS "double Alogistic (doubletime, doubleA, doublekei, doubletei)"
+
+.PP
+.nf
+221                                                                {
+222 /* Eq 2 in Lizaso 2003 */
+223         double ans;
+224 
+225         ans = A / (1 + exp(-kei * (time - tei)));
+226 
+227         return ans;
+228 
+229 }
+.fi
+.SS "struct \fBmaize_dbp_str\fP maize_sel_dbp_coef (doubledbpCoefs[13], doublephenoStage)"
+
+.PP
+.nf
+231                                                                                {
+232 
+233         struct maize_dbp_str tmp;
+234 
+235         tmp\&.kLeaf = 0\&.0;
+236         tmp\&.kStem = 0\&.0;
+237         tmp\&.kRoot = 0\&.0;
+238         tmp\&.kGrain = 0\&.0;
+239 
+240         if(phenoStage < 0\&.06){
+241 /* For now there is one set of coefficients for V6 */
+242                 tmp\&.kStem = dbpCoefs[0];
+243                 tmp\&.kLeaf = dbpCoefs[1];
+244                 tmp\&.kRoot = dbpCoefs[2];
+245         }else
+246         if(phenoStage < 0\&.12){
+247 /* For now there is one set of coefficients until V12 */
+248                 tmp\&.kStem = dbpCoefs[3];
+249                 tmp\&.kLeaf = dbpCoefs[4];
+250                 tmp\&.kRoot = dbpCoefs[5];
+251         }else
+252         if(phenoStage < 1){
+253 /* For now there is one set of coefficients after V12 but before R1*/
+254                 tmp\&.kStem = dbpCoefs[6];
+255                 tmp\&.kLeaf = dbpCoefs[7];
+256                 tmp\&.kRoot = dbpCoefs[8];
+257         }else
+258                 if(phenoStage >= 1){
+259 /* For now there is one set of coefficients after R1*/
+260                         tmp\&.kStem = dbpCoefs[9];
+261                         tmp\&.kLeaf = dbpCoefs[10];
+262                         tmp\&.kRoot = dbpCoefs[11];
+263                         tmp\&.kGrain = dbpCoefs[12];
+264                 }
+265 
+266         return(tmp);
+267 
+268 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

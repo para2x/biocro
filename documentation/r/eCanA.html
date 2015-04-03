@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>eCanA. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Simulates canopy assimilation (von Caemmerer model)</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>eCanA(LAI, doy, hour, solarR, AirTemp, RH, WindS, Vcmax, Vpmax, Vpr, Jmax, Ca&nbsp;=&nbsp;380, Oa&nbsp;=&nbsp;210, StomataWS&nbsp;=&nbsp;1)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>LAI</dt>
+      <dd>leaf area index.</dd>
+      <dt>doy</dt>
+      <dd>day of the year, (1--365).</dd>
+      <dt>hour</dt>
+      <dd>hour of the day, (0--23).</dd>
+      <dt>solarR</dt>
+      <dd>solar radiation (<code class = 'eq'>micro mol /m2/s</code>).</dd>
+      <dt>AirTemp</dt>
+      <dd>temperature (Celsius).</dd>
+      <dt>RH</dt>
+      <dd>relative humidity (0--1).</dd>
+      <dt>WindS</dt>
+      <dd>wind speed (<code class = 'eq'>m/s</code>).</dd>
+      <dt>Vcmax</dt>
+      <dd>Maximum rubisco activity (<code class = 'eq'>micro mol /m2/s</code>).</dd>
+      <dt>Vpmax</dt>
+      <dd>Maximum PEP carboxylase activity (<code class = 'eq'>micro mol /m2/s</code>).</dd>
+      <dt>Vpr</dt>
+      <dd>PEP regeneration rate (<code class = 'eq'>micro mol /m2/s</code>).</dd>
+      <dt>Jmax</dt>
+      <dd>Maximal electron transport rate
+  (<code class = 'eq'>micro</code>mol electrons <code class = 'eq'>m-2</code>
+  <code class = 'eq'>s-1</code>).</dd>
+      <dt>Ca</dt>
+      <dd>atmospheric carbon dioxide concentration (ppm
+  or <code class = 'eq'>micro</code>bar) (e.g. 380).</dd>
+      <dt>Oa</dt>
+      <dd>atmospheric oxygen concentration (mbar) (e.g.
+  210).</dd>
+      <dt>StomataWS</dt>
+      <dd>Effect of water stress on assimilation.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+<code><a href='http://www.inside-r.org/r-doc/base/numeric'>numeric</a></code></p>
+  
+      <p>returns a single value which is hourly canopy assimilation
+(mol <code class = 'eq'>m-2</code> ground <code class = 'eq'>s-1</code>)
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>It represents an integration of the photosynthesis function
+<code><a href='eC4photo.html'>eC4photo</a></code>, canopy evapo/transpiration and the
+multilayer canopy model <code><a href='sunML.html'>sunML</a></code>.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## &lt;strong&gt;Not run&lt;/strong&gt;: 
+# data(doy124)
+# tmp1 &lt;- numeric(24)
+# for(i in 1:24){
+#   lai &lt;- doy124[i,1]
+#   doy &lt;- doy124[i,3]
+#   hr  &lt;- doy124[i,4]
+#   solar &lt;- doy124[i,5]
+#   temp &lt;- doy124[i,6]
+#   rh &lt;- doy124[i,7]/100
+#   ws &lt;- doy124[i,8]
+# 
+#   tmp1[i] &lt;- CanA(lai,doy,hr,solar,temp,rh,ws)
+# }
+# 
+# plot(c(0:23),tmp1,
+#      type=&#39;l&#39;,lwd=2,
+#      xlab=&#39;Hour&#39;,
+#      ylab=expression(paste(&#39;Canopy assimilation (mol  &#39;,
+#      m^-2,&#39; &#39;,s^-1,&#39;)&#39;)))
+# ## &lt;strong&gt;End(Not run)&lt;/strong&gt;
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>eCanA</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

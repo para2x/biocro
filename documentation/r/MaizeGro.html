@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>MaizeGro. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="
+Fernando E Miguez
+">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Simulation of Maize, Growth, LAI, Photosynthesis and phenology</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>MaizeGro(WetDat, plant.day&nbsp;=&nbsp;NULL, emerge.day&nbsp;=&nbsp;NULL, harvest.day&nbsp;=&nbsp;NULL, plant.density&nbsp;=&nbsp;7, timestep&nbsp;=&nbsp;1, lat&nbsp;=&nbsp;40, canopyControl&nbsp;=&nbsp;list(), MaizeSeneControl&nbsp;=&nbsp;list(), photoControl&nbsp;=&nbsp;list(), MaizePhenoControl&nbsp;=&nbsp;list(), MaizeCAllocControl&nbsp;=&nbsp;list(), laiControl&nbsp;=&nbsp;list(), soilControl&nbsp;=&nbsp;list(), MaizeNitroControl&nbsp;=&nbsp;list(), centuryControl&nbsp;=&nbsp;list())</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>WetDat</dt>
+      <dd>weather data as produced by the
+  <code><a href='weach.html'>weach</a></code> function.</dd>
+      <dt>plant.day</dt>
+      <dd>Planting date (format 0-365)</dd>
+      <dt>emerge.day</dt>
+      <dd>Emergence date (format 0-365)</dd>
+      <dt>harvest.day</dt>
+      <dd>Harvest date (format 0-365)</dd>
+      <dt>plant.density</dt>
+      <dd>Planting density (plants per meter
+  squared, default = 7)</dd>
+      <dt>timestep</dt>
+      <dd>Simulation timestep, the default of 1
+  requires houlry weather data. A value of 3 would require
+  weather data every 3 hours.  This number should be a
+  divisor of 24.</dd>
+      <dt>lat</dt>
+      <dd>latitude, default 40.</dd>
+      <dt>canopyControl</dt>
+      <dd>List that controls aspects of the
+  canopy simulation. It should be supplied through the
+  <code>canopyParms</code> function.
+
+  <code>Sp</code> (specific leaf area) here the units are ha
+  <code class = 'eq'>Mg^{-1}</code>.  If you have data in <code class = 'eq'>m^2</code> of leaf per
+  kg of dry matter (e.g. 15) then divide by 10 before
+  inputting this coefficient.
+
+  <code>SpD</code> decrease of specific leaf area. Empirical
+  parameter. Default 0. example value (1.7e-3).
+
+  <code>nlayers</code> (number of layers of the canopy) Maximum
+  50. To increase the number of layers (more than 50) the
+  <code>C</code> source code needs to be changed slightly.
+
+  <code>kd</code> (extinction coefficient for diffuse light)
+  between 0 and 1.
+
+  <code>mResp</code> (maintenance respiration) a vector of length
+  2 with the first component for leaf and stem and the
+  second component for rhizome and root.</dd>
+      <dt>MaizeSeneControl</dt>
+      <dd>List that controls aspects of
+  senescence simulation. It should be supplied through the
+  <code>MaizeSeneParms</code> function.
+
+  <code>senLeaf</code> Thermal time at which leaf senescence will
+  start.
+
+  <code>senStem</code> Thermal time at which stem senescence will
+  start.
+
+  <code>senRoot</code> Thermal time at which root senescence will
+  start.</dd>
+      <dt>photoControl</dt>
+      <dd>List that controls aspects of
+  photosynthesis simulation. It should be supplied through
+  the <code>MaizePhotoParms</code> function.
+
+  <code>vmax</code> Vmax passed to the <code><a href='c4photo.html'>c4photo</a></code>
+  function.
+
+  <code>alpha</code> alpha parameter passed to the
+  <code><a href='c4photo.html'>c4photo</a></code> function.
+
+  <code>kparm</code> kparm parameter passed to the
+  <code><a href='c4photo.html'>c4photo</a></code> function.
+
+  <code>theta</code> theta parameter passed to the
+  <code><a href='c4photo.html'>c4photo</a></code> function.
+
+  <code>beta</code> beta parameter passed to the
+  <code><a href='c4photo.html'>c4photo</a></code> function.
+
+  <code>Rd</code> Rd parameter passed to the
+  <code><a href='c4photo.html'>c4photo</a></code> function.
+
+  <code>UPPERTEMP</code> UPPERTEMP parameter passed to the
+  <code><a href='c4photo.html'>c4photo</a></code> function.
+
+  <code>LOWERTEMP</code> LOWERTEMP parameter passed to the
+  <code><a href='c4photo.html'>c4photo</a></code> function.
+
+  <code>Catm</code> Catm parameter passed to the
+  <code><a href='c4photo.html'>c4photo</a></code> function.
+
+  <code>b0</code> b0 parameter passed to the
+  <code><a href='c4photo.html'>c4photo</a></code> function.
+
+  <code>b1</code> b1 parameter passed to the
+  <code><a href='c4photo.html'>c4photo</a></code> function.</dd>
+      <dt>MaizePhenoControl</dt>
+      <dd>argument used to pass parameters
+  related to phenology characteristics 
+  <code>MaizePhenoControl</code> here~~</dd>
+      <dt>soilControl</dt>
+      <dd>
+  here~~</dd>
+      <dt>nitroControl</dt>
+      <dd>
+  here~~</dd>
+      <dt>centuryControl</dt>
+      <dd>
+  here~~</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+It currently returns a list with the following components</p>
+  
+      <p><dt>DayofYear</dt><dd>Day of the year (0-365)</dd></p>
+  
+      <p><dt>Hour</dt><dd>Hour of the day (0-23)</dd></p>
+  
+      <p><dt>TTTc</dt><dd>Accumulated thermal time</dd></p>
+  
+      <p><dt>PhenoStage</dt><dd>Phenological stage of the crop</dd></p>
+  
+      <p><dt>CanopyAssim</dt><dd>Hourly canopy assimilation, (Mg
+<code class = 'eq'>ha^-1</code> ground <code class = 'eq'>hr^-1</code>).</dd></p>
+  
+      <p><dt>CanopyTrans</dt><dd>Hourly canopy transpiration, (Mg
+<code class = 'eq'>ha^-1</code> ground <code class = 'eq'>hr^-1</code>).</dd></p>
+  
+      <p><dt>LAI</dt><dd>Leaf Area Index</dd></p>
+  
+      <p></dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>It takes weather data as input (hourly timesteps) and
+several parameters and it produces phenology,
+photosynthesis, LAI, etc.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>The phenology follows the 'Corn Growth and Development'
+Iowa State Publication. 
+than the description above ~~</p>
+  
+    </div>
+
+    <div class="Note">
+      <h2>Note</h2>
+
+      <p></p>
+  
+      <p></p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p></p>
+  
+      <p></p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>data(weather05)
+res &lt;- MaizeGro(weather05, plant.day = 110, emerge.day = 120, harvest.day=300,
+                  MaizePhenoControl = MaizePhenoParms(R6 = 2000))
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>MaizeGro</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+<code><a href='BioGro.html'>BioGro</a></code> 
+<code><a href='http://www.inside-r.org/packages/cran/devtools/docs/help'>help</a></code>, ~~~
+
+    
+    <h2>Author</h2>
+    
+Fernando E Miguez
+
+    
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

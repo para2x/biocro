@@ -1,0 +1,2012 @@
+.TH "/home/dlebauer/dev/biocro/src/BioCro.h" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/BioCro.h \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "double \fBRSS_BG\fP (double oStem[], double oLeaf[], double oRhizome[], double oRoot[], double oGrain[], double oLAI[], double sStem[], double sLeaf[], double sRhizome[], double sRoot[], double sGrain[], double sLAI[], int N1Dat)"
+.br
+.ti -1c
+.RI "void \fBBioGro\fP (double lat, int doy[], int hr[], double solar[], double temp[], double rh[], double windspeed[], double precip[], double kd, double chil, double heightf, int nlayers, double iRhizome, double irtl, double sencoefs[], int timestep, int vecsize, double Sp, double SpD, double dbpcoefs[25], double thermalp[], double vmax1, double alpha1, double kparm, double theta, double beta, double Rd, double Catm, double b0, double b1, double soilcoefs[], double ileafn, double kLN, double vmaxb1, double alphab1, double mresp[], int soilType, int wsFun, int ws, double centcoefs[], double centks[], int centTimestep, int soilLayers, double soilDepths[], double cws[], int hydrDist, double secs[], double kpLN, double lnb0, double lnb1, int lnfun, double upperT, double lowerT, struct \fBnitroParms\fP nitroP)"
+.br
+.ti -1c
+.RI "struct \fBCan_Str\fP \fBCanAC\fP (double LAI, int DOY, int hr, double solarR, double Temp, double RH, double WindSpeed, double lat, int nlayers, double Vmax, double Alpha, double Kparm, double theta, double beta, double Rd, double Catm, double b0, double b1, double StomataWS, int ws, double kd, double chil, double heightf, double leafN, double kpLN, double lnb0, double lnb1, int lnfun, double upperT, double lowerT, struct \fBnitroParms\fP nitroP)"
+.br
+.ti -1c
+.RI "struct \fBCan_Str\fP \fBc3CanAC\fP (double LAI, int DOY, int hr, double solarR, double Temp, double RH, double WindSpeed, double lat, int nlayers, double Vmax, double Jmax, double Rd, double Catm, double o2, double b0, double b1, double theta, double kd, double heightf, double leafN, double kpLN, double lnb0, double lnb1, int lnfun, double StomWS, int ws)"
+.br
+.ti -1c
+.RI "struct \fBCan_Str\fP \fBnewc3CanAC\fP (double LAI, int DOY, int hr, double solarR, double Temp, double RH, double WindSpeed, double lat, int nlayers, double Vmax, double Jmax, double Rd, double Catm, double o2, double b0, double b1, double theta, double kd, double heightf, double leafN, double kpLN, double lnb0, double lnb1, int lnfun, double StomWS, int ws)"
+.br
+.ti -1c
+.RI "struct \fBdbp_str\fP \fBsel_dbp_coef\fP (double coefs[25], double TherPrds[6], double TherTime)"
+.br
+.ti -1c
+.RI "double \fBresp\fP (double comp, double mrc, double temp)"
+.br
+.ti -1c
+.RI "struct \fBws_str\fP \fBwatstr\fP (double precipit, double evapo, double cws, double soildepth, double fieldc, double wiltp, double phi1, double phi2, int soiltype, int wsFun)"
+.br
+.ti -1c
+.RI "double \fBSoilEvapo\fP (double LAI, double k, double AirTemp, double DirectRad, double awc, double fieldc, double wiltp, double winds, double RelH, double rsec)"
+.br
+.ti -1c
+.RI "struct \fBsoilML_str\fP \fBsoilML\fP (double precipit, double transp, double *cws, double soildepth, double *depths, double fieldc, double wiltp, double phi1, double phi2, struct \fBsoilText_str\fP soTexS, int wsFun, int layers, double rootDB, double LAI, double k, double AirTemp, double IRad, double winds, double RelH, int hydrDist, double rfl, double rsec, double rsdf)"
+.br
+.ti -1c
+.RI "double \fBTempToSWVC\fP (double Temp)"
+.br
+.ti -1c
+.RI "double \fBTempToSFS\fP (double Temp)"
+.br
+.ti -1c
+.RI "double \fBTempToLHV\fP (double Temp)"
+.br
+.ti -1c
+.RI "double \fBTempToDdryA\fP (double Temp)"
+.br
+.ti -1c
+.RI "void \fBRHprof\fP (double RH, int nlayers)"
+.br
+.ti -1c
+.RI "void \fBWINDprof\fP (double WindSpeed, double LAI, int nlayers)"
+.br
+.ti -1c
+.RI "void \fBsunML\fP (double Idir, double Idiff, double LAI, int nlayers, double cosTheta, double kd, double chil, double heightf)"
+.br
+.ti -1c
+.RI "void \fBlightME\fP (double lat, int DOY, int td)"
+.br
+.ti -1c
+.RI "struct \fBcenT_str\fP \fBCentury\fP (double *LeafL, double *StemL, double *RootL, double *RhizL, double smoist, double stemp, int timestep, double SCs[9], double leachWater, double Nfert, double MinN, double precip, double LeafL_Ln, double StemL_Ln, double RootL_Ln, double RhizL_Ln, double LeafL_N, double StemL_N, double RootL_N, double RhizL_N, int soilType, double Ks_cf[8])"
+.br
+.ti -1c
+.RI "struct \fBFL_str\fP \fBFmLcFun\fP (double Lig, double Nit)"
+.br
+.ti -1c
+.RI "struct \fBflow_str\fP \fBflow\fP (double *SC, double CNratio, double A, double Lc, double Tm, double \fBresp\fP, int kno, double Ks[8])"
+.br
+.ti -1c
+.RI "double \fBAbiotEff\fP (double smoist, double stemp)"
+.br
+.ti -1c
+.RI "double \fBsel_phen\fP (int phen)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "double \fBCanopyAssim\fP [8760]"
+.br
+.ti -1c
+.RI "double \fBLeafy\fP [8760]"
+.br
+.ti -1c
+.RI "double \fBStemy\fP [8760]"
+.br
+.ti -1c
+.RI "double \fBRooty\fP [8760]"
+.br
+.ti -1c
+.RI "double \fBRhizomey\fP [8760]"
+.br
+.ti -1c
+.RI "double \fBGrainy\fP [8760]"
+.br
+.ti -1c
+.RI "double \fBLAIc\fP [8760]"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "double AbiotEff (doublesmoist, doublestemp)"
+
+.PP
+.nf
+570                                             {
+571 
+572   double ans;
+573   double TempEff = 0\&.0, MoisEff;
+574 
+575   if(stemp < 35){
+576     TempEff = 1\&.0087 / (1 + (46\&.2 * exp(-0\&.1899 * stemp)));
+577   }else{
+578     TempEff = -0\&.0826 * stemp + 3\&.84;
+579   }
+580   
+581   MoisEff = 1\&.0267 / (1 + 14\&.7 * exp(-6\&.5 * smoist));
+582 
+583   ans = TempEff * MoisEff;
+584 
+585   return(ans);
+586 
+587 }
+.fi
+.SS "void BioGro (doublelat, intdoy[], inthr[], doublesolar[], doubletemp[], doublerh[], doublewindspeed[], doubleprecip[], doublekd, doublechil, doubleheightf, intnlayers, doubleiRhizome, doubleirtl, doublesencoefs[], inttimestep, intvecsize, doubleSp, doubleSpD, doubledbpcoefs[25], doublethermalp[], doublevmax1, doublealpha1, doublekparm, doubletheta, doublebeta, doubleRd, doubleCatm, doubleb0, doubleb1, doublesoilcoefs[], doubleileafn, doublekLN, doublevmaxb1, doublealphab1, doublemresp[], intsoilType, intwsFun, intws, doublecentcoefs[], doublecentks[], intcentTimestep, intsoilLayers, doublesoilDepths[], doublecws[], inthydrDist, doublesecs[], doublekpLN, doublelnb0, doublelnb1, intlnfun, doubleupperT, doublelowerT, struct \fBnitroParms\fPnitroP)"
+
+.PP
+.nf
+1880 {
+1881 
+1882         extern double CanopyAssim[8760] ;
+1883         extern double Leafy[8760] ;
+1884         extern double Stemy[8760] ;
+1885         extern double Rooty[8760] ;
+1886         extern double Rhizomey[8760] ;
+1887         extern double Grainy[8760] ;
+1888         extern double LAIc[8760] ;
+1889 
+1890         double newLeafcol[8760];
+1891         double newStemcol[8760];
+1892         double newRootcol[8760];
+1893         double newRhizomecol[8760];
+1894 
+1895         int i, i3;
+1896 
+1897         double Leaf, Stem, Root, Rhizome, LAI, Grain = 0\&.0;
+1898         double TTc = 0\&.0;
+1899         double kLeaf = 0\&.0, kStem = 0\&.0, kRoot = 0\&.0, kRhizome = 0\&.0, kGrain = 0\&.0;
+1900         double newLeaf, newStem = 0\&.0, newRoot, newRhizome = 0\&.0, newGrain = 0\&.0;
+1901 
+1902         double litter[4];
+1903         litter[0] = centcoefs[19];
+1904         litter[1] = centcoefs[20];
+1905         litter[2] = centcoefs[21];
+1906         litter[3] = centcoefs[22];
+1907 
+1908         /* Variables needed for collecting litter */
+1909         double LeafLitter = litter[0], StemLitter = litter[1];
+1910         double RootLitter = litter[2], RhizomeLitter = litter[3];
+1911         double LeafLitter_d = 0\&.0, StemLitter_d = 0\&.0;
+1912         double RootLitter_d = 0\&.0, RhizomeLitter_d = 0\&.0;
+1913         double ALitter = 0\&.0, BLitter = 0\&.0;
+1914 
+1915         double *sti , *sti2, *sti3, *sti4; 
+1916         double Remob;
+1917         int k = 0, q = 0, m = 0, n = 0;
+1918         int ri = 0;
+1919 
+1920         double StomWS = 1, LeafWS = 1;
+1921         double CanopyA, CanopyT;
+1922         double vmax, alpha;
+1923         double LeafN_0 = ileafn;
+1924         double LeafN = ileafn; /* Need to set it because it is used by CanA before it is computed */
+1925         double iSp = Sp;
+1926         vmax = vmax1;
+1927         alpha = alpha1;
+1928 
+1929         /* Century */
+1930         double MinNitro = centcoefs[18];
+1931         double SCCs[9];
+1932         double Resp;
+1933 
+1934         const double mrc1 = mresp[0];
+1935         const double mrc2 = mresp[1];
+1936 
+1937         struct Can_Str Canopy;
+1938         struct ws_str WaterS;
+1939         struct dbp_str dbpS;
+1940         struct cenT_str centS;
+1941         struct soilML_str soilMLS;
+1942         struct soilText_str soTexS; /* , *soTexSp = &soTexS; */
+1943         soTexS = soilTchoose(soilType);
+1944 
+1945         Rhizome = iRhizome;
+1946         Leaf = Rhizome * irtl;
+1947         Stem = Rhizome * 0\&.001;
+1948         Root = Rhizome * 0\&.001;
+1949         LAI = Leaf * Sp;
+1950 
+1951         const double FieldC = soilcoefs[0];
+1952         const double WiltP = soilcoefs[1];
+1953         const double phi1 = soilcoefs[2];
+1954         const double phi2 = soilcoefs[3];
+1955         const double soilDepth = soilcoefs[4];
+1956         double waterCont = soilcoefs[5];
+1957         double soilEvap, TotEvap;
+1958 
+1959         const double SeneLeaf = sencoefs[0];
+1960         const double SeneStem = sencoefs[1];
+1961         const double SeneRoot = sencoefs[2];
+1962         const double SeneRhizome = sencoefs[3];
+1963 
+1964         SCCs[0] = centcoefs[0];
+1965         SCCs[1] = centcoefs[1];
+1966         SCCs[2] = centcoefs[2];
+1967         SCCs[3] = centcoefs[3];
+1968         SCCs[4] = centcoefs[4];
+1969         SCCs[5] = centcoefs[5];
+1970         SCCs[6] = centcoefs[6];
+1971         SCCs[7] = centcoefs[7];
+1972         SCCs[8] = centcoefs[8];
+1973 
+1974 
+1975         /* Creation of pointers outside the loop */
+1976         sti = &newLeafcol[0]; /* This creates sti to be a pointer to the position 0
+1977                                  in the newLeafcol vector */
+1978         sti2 = &newStemcol[0];
+1979         sti3 = &newRootcol[0];
+1980         sti4 = &newRhizomecol[0];
+1981 
+1982         for(i=0;i<vecsize;i++)
+1983         {
+1984                 /* First calculate the elapsed Thermal Time*/
+1985                 TTc += (temp[i] / (24/timestep));
+1986 
+1987                 /* Do the magic! Calculate growth*/
+1988 
+1989                 Canopy = CanAC(LAI,doy[i],hr[i],
+1990                                solar[i],temp[i],rh[i],windspeed[i],
+1991                                lat,nlayers,vmax,alpha,kparm,theta,beta,
+1992                                Rd,Catm,b0,b1,StomWS,ws,kd, chil,
+1993                                heightf, LeafN, kpLN, lnb0, lnb1, lnfun,upperT,lowerT,nitroP);
+1994 
+1995 
+1996 
+1997                 CanopyA = Canopy\&.Assim * timestep;
+1998                 CanopyT = Canopy\&.Trans * timestep;
+1999 
+2000                 if(ISNAN(CanopyA)){
+2001                         Rprintf("LAI %\&.2f \n",LAI); 
+2002                         Rprintf("Leaf %\&.2f \n",Leaf);
+2003                         Rprintf("irtl %\&.2f \n",irtl);
+2004                         Rprintf("Rhizome %\&.2f \n",Rhizome);
+2005                         Rprintf("Sp %\&.2f \n",Sp);   
+2006                         Rprintf("doy[i] %\&.i %\&.i \n",i,doy[i]); 
+2007                         Rprintf("hr[i] %\&.i %\&.i \n",i,hr[i]); 
+2008                         Rprintf("solar[i] %\&.i %\&.2f \n",i,solar[i]); 
+2009                         Rprintf("temp[i] %\&.i %\&.2f \n",i,temp[i]); 
+2010                         Rprintf("rh[i] %\&.i %\&.2f \n",i,rh[i]); 
+2011                         Rprintf("windspeed[i] %\&.i %\&.2f \n",i,windspeed[i]);
+2012                         Rprintf("lat %\&.i %\&.2f \n",i,lat);
+2013                         Rprintf("nlayers %\&.i %\&.i \n",i,nlayers);   
+2014                 }
+2015 
+2016                 if(soilLayers > 1){
+2017                         soilMLS = soilML(precip[i], CanopyT, &cws[0], soilDepth, soilDepths, FieldC, WiltP,
+2018                                          phi1, phi2, soTexS, wsFun, soilLayers, Root,
+2019                                          LAI, 0\&.68, temp[i], solar[i], windspeed[i], rh[i], hydrDist,
+2020                                          secs[0], secs[1], secs[2]);
+2021 
+2022                         StomWS = soilMLS\&.rcoefPhoto;
+2023                         LeafWS = soilMLS\&.rcoefSpleaf;
+2024                         soilEvap = soilMLS\&.SoilEvapo;
+2025                         for(i3=0;i3<soilLayers;i3++){
+2026                                 cws[i3] = soilMLS\&.cws[i3];
+2027                         }
+2028 
+2029                 }else{
+2030 
+2031                         soilEvap = SoilEvapo(LAI, 0\&.68, temp[i], solar[i], waterCont, FieldC, WiltP, windspeed[i], rh[i], secs[1]);
+2032                         TotEvap = soilEvap + CanopyT;
+2033                         WaterS = watstr(precip[i],TotEvap,waterCont,soilDepth,FieldC,WiltP,phi1,phi2,soilType, wsFun);   
+2034                         waterCont = WaterS\&.awc;
+2035                         StomWS = WaterS\&.rcoefPhoto ;
+2036                         LeafWS = WaterS\&.rcoefSpleaf;
+2037                 }
+2038 
+2039                 /* Picking the dry biomass partitioning coefficients */
+2040                 dbpS = sel_dbp_coef(dbpcoefs, thermalp, TTc);
+2041 
+2042                 kLeaf = dbpS\&.kLeaf;
+2043                 kStem = dbpS\&.kStem;
+2044                 kRoot = dbpS\&.kRoot;
+2045                 kRhizome = dbpS\&.kRhiz;
+2046                 kGrain = dbpS\&.kGrain;
+2047 
+2048                 if(ISNAN(kRhizome) || ISNAN(kLeaf) || ISNAN(kRoot) || ISNAN(kStem) || ISNAN(kGrain)){
+2049                         Rprintf("kLeaf %\&.2f, kStem %\&.2f, kRoot %\&.2f, kRhizome %\&.2f, kGrain %\&.2f \n",kLeaf,kStem,kRoot,kRhizome,kGrain);
+2050                         Rprintf("iter %i \n",i);
+2051                 }
+2052 
+2053                 if(i % 24*centTimestep == 0){
+2054                         LeafLitter_d = LeafLitter * ((0\&.1/30)*centTimestep);
+2055                         StemLitter_d = StemLitter * ((0\&.1/30)*centTimestep);
+2056                         RootLitter_d = RootLitter * ((0\&.1/30)*centTimestep);
+2057                         RhizomeLitter_d = RhizomeLitter * ((0\&.1/30)*centTimestep);
+2058        
+2059                         LeafLitter -= LeafLitter_d;
+2060                         StemLitter -= StemLitter_d;
+2061                         RootLitter -= RootLitter_d;
+2062                         RhizomeLitter -= RhizomeLitter_d;
+2063        
+2064                         centS = Century(&LeafLitter_d,&StemLitter_d,&RootLitter_d,&RhizomeLitter_d,
+2065                                         waterCont,temp[i],centTimestep,SCCs,WaterS\&.runoff,
+2066                                         centcoefs[17], /* N fertilizer*/
+2067                                         MinNitro, /* initial Mineral nitrogen */
+2068                                         precip[i], /* precipitation */
+2069                                         centcoefs[9], /* Leaf litter lignin */
+2070                                         centcoefs[10], /* Stem litter lignin */
+2071                                         centcoefs[11], /* Root litter lignin */
+2072                                         centcoefs[12], /* Rhizome litter lignin */
+2073                                         centcoefs[13], /* Leaf litter N */
+2074                                         centcoefs[14], /* Stem litter N */
+2075                                         centcoefs[15],  /* Root litter N */
+2076                                         centcoefs[16],   /* Rhizome litter N */
+2077                                         soilType, centks);
+2078                 }
+2079 
+2080                 /* Here I can insert the code for Nitrogen limitations on photosynthesis
+2081                    parameters\&. This is taken From Harley et al\&. (1992) Modelling cotton under
+2082                    elevated CO2\&. PCE\&. This is modeled as a simple linear relationship between
+2083                    leaf nitrogen and vmax and alpha\&. Leaf Nitrogen should be modulated by N
+2084                    availability and possibly by the Thermal time accumulated\&.*/
+2085 
+2086                 MinNitro = centS\&.MinN;
+2087                 Resp = centS\&.Resp;
+2088      
+2089                 SCCs[0] = centS\&.SCs[0];
+2090                 SCCs[1] = centS\&.SCs[1];
+2091                 SCCs[2] = centS\&.SCs[2];
+2092                 SCCs[3] = centS\&.SCs[3];
+2093                 SCCs[4] = centS\&.SCs[4];
+2094                 SCCs[5] = centS\&.SCs[5];
+2095                 SCCs[6] = centS\&.SCs[6];
+2096                 SCCs[7] = centS\&.SCs[7];
+2097                 SCCs[8] = centS\&.SCs[8];
+2098 
+2099                 LeafN = LeafN_0 * exp(-kLN * TTc); 
+2100                 vmax = (LeafN_0 - LeafN) * vmaxb1 + vmax1;
+2101                 alpha = (LeafN_0 - LeafN) * alphab1 + alpha1;
+2102 
+2103                 if(kLeaf > 0)
+2104                 {
+2105                         newLeaf = CanopyA * kLeaf * LeafWS ; 
+2106                         /*  The major effect of water stress is on leaf expansion rate\&. See Boyer (1970)
+2107                             Plant\&. Phys\&. 46, 233-235\&. For this the water stress coefficient is different
+2108                             for leaf and vmax\&. */
+2109                         /* Tissue respiration\&. See Amthor (1984) PCE 7, 561-*/ 
+2110                         /* The 0\&.02 and 0\&.03 are constants here but vary depending on species
+2111                            as pointed out in that reference\&. */
+2112                         newLeaf = resp(newLeaf, mrc1, temp[i]);
+2113 
+2114                         *(sti+i) = newLeaf; /* This populates the vector newLeafcol\&. It makes sense
+2115                                                to use i because when kLeaf is negative no new leaf is
+2116                                                being accumulated and thus would not be subjected to senescence */
+2117                 }else{
+2118 
+2119                         newLeaf = Leaf * kLeaf ;
+2120                         Rhizome += kRhizome * -newLeaf * 0\&.9; /* 0\&.9 is the efficiency of retranslocation */
+2121                         Stem += kStem * -newLeaf   * 0\&.9;
+2122                         Root += kRoot * -newLeaf * 0\&.9;
+2123                         Grain += kGrain * -newLeaf * 0\&.9;
+2124                 }
+2125 
+2126                 if(TTc < SeneLeaf){
+2127 
+2128                         Leaf += newLeaf;
+2129 
+2130                 }else{
+2131     
+2132                         Leaf += newLeaf - *(sti+k); /* This means that the new value of leaf is
+2133                                                        the previous value plus the newLeaf
+2134                                                        (Senescence might start when there is
+2135                                                        still leaf being produced) minus the leaf
+2136                                                        produced at the corresponding k\&.*/
+2137                         Remob = *(sti+k) * 0\&.6 ;
+2138                         LeafLitter += *(sti+k) * 0\&.4; /* Collecting the leaf litter */ 
+2139                         Rhizome += kRhizome * Remob;
+2140                         Stem += kStem * Remob; 
+2141                         Root += kRoot * Remob;
+2142                         Grain += kGrain * Remob;
+2143                         k++;
+2144                 }
+2145 
+2146                 /* The specific leaf area declines with the growing season at least in
+2147                    Miscanthus\&.  See Danalatos, Nalianis and Kyritsis "Growth and Biomass
+2148                    Productivity of Miscanthus sinensis "Giganteus" under optimum cultural
+2149                    management in north-eastern greece*/
+2150 
+2151                 if(i%24 == 0){
+2152                         Sp = iSp - (doy[i] - doy[0]) * SpD;
+2153                 }
+2154 
+2155                 /* Rprintf("Sp %\&.2f \n", Sp); */
+2156 
+2157                 LAI = Leaf * Sp ;
+2158 
+2159                 /* New Stem*/
+2160                 if(kStem > 0)
+2161                 {
+2162                         newStem = CanopyA * kStem ;
+2163                         newStem = resp(newStem, mrc1, temp[i]);
+2164                         *(sti2+i) = newStem;
+2165                 }
+2166 
+2167                 if(TTc < SeneStem){
+2168 
+2169                         Stem += newStem;
+2170 
+2171                 }else{
+2172 
+2173                         Stem += newStem - *(sti2+q);
+2174                         StemLitter += *(sti2+q);
+2175                         q++;
+2176 
+2177                 }
+2178 
+2179                 if(kRoot > 0)
+2180                 {
+2181                         newRoot = CanopyA * kRoot ;
+2182                         newRoot = resp(newRoot, mrc2, temp[i]);
+2183                         *(sti3+i) = newRoot;
+2184                 }else{
+2185 
+2186                         newRoot = Root * kRoot ;
+2187                         Rhizome += kRhizome * -newRoot * 0\&.9;
+2188                         Stem += kStem * -newRoot       * 0\&.9;
+2189                         Leaf += kLeaf * -newRoot * 0\&.9;
+2190                         Grain += kGrain * -newRoot * 0\&.9;
+2191                 }
+2192 
+2193                 if(TTc < SeneRoot){
+2194 
+2195                         Root += newRoot;
+2196 
+2197                 }else{
+2198 
+2199                         Root += newRoot - *(sti3+m);
+2200                         RootLitter += *(sti3+m);
+2201                         m++;
+2202 
+2203                 }
+2204 
+2205                 if(kRhizome > 0)
+2206                 {
+2207                         newRhizome = CanopyA * kRhizome ;
+2208                         newRhizome = resp(newRhizome, mrc2, temp[i]);
+2209                         *(sti4+ri) = newRhizome;
+2210                         /* Here i will not work because the rhizome goes from being a source
+2211                            to a sink\&. I need its own index\&. Let's call it rhizome's i or ri\&.*/
+2212                         ri++;
+2213                 }else{
+2214 
+2215                         if(Rhizome < 0){
+2216                                 Rhizome = 1e-4;
+2217                                 warning("Rhizome became negative");
+2218                         }
+2219 
+2220                         newRhizome = Rhizome * kRhizome;
+2221                         Root += kRoot * -newRhizome ;
+2222                         Stem += kStem * -newRhizome ;
+2223                         Leaf += kLeaf * -newRhizome ;
+2224                         Grain += kGrain * -newRhizome;
+2225                 }
+2226 
+2227                 if(TTc < SeneRhizome){
+2228 
+2229                         Rhizome += newRhizome;
+2230 
+2231                 }else {
+2232 
+2233                         Rhizome += newRhizome - *(sti4+n);
+2234                         RhizomeLitter += *(sti4+n);
+2235                         n++;
+2236 
+2237                 }
+2238 
+2239                 if((kGrain < 1e-10) || (TTc < thermalp[4])){
+2240                         newGrain = 0\&.0;
+2241                         Grain += newGrain;
+2242                 }else{
+2243                         newGrain = CanopyA * kGrain;
+2244                         /* No respiration for grain at the moment */
+2245                         /* No senescence either */
+2246                         Grain += newGrain;  
+2247                 }
+2248 
+2249                 ALitter += LeafLitter + StemLitter;
+2250                 BLitter += RootLitter + RhizomeLitter;
+2251 
+2252                 CanopyAssim[i] =  CanopyA;
+2253                 Leafy[i] = Leaf;
+2254                 Stemy[i] = Stem;
+2255                 Rooty[i] =  Root;
+2256                 Rhizomey[i] = Rhizome;
+2257                 Grainy[i] = Grain;
+2258                 LAIc[i] = LAI;
+2259         }
+2260 }
+.fi
+.SS "struct \fBCan_Str\fP c3CanAC (doubleLAI, intDOY, inthr, doublesolarR, doubleTemp, doubleRH, doubleWindSpeed, doublelat, intnlayers, doubleVmax, doubleJmax, doubleRd, doubleCatm, doubleo2, doubleb0, doubleb1, doubletheta, doublekd, doubleheightf, doubleleafN, doublekpLN, doublelnb0, doublelnb1, intlnfun, doubleStomWS, intws)"
+
+.SS "struct \fBCan_Str\fP CanAC (doubleLAI, intDOY, inthr, doublesolarR, doubleTemp, doubleRH, doubleWindSpeed, doublelat, intnlayers, doubleVmax, doubleAlpha, doubleKparm, doubletheta, doublebeta, doubleRd, doubleCatm, doubleb0, doubleb1, doubleStomataWS, intws, doublekd, doublechil, doubleheightf, doubleleafN, doublekpLN, doublelnb0, doublelnb1, intlnfun, doubleupperT, doublelowerT, struct \fBnitroParms\fPnitroP)"
+
+.PP
+.nf
+545 {
+546 
+547         struct ET_Str tmp5_ET, tmp6_ET;
+548         struct Can_Str ans;
+549         struct c4_str tmpc4;
+550         struct c4_str tmpc42;
+551 
+552         int i;
+553         double Idir, Idiff, cosTh;
+554         double LAIc;
+555         double IDir, IDiff, Itot, rh, WS;
+556         double pLeafsun, pLeafshade;
+557         double Leafsun, Leafshade;
+558         double CanHeight;
+559 
+560         double vmax1, leafN_lay;
+561         double TempIdir,TempIdiff,AssIdir,AssIdiff,GAssIdir,GAssIdiff;
+562 
+563         double CanopyA, CanopyT,GCanopyA;
+564 
+565         const double cf = 3600 * 1e-6 * 30 * 1e-6 * 10000;
+566         const double cf2 = 3600 * 1e-3 * 18 * 1e-6 * 10000; 
+567 
+568         /* For Assimilation */
+569         /* 3600 converts seconds to hours */
+570         /* 1e-6 converts micro mols to mols */
+571         /* 30 is the grams in one mol of CO2 */
+572         /* 1e-6 converts g to Mg */
+573         /* 10000 scales from meter squared to hectare */
+574 
+575         /* For Transpiration */
+576         /* 3600 converts seconds to hours */
+577         /* 1e-3 converts mili mols to mols */
+578         /* 18 is the grams in one mol of H20 */
+579         /* 1e-6 converts g to Mg */
+580         /* 10000 scales from meter squared to hectare */
+581 
+582         lightME(lat,DOY,hr);
+583 
+584         Idir = tmp1[0] * solarR;
+585         Idiff = tmp1[1] * solarR;
+586         cosTh = tmp1[2];
+587     
+588         sunML(Idir,Idiff,LAI,nlayers,cosTh, kd, chil, heightf);
+589 
+590         /* results from multilayer model */
+591         LAIc = LAI / nlayers;
+592         /* Next I need the RH and wind profile */
+593         RHprof(RH,nlayers);
+594         WINDprof(WindSpeed,LAI,nlayers);
+595 
+596         LNprof(leafN, LAI, nlayers, kpLN);
+597         /* It populates tmp5 */
+598 
+599         /* Next use the EvapoTrans function */
+600         CanopyA=0\&.0;
+601         GCanopyA=0\&.0;
+602         CanopyT=0\&.0;
+603         for(i=0;i<nlayers;i++)
+604         {
+605                 leafN_lay = tmp5[--tp5];
+606                 if(lnfun == 0){
+607                         vmax1 = Vmax;
+608                 }else{
+609                         vmax1=nitroP\&.Vmaxb1*leafN_lay+nitroP\&.Vmaxb0;
+610                                               if(vmax1<0) vmax1=0\&.0;
+611                                                       Alpha=nitroP\&.alphab1*leafN_lay+nitroP\&.alphab0;
+612                                                        Rd=nitroP\&.Rdb1*leafN_lay+nitroP\&.Rdb0;
+613                /* For now alpha is not affected by leaf nitrogen */
+614                 }
+615 
+616                 IDir = layIdir[--sp1];
+617                 Itot = layItotal[--sp3];
+618 
+619                 rh = tmp4[--tp4];
+620                 WS = tmp3[--tp3];
+621                 pLeafsun = layFsun[--sp4];
+622                 CanHeight = layHeight[--sp6];
+623                 Leafsun = LAIc * pLeafsun;
+624                 tmp5_ET = EvapoTrans(IDir,Itot,Temp,rh,WS,LAIc,CanHeight,StomataWS,ws,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,upperT,lowerT,Catm);
+625                 TempIdir = Temp + tmp5_ET\&.Deltat;
+626                 tmpc4 = c4photoC(IDir,TempIdir,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws,upperT,lowerT);
+627                 AssIdir = tmpc4\&.Assim;
+628                 GAssIdir =tmpc4\&.GrossAssim;
+629 
+630                 IDiff = layIdiff[--sp2];
+631                 pLeafshade = layFshade[--sp5];
+632                 Leafshade = LAIc * pLeafshade;
+633                 tmp6_ET = EvapoTrans(IDiff,Itot,Temp,rh,WS,LAIc,CanHeight,StomataWS,ws,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,upperT,lowerT,Catm);
+634                 TempIdiff = Temp + tmp6_ET\&.Deltat;
+635                 tmpc42 = c4photoC(IDiff,TempIdiff,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws,upperT,lowerT);
+636                 AssIdiff = tmpc42\&.Assim;
+637                 GAssIdiff = tmpc42\&.GrossAssim;
+638                 CanopyA += Leafsun * AssIdir + Leafshade * AssIdiff;
+639                 GCanopyA += Leafsun * GAssIdir + Leafshade * GAssIdiff;
+640 // I am evaluating CanopyT using Penman Method because it gives realistic results
+641 // IN future canopyT needs to be fixed
+642 //                CanopyT += Leafsun * tmp5_ET\&.TransR + Leafshade * tmp6_ET\&.TransR;
+643                 CanopyT += Leafsun * tmp5_ET\&.EPenman + Leafshade * tmp6_ET\&.EPenman;
+644         }
+645         /*## These are micro mols of CO2 per m2 per sec for Assimilation
+646           ## and mili mols of H2O per m2 per sec for Transpiration
+647           ## Need to convert to 
+648           ## 3600 converts seconds to hours
+649           ## 10^-6 converts micro mols to mols
+650           ## 30 converts mols of CO2 to grams
+651           ## (1/10^6) converts grams to Mg
+652           ## 10000 scales up to ha */
+653 /* A similar conversion is made for water but
+654    replacing 30 by 18 and mili mols are converted to
+655    mols (instead of micro) */
+656         ans\&.Assim = cf * CanopyA ;
+657         ans\&.Trans = cf2 * CanopyT; 
+658         ans\&.GrossAssim=cf*GCanopyA;
+659         return(ans);
+660 }
+.fi
+.SS "struct \fBcenT_str\fP Century (double *LeafL, double *StemL, double *RootL, double *RhizL, doublesmoist, doublestemp, inttimestep, doubleSCs[9], doubleleachWater, doubleNfert, doubleMinN, doubleprecip, doubleLeafL_Ln, doubleStemL_Ln, doubleRootL_Ln, doubleRhizL_Ln, doubleLeafL_N, doubleStemL_N, doubleRootL_N, doubleRhizL_N, intsoilType, doubleKs_cf[8])"
+
+.PP
+.nf
+42                                         {
+43 
+44   /* Converting Mg ha^-1 to g m^-2 */
+45   /* 1 Mg = 1e6 grams*/
+46   /* 1 ha = 1e4 m^2 */  
+47   const double cf = 100;
+48   *LeafL *= cf; 
+49   *StemL *= cf;
+50   *RootL *= cf;
+51   *RhizL *= cf;
+52 
+53   struct cenT_str tmp;
+54   struct soilText_str soilTemp;
+55 
+56   struct FL_str FmLc_Leaf, FmLc_Stem, FmLc_Root, FmLc_Rhiz;
+57   struct flow_str C1_5_Leaf, C2_5_Leaf, C1_5_Stem, C2_5_Stem;
+58   struct flow_str C1_7_Leaf_Ln, C1_7_Stem_Ln;
+59   struct flow_str C3_6_Root, C4_6_Root, C3_6_Rhiz, C4_6_Rhiz;
+60   struct flow_str C3_7_Root_Ln, C3_7_Rhiz_Ln;
+61   struct flow_str C5_7, C6, C7, C8_6;
+62 
+63   double C6_7, C6_8, C6_9, C7_6, C7_8;
+64   double C_ap, C_al, C_sp; 
+65 
+66   double SC1_Leaf, SC2_Leaf, SC1_Stem, SC2_Stem;
+67   double SC3_Root, SC4_Root, SC3_Rhiz, SC4_Rhiz;
+68 
+69 /*  
+70     I need the separate fractions of Leaf Litter and Stem Litter 
+71   Because they have different lignin to N ratios 
+72   Presumably, the rhizome and root are similar 
+73 
+74   There is an issue here that I should be careful about I'm importing 
+75   biomass, but need only carbon in some of these calculations 
+76 
+77   I also need to determine the initial values of carbon for each 
+78   component 
+79 */
+80 
+81   soilTemp = soilTchoose(soilType);  
+82   double T = soilTemp\&.clay + soilTemp\&.silt; /*  silt plus clay content of the soil */
+83   double Ts = soilTemp\&.sand; /*  Sand content of the soil */
+84   double Tc = soilTemp\&.clay; /*  Clay content of the soil */
+85 
+86   double CN_structural = 150;
+87   double CN_surface;
+88   double CN_active ;
+89   double CN_slow ;
+90   double CN_passive ;
+91   
+92   double SN1, SN2, SN3, SN4, SN5, SN6, SN7, SN8, SN9;
+93   double SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9;
+94   double Abiot;
+95   double Na = 0\&.0, Nf = 0\&.0;
+96   double PlantN;
+97 
+98   double SC1_Leaf_Ln, SC1_Stem_Ln;
+99   double SC3_Root_Ln, SC3_Rhiz_Ln;
+100 
+101   /* Converting from Mg ha^-1 to g m^-2 */
+102   SC1 = SCs[0] * cf;
+103   SC2 = SCs[1] * cf;
+104   SC3 = SCs[2] * cf;
+105   SC4 = SCs[3] * cf;
+106   SC5 = SCs[4] * cf;
+107   SC6 = SCs[5] * cf;
+108   SC7 = SCs[6] * cf;
+109   SC8 = SCs[7] * cf;
+110   SC9 = SCs[8] * cf;
+111 
+112   double MinN = 0\&.0, Resp = 0\&.0;
+113   
+114   const double respC1_5 = 0\&.6;
+115   const double respC1_7 = 0\&.3;
+116   const double respC3_7 = 0\&.3;
+117   const double respC2_5 = 0\&.6;
+118   const double respC3_6 = 0\&.55;
+119   const double respC4_6 = 0\&.55;
+120   const double respC5_7 = 0\&.6;
+121   const double respC6 = 0\&.85 - 0\&.68 * T;
+122   const double respC7 = 0\&.55;
+123   const double respC8 = 0\&.55;
+124 
+125   double Ks[8];
+126   
+127   /*  Tm is the effect of soil texture on active SOM turnover */
+128   double Tm = 1 - 0\&.75 * T;
+129 
+130 /*    The flow constants are taken from the paper 
+131       and Parton et al\&. 1993 Global Biogeochemistry pg 785 
+132       but 
+133       Parton et al\&. 1987 SSSJ 51:1173 
+134       is also relevant
+135     
+136       double Ksy[ ] = { 3\&.9, 4\&.9, 7\&.3, 6\&.0, 14\&.8, 18\&.5, 0\&.2, 0\&.0045 };     The units are year^-1  
+137 
+138       To get the rates per week we can divide by 52
+139       To get the rates poer day we can divide by 365
+140 */
+141 /* It seems that the rates are the ones reported in Parton et al\&. 1993 Global Biogeochemical Cycles */
+142 /* These are annual rates and to convert to other time steps the model should be run accordingly */
+143 
+144     /* Rprintf("Ks[3] : %f Ks[4] : %f \n",Ks[3],Ks[4]); */
+145     /* Rprintf("Ks[5] : %f Ks[6] : %f \n",Ks[5],Ks[6]); */
+146 
+147      if(timestep == 7){
+148        Ks[0] = Ks_cf[0] / 52 ;
+149        Ks[1] = Ks_cf[1] / 52 ;
+150        Ks[2] = Ks_cf[2] / 52 ;
+151        Ks[3] = Ks_cf[3] / 52 ;
+152        Ks[4] = Ks_cf[4] / 52 ;
+153        Ks[5] = Ks_cf[5] / 52 ;
+154        Ks[6] = Ks_cf[6] / 52 ;
+155        Ks[7] = Ks_cf[7] / 52 ;
+156      }else
+157      if(timestep == 1){   
+158        Ks[0] = Ks_cf[0] / 365 ; 
+159        Ks[1] = Ks_cf[1] / 365 ; 
+160        Ks[2] = Ks_cf[2] / 365 ; 
+161        Ks[3] = Ks_cf[3] / 365 ; 
+162        Ks[4] = Ks_cf[4] / 365 ; 
+163        Ks[5] = Ks_cf[5] / 365 ; 
+164        Ks[6] = Ks_cf[6] / 365 ; 
+165        Ks[7] = Ks_cf[7] / 365 ;  
+166      } 
+167 
+168 /* Nitrogen processes 
+169     N deposition */
+170 
+171   Na = 0\&.21 + 0\&.0028 * precip * 0\&.10 ;  /*precipitation is entered in mm
+172                                           but it is needed in cm for this
+173                                            equation\&. Idem below */
+174 
+175   /*  N fixation */
+176   Nf = -0\&.18 + 0\&.014 * precip * 0\&.10 ; 
+177 
+178   /* The resulting N is in g N m^-2 yr^-1 
+179    Conversions
+180    g => Mg : multiply by 1e-6
+181    m^2 => ha : multiply by 1e4
+182    year to week : divide by 52 */
+183   if(timestep == 7){
+184      Na /=  52;
+185      Nf /=  52;
+186   }else
+187   if(timestep == 1){
+188      Na /=  365;
+189      Nf /=  365;
+190   }
+191 
+192 /*   Rprintf("Na : %f \n",Na); */
+193 /*   Rprintf("Nf : %f \n",Nf); */
+194 /*   Nitrogen in the form of fertilizer */
+195 /*   The input units should be in g N m^2 */
+196 
+197 /*   Rprintf("Nfert : %f iMinN : %f \n",Nfert,iMinN); */
+198   MinN = Na + Nf + Nfert + iMinN;
+199 
+200 /*   Rprintf("MinN 0: %f \n",MinN); */
+201 
+202   PlantN = *LeafL * LeafL_N + *StemL * StemL_N;
+203 
+204   CN_surface = 20 - PlantN * 5;
+205   CN_active = 15 - MinN * 6;
+206   CN_slow = 20 - MinN * 4;
+207   CN_passive = 10 - MinN * 1\&.5;
+208 
+209   if(PlantN > 2) CN_surface = 10;
+210 
+211   /*   Here 2 is g m^-2 */
+212   if(MinN > 2){
+213     CN_active = 3;
+214     CN_passive = 7;
+215     CN_slow = 12;
+216   }
+217 
+218   SN1 = SC1 / CN_structural; 
+219   SN2 = SC2 / CN_active;
+220   SN3 = SC3 / CN_structural;
+221   SN4 = SC4 / CN_active;
+222   SN5 = SC5 / CN_active;
+223   SN6 = SC6 / CN_active;
+224   SN7 = SC7 / CN_slow;
+225   SN8 = SC8 / CN_passive;
+226   SN9 = SC9 / CN_passive;
+227 
+228 /*  Need to calculate the effect of temperature and moisture\&. */
+229 
+230   Abiot = AbiotEff(smoist, stemp);
+231 
+232 /*    Calculate Fm and Lc separately for each component */
+233   FmLc_Leaf = FmLcFun(LeafL_Ln,LeafL_N);
+234   FmLc_Stem = FmLcFun(StemL_Ln,StemL_N);
+235   FmLc_Root = FmLcFun(RootL_Ln,RootL_N);
+236   FmLc_Rhiz = FmLcFun(RhizL_Ln,RhizL_N);
+237 
+238   /*  Surface Metabolic Carbon */
+239   SC2_Leaf = FmLc_Leaf\&.Fm * *LeafL;
+240   SC2_Stem = FmLc_Stem\&.Fm * *StemL;
+241   /*  Root Metabolic Carbon */
+242   SC4_Root = FmLc_Root\&.Fm * *RootL;
+243   SC4_Rhiz = FmLc_Rhiz\&.Fm * *RhizL;
+244 
+245   /*  Surface Structural Carbon */
+246   SC1_Leaf = (1 - FmLc_Leaf\&.Fm) * *LeafL;
+247   SC1_Stem = (1 - FmLc_Stem\&.Fm) * *StemL;
+248   /* Lignin content needs to be considered separately */
+249   SC1_Leaf_Ln = SC1_Leaf * LeafL_Ln;
+250   SC1_Stem_Ln = SC1_Stem * StemL_Ln;
+251   SC1_Leaf = SC1_Leaf - SC1_Leaf_Ln;
+252   SC1_Stem = SC1_Stem - SC1_Stem_Ln;
+253 
+254   /*  Root Structural Carbon */
+255   SC3_Root = (1 - FmLc_Root\&.Fm) * *RootL;
+256   SC3_Rhiz = (1 - FmLc_Rhiz\&.Fm) * *RhizL;
+257   /* Lignin content needs to be considered separately */
+258   SC3_Root_Ln = SC3_Root * RootL_Ln;
+259   SC3_Rhiz_Ln = SC3_Rhiz * RhizL_Ln;
+260   SC3_Root = SC3_Root - SC3_Root_Ln;
+261   SC3_Rhiz = SC3_Rhiz - SC3_Rhiz_Ln;
+262 
+263 /*    T is silt plus clay content 
+264     Ls is fraction of structural C that is lignin 
+265 
+266     Structural Surface Litter C to Surface Microbe C 
+267     1 => 5 
+268     2 => 5 
+269     dC1/dt = Ki * Lc * A * Ci 
+270     Leaf */
+271   SC1_Leaf +=  0\&.3 * SC1;
+272   SC2_Leaf +=  0\&.3 * SC2;
+273 
+274   C1_5_Leaf = flow(&SC1_Leaf,CN_surface,Abiot,FmLc_Leaf\&.Lc,Tm,respC1_5,1,Ks);
+275   C2_5_Leaf = flow(&SC2_Leaf,CN_surface,Abiot,FmLc_Leaf\&.Lc,Tm,respC1_5,5,Ks);
+276 
+277   /*  Stem */
+278   SC1_Stem = SC1_Stem + 0\&.7 * SC1;
+279   SC2_Stem = SC2_Stem + 0\&.7 * SC2;
+280 
+281   C1_5_Stem = flow(&SC1_Stem,CN_surface,Abiot,FmLc_Stem\&.Lc,Tm,respC2_5,1,Ks);
+282   C2_5_Stem = flow(&SC2_Stem,CN_surface,Abiot,FmLc_Stem\&.Lc,Tm,respC2_5,5,Ks);
+283 
+284   SC1_Leaf = C1_5_Leaf\&.SC;
+285   SC2_Leaf = C2_5_Leaf\&.SC;
+286   SC1_Stem = C1_5_Stem\&.SC;
+287   SC2_Stem = C2_5_Stem\&.SC;
+288 
+289  /*   Adding the ligning content */
+290   C1_7_Leaf_Ln = flow(&SC1_Leaf_Ln,CN_surface,Abiot,FmLc_Leaf\&.Lc,Tm,respC1_7,1,Ks);
+291   C1_7_Stem_Ln = flow(&SC1_Stem_Ln,CN_surface,Abiot,FmLc_Stem\&.Lc,Tm,respC1_7,1,Ks);
+292   
+293   /* Flow from SC1\&.lignin to SC7 */
+294   SC7 += C1_7_Leaf_Ln\&.fC + C1_7_Stem_Ln\&.fC ;
+295 
+296   /*  Collect respiration */
+297   Resp = C1_5_Leaf\&.Resp + C2_5_Leaf\&.Resp +
+298          C1_5_Stem\&.Resp + C2_5_Stem\&.Resp +
+299          C1_7_Leaf_Ln\&.Resp + C1_7_Stem_Ln\&.Resp;
+300   /*  Collect mineralized Nitrogen */
+301   MinN += C1_5_Leaf\&.MinN + C2_5_Leaf\&.MinN +
+302           C1_5_Stem\&.MinN + C2_5_Stem\&.MinN +
+303           C1_7_Leaf_Ln\&.MinN + C1_7_Stem_Ln\&.MinN;
+304 
+305 /*   Rprintf("MinN 1: %f \n",MinN); */
+306   /*  Updating the Soil Carbon Pools 1 and 2  */
+307   SC1 = C1_5_Leaf\&.SC + C1_5_Stem\&.SC + C1_7_Leaf_Ln\&.SC + C1_7_Stem_Ln\&.SC ;
+308   SC2 = C2_5_Leaf\&.SC + C2_5_Stem\&.SC ;
+309 
+310   /*  Updating the Nitrogen Carbon Pools 1 and 2 */
+311   SN1 = SC1 / CN_structural + SN1;
+312   SN2 = SC2 / CN_surface + SN2;
+313   
+314 /*    Structural Root Litter C to Soil Microbe C */
+315 /*    4 => 6 */
+316 /*    3 => 6 */
+317 /*    Root */
+318   SC3_Root = SC3_Root + 0\&.3 * SC3;
+319   SC4_Root = SC4_Root + 0\&.3 * SC4;
+320   C3_6_Root = flow(&SC3_Root,CN_active,Abiot,FmLc_Root\&.Lc,Tm,respC3_6,2,Ks);
+321   C4_6_Root = flow(&SC4_Root,CN_active,Abiot,FmLc_Root\&.Lc,Tm,respC3_6,6,Ks);
+322 /*    Rhizome */
+323   SC3_Rhiz = SC3_Rhiz + 0\&.7 * SC3;
+324   SC4_Rhiz = SC4_Rhiz + 0\&.7 * SC4;
+325   C3_6_Rhiz = flow(&SC3_Rhiz,CN_active,Abiot,FmLc_Rhiz\&.Lc,Tm,respC4_6,2,Ks);
+326   C4_6_Rhiz = flow(&SC4_Rhiz,CN_active,Abiot,FmLc_Rhiz\&.Lc,Tm,respC4_6,6,Ks);
+327 
+328   SC3_Root = C3_6_Root\&.SC;
+329   SC4_Root = C4_6_Root\&.SC;
+330   SC3_Rhiz = C3_6_Rhiz\&.SC;
+331   SC4_Rhiz = C4_6_Rhiz\&.SC;
+332 
+333   C3_7_Root_Ln = flow(&SC3_Root_Ln,CN_slow,Abiot,FmLc_Root\&.Lc,Tm,respC3_7,2,Ks);
+334   C3_7_Rhiz_Ln = flow(&SC3_Rhiz_Ln,CN_slow,Abiot,FmLc_Rhiz\&.Lc,Tm,respC3_7,2,Ks);
+335 
+336   SC7 += C3_7_Root_Ln\&.fC + C3_7_Rhiz_Ln\&.fC ; 
+337  /*   Collect respiration */
+338   Resp += C3_6_Root\&.Resp + C4_6_Root\&.Resp +
+339            C3_6_Rhiz\&.Resp + C4_6_Rhiz\&.Resp;
+340 
+341 /*    Collect mineralized Nitrogen */
+342   MinN += C3_6_Root\&.MinN + C4_6_Root\&.MinN +
+343            C3_6_Rhiz\&.MinN + C4_6_Rhiz\&.MinN + 
+344            C3_7_Root_Ln\&.MinN + C3_7_Rhiz_Ln\&.MinN;
+345 
+346 /*   Rprintf("MinN 2: %f \n",MinN); */
+347 /*   Updating the Soil Carbon Pools 3 and 4 */
+348   SC3 = C3_6_Root\&.SC + C3_6_Rhiz\&.SC + C3_7_Root_Ln\&.SC + C3_7_Rhiz_Ln\&.SC;
+349   SC4 = C4_6_Root\&.SC + C4_6_Rhiz\&.SC ;
+350 
+351 /*   Updating the Nitrogen pools 3 and 4 */
+352   SN3 += SC3 / CN_structural ;
+353   SN4 += SC4 / CN_active ;
+354 
+355 /*    Updating the Soil Carbon Pool 5 */
+356   SC5 += C1_5_Leaf\&.fC + C1_5_Stem\&.fC + C2_5_Leaf\&.fC + C2_5_Stem\&.fC ;
+357 
+358 /*    Updating the Soil Nitrogen pool 5 */
+359   SN5 += SC5 / CN_surface ;
+360   
+361 /*    Updating the Soil Carbon Pool 6 */
+362   SC6 += C3_6_Root\&.fC + C3_6_Rhiz\&.fC + C4_6_Root\&.fC + C4_6_Rhiz\&.fC ;
+363 
+364 /*    Updating the Soil Nitrogen Pool 6 */
+365   SN6 += SC6 / CN_active ;
+366 
+367 /*    Surface Microbe C to Slow C */
+368 /*    5 => 7 */
+369   C5_7 = flow(&SC5,CN_slow,Abiot,0,0,respC5_7,4,Ks);
+370 
+371   Resp +=  C5_7\&.Resp;
+372   MinN +=  C5_7\&.MinN;
+373 
+374 /*    Updating Surface Microbe C (pool 5) and slow (pool 7) */
+375 
+376   SC5 = C5_7\&.SC ;
+377   SC7 += C5_7\&.fC ;
+378 
+379 /*    Updating Surface Microbe N pool */
+380 
+381   SN5 = SC5 / CN_surface;
+382    
+383 /*   Soil Microbe C to intermediate stage C */
+384   C6 = flow(&SC6,CN_slow,Abiot,0,Tm,respC6,3,Ks);
+385 
+386 /*   if(ISNAN(C6\&.fC) | ISNAN(C6\&.SC)){ */
+387 /*     Rprintf("C6\&.fC %f and C6\&.SC %f and SC6 %f \n",C6\&.fC,C6\&.SC,SC6); */
+388 /*   } */
+389 
+390   Resp +=  C6\&.Resp;
+391   MinN +=  C6\&.MinN;
+392 
+393 /*    Updating carbon and nitrogen soil pools 6 */
+394   SC6 = C6\&.SC;
+395   SN6 = SC6 / CN_active;
+396   
+397   C_ap = 0\&.003 + 0\&.032 * Tc;   
+398   C_al = leachWater / 18\&.0 * (0\&.01 + 0\&.04 * Ts);
+399   
+400 /*   Rprintf("C_al %f and C_ap %f Tc %f \n",C_al, C_ap, Tc); */
+401 /*   Rprintf("leachWater %f and Ts %f \n",leachWater, Ts); */
+402 
+403   C6_8 = C6\&.fC * C_ap;
+404   C6_9 = C6\&.fC * C_al;
+405   C6_7 = C6\&.fC * (1 - C_ap - C_al); /* There is no need to subtract 0\&.55 since 
+406                                        this was already taken into account in 
+407                                        the flow equation */
+408   
+409  /*   Updating the Soil Carbon Pool 7, 8 and 9 */
+410 
+411   SC7 += C6_7 ;
+412   SC8 += C6_8 ;
+413   SC9 += C6_9 ;
+414 
+415 /*   Rprintf("C6_9 %f \n",C6_9); */
+416 
+417 /*  Updating the Soil Nitrogen Pool 7, 8 and 9 */
+418 
+419   SN7 += SC7 / CN_slow ;
+420   SN8 += SC8 / CN_passive ;
+421   SN9 += SC9 / CN_slow ;
+422   
+423 /*    Slow Carbon to intermediate stage */
+424 
+425   C7 = flow(&SC7,CN_slow,Abiot,0,0,respC7,7,Ks);
+426 
+427   Resp += C7\&.Resp;
+428   MinN += C7\&.MinN;
+429   
+430   C_sp = 0\&.003 - 0\&.009 *Tc;
+431   C7_8 = C7\&.fC * C_sp;
+432   C7_6 = C7\&.fC * (1 - C_sp);  /* There is no need to subtract 0\&.55 since 
+433                                  this was already taken into account in 
+434                                  the flow equation */
+435 
+436 /*    Updating the Soil Carbon Pools 6 and 8 */
+437 
+438   SC6 += C7_6 ;
+439   SC8 += C7_8 ;
+440 
+441 /*    Updating the Soil Nitrogen Pools 6 and 8 */
+442 
+443   SN6 = SC6 / CN_active;
+444   SN8 = SN8 / CN_passive;
+445 
+446 /*    Passive Carbon to Soil Microbe C */
+447 
+448   C8_6 = flow(&SC8,CN_passive,Abiot,0,0,respC8,8,Ks);
+449 
+450   Resp += C8_6\&.Resp;
+451   MinN += C8_6\&.MinN;
+452 
+453 /*   Updating the Soil Microbe C 6 and 8 */
+454   
+455   SC8 = C8_6\&.SC ;
+456   SC6 += C8_6\&.fC ;
+457 
+458   SN6 = SC6 / CN_active;
+459   SN8 = SC8 / CN_passive;
+460 
+461   tmp\&.SNs[0] = SN1 / cf;
+462   tmp\&.SNs[1] = SN2 / cf ;
+463   tmp\&.SNs[2] = SN3 / cf ;
+464   tmp\&.SNs[3] = SN4 / cf ;
+465   tmp\&.SNs[4] = SN5 / cf ;
+466   tmp\&.SNs[5] = SN6 / cf ;
+467   tmp\&.SNs[6] = SN7 / cf ;
+468   tmp\&.SNs[7] = SN8 / cf ;
+469   tmp\&.SNs[8] = SN9 / cf ;
+470 
+471   tmp\&.SCs[0] = SC1 / cf;
+472   tmp\&.SCs[1] = SC2 / cf;
+473   tmp\&.SCs[2] = SC3 / cf;
+474   tmp\&.SCs[3] = SC4 / cf;
+475   tmp\&.SCs[4] = SC5 / cf;
+476   tmp\&.SCs[5] = SC6 / cf;
+477   tmp\&.SCs[6] = SC7 / cf;
+478   tmp\&.SCs[7] = SC8 / cf;
+479   tmp\&.SCs[8] = SC9 / cf;
+480 
+481   tmp\&.MinN = MinN;
+482   tmp\&.Resp = Resp;
+483 
+484 /* Converting Leaf Litter to its original units */
+485 
+486   *LeafL /= cf;
+487   *StemL /= cf;
+488   *RootL /= cf;
+489   *RhizL /= cf;
+490 
+491   return(tmp);
+492 }
+.fi
+.SS "struct \fBflow_str\fP \fBflow\fP (double *SC, doubleCNratio, doubleA, doubleLc, doubleTm, doubleresp, intkno, doubleKs[8])"
+
+.PP
+.nf
+523                                                                                                                     {
+524 
+525   struct flow_str tmp;
+526 
+527   double Kf = 0\&.0, fC = 0\&.0;
+528   double Resp, MinN;
+529 
+530   if(kno < 3){
+531     Kf = Ks[kno-1] * Lc * A ;
+532     fC = Kf * *SC;
+533   }else
+534   if(kno == 3){
+535     Kf = Ks[kno-1] * A * Tm ;
+536     fC = Kf * *SC;
+537   }else
+538   if(kno > 3){
+539     Kf = Ks[kno-1] * A;
+540     fC = Kf * *SC;
+541   }
+542 
+543   if(Kf > 1){
+544     Rprintf("Kf greater than 1: %d %f %f %f %f \n", kno, Ks[kno-1], Kf, A, Tm);
+545   }
+546 
+547   Resp = fC * resp;
+548 
+549   /*  Mineralized N */
+550   MinN = Resp / CNratio;
+551 
+552   *SC = *SC - fC;
+553   
+554   fC = fC - Resp;
+555 /*   fN = fC / CNratio; */
+556 
+557 /*  It is important to keep track of C emissions because */
+558 /*  I might need to validate it against Eddy flux data */
+559   tmp\&.SC = *SC;
+560   tmp\&.fC = fC;
+561   tmp\&.Resp = Resp;
+562   tmp\&.MinN = MinN;  
+563 
+564   return(tmp);
+565 
+566 }
+.fi
+.SS "struct \fBFL_str\fP FmLcFun (doubleLig, doubleNit)"
+
+.PP
+.nf
+496                                              {
+497 
+498   double Fm, Ls, Lc;
+499   struct FL_str tmp;
+500 
+501   Fm = 0\&.85 - 0\&.018 *(Lig/Nit);
+502   Ls = Lig / (1 - Fm);
+503   Lc = exp(-3 * Ls);
+504 
+505   tmp\&.Lc = Lc;
+506   tmp\&.Fm = Fm;
+507 
+508   return(tmp);
+509 
+510 }
+.fi
+.SS "void lightME (doublelat, intDOY, inttd)"
+
+.PP
+.nf
+27 {
+28 
+29         extern double tmp1[];
+30         double *ip1;
+31         ip1 = &tmp1[0];
+32         double omega, delta0, delta, deltaR;
+33         double tf, SSin, CCos, PPo;
+34         double CosZenithAngle, CosHour;
+35         double CosHourDeg;
+36         double Idir, Idiff, propIdir, propIdiff;
+37         const double DTR = M_PI/180;
+38         const double tsn = 12\&.0;
+39         const double alpha = 0\&.85;
+40         const double SolarConstant = 2650;
+41         const double atmP = 1e5;
+42 
+43         omega = lat * DTR;
+44         delta0 = 360\&.0 * ((DOY + 10)/365\&.0);
+45         delta = -23\&.5 * cos(delta0*DTR);
+46         deltaR = delta * DTR;
+47 
+48         tf = (15\&.0*(td - tsn))*DTR;
+49         SSin = sin(deltaR) * sin(omega);
+50         CCos = cos(deltaR) * cos(omega);
+51 
+52         CosZenithAngle = SSin + CCos * cos(tf);
+53         if(CosZenithAngle < pow(10,-10))
+54                 CosZenithAngle = pow(10,-10);
+55 
+56         CosHour = -tan(omega) * tan(deltaR);
+57         CosHourDeg = (1/DTR)*CosHour;
+58         if(CosHourDeg < -57)
+59                 CosHour = -0\&.994;
+60 
+61         PPo = 1e5 / atmP;
+62         Idir = SolarConstant * (pow(alpha,(PPo/CosZenithAngle)));
+63         Idiff = 0\&.3 * SolarConstant *(1 - pow(alpha,(PPo/CosZenithAngle))) * CosZenithAngle ;
+64 
+65         propIdir = Idir / (Idir + Idiff);
+66         propIdiff = Idiff / (Idir + Idiff);
+67 
+68         *ip1 = propIdir;
+69         *(ip1+1) = propIdiff;
+70         *(ip1+2) = CosZenithAngle;
+71         return;
+72 }
+.fi
+.SS "struct \fBCan_Str\fP newc3CanAC (doubleLAI, intDOY, inthr, doublesolarR, doubleTemp, doubleRH, doubleWindSpeed, doublelat, intnlayers, doubleVmax, doubleJmax, doubleRd, doubleCatm, doubleo2, doubleb0, doubleb1, doubletheta, doublekd, doubleheightf, doubleleafN, doublekpLN, doublelnb0, doublelnb1, intlnfun, doubleStomWS, intws)"
+
+.SS "double resp (doublecomp, doublemrc, doubletemp)"
+
+.PP
+.nf
+1024                                                  {
+1025 
+1026         double ans;
+1027 
+1028         ans = comp *  (1 - (mrc * pow(2,(temp/10\&.0))));
+1029 
+1030         if(ans <0) ans = 0;
+1031 
+1032         return(ans);
+1033 
+1034 }
+.fi
+.SS "void RHprof (doubleRH, intnlayers)"
+
+.PP
+.nf
+145 {
+146         int i;
+147         double kh, hsla, j;
+148 
+149         kh = 1 - RH;
+150         /* kh = 0\&.2; */
+151         /*kh = log(1/RH);*/
+152         for(i=0;i<nlayers;i++)
+153         {
+154                 j = i + 1;
+155                 hsla = RH * exp(kh * (j/nlayers));
+156 //              /*hsla = RH * exp(-kh * (j/nlayers));  /*new simpler version from Joe Iverson*/
+157                 if(hsla > 1) hsla = 0\&.99; 
+158                 tmp4[tp4++] = hsla;
+159         }
+160         /* It should return values in the 0-1 range */
+161 }
+.fi
+.SS "double RSS_BG (doubleoStem[], doubleoLeaf[], doubleoRhizome[], doubleoRoot[], doubleoGrain[], doubleoLAI[], doublesStem[], doublesLeaf[], doublesRhizome[], doublesRoot[], doublesGrain[], doublesLAI[], intN1Dat)"
+
+.PP
+.nf
+1815                         {
+1816 
+1817         int i;
+1818         double diff1=0\&.0, RSS1=0\&.0, SST1=0\&.0;
+1819         double diff2=0\&.0, RSS2=0\&.0, SST2=0\&.0;
+1820         double diff3=0\&.0, RSS3=0\&.0, SST3=0\&.0;
+1821         double diff4=0\&.0, RSS4=0\&.0, SST4=0\&.0; 
+1822         double diff5=0\&.0, RSS5=0\&.0, SST5=0\&.0;
+1823         double diff6=0\&.0, RSS6=0\&.0, SST6=0\&.0;
+1824         double RSS=0\&.0;
+1825 
+1826         for(i = 0 ; i < N1Dat; i++){
+1827                 /* Stem */
+1828                 if(oStem[i] >= 0){
+1829                         SST1 += pow(oStem[i],2);
+1830                         diff1 = oStem[i] - sStem[i];
+1831                         RSS1 += pow(diff1,2);
+1832                 }
+1833                 /* Leaf */
+1834                 if(oLeaf[i] >= 0){
+1835                         SST2 += pow(oLeaf[i],2);
+1836                         diff2 = oLeaf[i] - sLeaf[i];
+1837                         RSS2 += pow(diff2,2);
+1838                 }
+1839                 /* Rhizome */
+1840                 if(oRhizome[i] >= 0){
+1841                         SST3 += pow(oRhizome[i],2);
+1842                         diff3 = oRhizome[i] - sRhizome[i];
+1843                         RSS3 += pow(diff3,2);
+1844                 }
+1845                 /* Root */
+1846                 if(oRoot[i] >= 0){
+1847                         SST4 += pow(oRoot[i],2);
+1848                         diff4 = oRoot[i] - sRoot[i];
+1849                         RSS4 += pow(diff4,2);
+1850                 }
+1851                 /* LAI */
+1852                 if(oLAI[i] >= 0){
+1853                         SST5 += pow(oLAI[i],2);
+1854                         diff5 = oLAI[i] - sLAI[i];
+1855                         RSS5 += pow(diff5,2);
+1856                 }
+1857                 if(oGrain[i] >= 0){
+1858                         SST6 += pow(oGrain[i],2);
+1859                         diff6 = oGrain[i] - sGrain[i];
+1860                         RSS6 += pow(diff6,2);
+1861                 }
+1862         }
+1863 
+1864         RSS = RSS1 + RSS2 + RSS3 + RSS4 + RSS5 + RSS6;
+1865         return(RSS);
+1866 }
+.fi
+.SS "struct \fBdbp_str\fP sel_dbp_coef (doublecoefs[25], doubleTherPrds[6], doubleTherTime)"
+
+.PP
+.nf
+1039                                                                                   {
+1040 
+1041         struct dbp_str tmp;
+1042 
+1043         tmp\&.kLeaf = 0\&.0;
+1044         tmp\&.kStem = 0\&.0;
+1045         tmp\&.kRoot = 0\&.0;
+1046         tmp\&.kRhiz = 0\&.0;
+1047         tmp\&.kGrain = 0\&.0; /* kGrain is always zero except for the last thermal period */
+1048 
+1049         if(TherTime < TherPrds[0])
+1050         {
+1051                 tmp\&.kStem = coefs[0];
+1052                 tmp\&.kLeaf = coefs[1];
+1053                 tmp\&.kRoot = coefs[2];
+1054                 tmp\&.kRhiz = coefs[3];
+1055 
+1056         } else
+1057                 if( TherTime < TherPrds[1] )
+1058                 {
+1059                         tmp\&.kStem = coefs[4];
+1060                         tmp\&.kLeaf = coefs[5];
+1061                         tmp\&.kRoot = coefs[6];
+1062                         tmp\&.kRhiz = coefs[7];
+1063 
+1064                 } else
+1065                         if( TherTime < TherPrds[2])
+1066                         {
+1067                                 tmp\&.kStem = coefs[8];
+1068                                 tmp\&.kLeaf = coefs[9];
+1069                                 tmp\&.kRoot = coefs[10];
+1070                                 tmp\&.kRhiz = coefs[11];
+1071 
+1072                         } else
+1073                                 if(TherTime < TherPrds[3])
+1074                                 {
+1075                                         tmp\&.kStem = coefs[12];
+1076                                         tmp\&.kLeaf = coefs[13];
+1077                                         tmp\&.kRoot = coefs[14];
+1078                                         tmp\&.kRhiz = coefs[15];
+1079 
+1080                                 } else
+1081                                         if(TherTime < TherPrds[4])
+1082                                         {
+1083                                                 tmp\&.kStem = coefs[16];
+1084                                                 tmp\&.kLeaf = coefs[17];
+1085                                                 tmp\&.kRoot = coefs[18];
+1086                                                 tmp\&.kRhiz = coefs[19];
+1087 
+1088                                         } else{
+1089                                                 
+1090                                                         tmp\&.kStem = coefs[20];
+1091                                                         tmp\&.kLeaf = coefs[21];
+1092                                                         tmp\&.kRoot = coefs[22];
+1093                                                         tmp\&.kRhiz = coefs[23];
+1094                                                         tmp\&.kGrain = coefs[24];
+1095                                                 
+1096                                                 }
+1097 
+1098 
+1099         return(tmp);
+1100 
+1101 }
+.fi
+.SS "double sel_phen (intphen)"
+
+.PP
+.nf
+2262                          {
+2263 
+2264         double index = 0;
+2265 
+2266         if(phen == 6){
+2267                 index = runif(20,25);
+2268         }else 
+2269          if(phen == 5){
+2270                  index = runif(16,20);
+2271          }else
+2272           if(phen == 4){
+2273                   index = runif(12,16);
+2274           }else
+2275            if(phen == 3){
+2276                    index = runif(8,12);
+2277            }else
+2278             if(phen == 2){
+2279                     index = runif(4,8);
+2280             }else
+2281              if(phen == 1){
+2282                      index = runif(0,4);
+2283              }
+2284 
+2285         return(index);
+2286 
+2287 }
+.fi
+.SS "double SoilEvapo (doubleLAI, doublek, doubleAirTemp, doubleDirectRad, doubleawc, doublefieldc, doublewiltp, doublewinds, doubleRelH, doublersec)"
+
+.PP
+.nf
+413                                                                                                   {
+414 
+415         double SoilArea;
+416         double SoilTemp;
+417         double Up; /*Maximum Dimensionless Uptake Rate */
+418         double TotalRadiation;
+419         double BoundaryLayerThickness, DiffCoef;
+420         double SoilBoundaryLayer, Ja, rlc;
+421         double PhiN, PsycParam, DeltaPVa;
+422         double Evaporation = 0\&.0;  
+423         double DdryA, LHV, SlopeFS, SWVC;
+424 
+425         double rawc; /* Relative available water content */
+426 
+427         int method = 1;
+428 
+429         /* some constants */
+430         const double SoilClodSize = 0\&.04;
+431         const double SoilReflectance = 0\&.2;
+432         const double SoilTransmission = 0\&.01;
+433         const double SpecificHeat = 1010;
+434         const double StefanBoltzman = 5\&.67e-8; /* Stefan Boltzman Constant */
+435 
+436         const double cf2 = 3600 * 1e-3 * 18 * 1e-6 * 10000; 
+437 
+438         /* For Transpiration */
+439         /* 3600 converts seconds to hours */
+440         /* 1e-3 converts mili mols to mols */
+441         /* 18 is the grams in one mol of H20 */
+442         /* 1e-6 converts g to Mg */
+443         /* 10000 scales from meter squared to hectare */
+444 
+445         /* Let us assume a simple way of calculating the proportion of the
+446            soil with direct radiation */
+447         SoilArea = exp(-k * LAI);
+448 
+449         /* For now the temperature of the soil will be the same as the air\&.
+450            At a later time this can be made more accurate\&. I looked at the
+451            equations for this and the issue is that it is strongly dependent on
+452            depth\&. Since the soil model now has a single layer, this cannot be
+453            implemented correctly at the moment\&.  */
+454 
+455         SoilTemp = AirTemp;
+456 
+457         /* Let us use an idea of Campbell and Norman\&. Environmental
+458            Biophysics\&. */
+459         /* If relative available water content is */
+460         rawc = (awc - wiltp)/(fieldc - wiltp);
+461 
+462         /* Page 142 */
+463         /* Maximum Dimensionless Uptake Rate */
+464         Up = 1 - pow((1 + 1\&.3 * rawc),-5);  
+465         /* This is a useful idea because dry soils evaporate little water when dry*/
+466 
+467         /* Total Radiation */
+468         /*' Convert light assuming 1 µmol PAR photons = 0\&.235 J/s Watts*/
+469         /* At the moment soil evaporation is grossly overestimated\&. In WIMOVAC
+470            the light reaching the last layer of leaves is used\&. Here instead
+471            of calculating this again, I will for now assume a 10% as a rough
+472            estimate\&. Note that I could maybe get this since layIdir and
+473            layIDiff in sunML are external variables\&.  Rprintf("IRad
+474            %\&.5f",layIdir[0],"\n"); Update: 03-13-2009\&. I tried printing this
+475            value but it is still too high and will likely overestimate soil
+476            evaporation\&. However, this is still a work in progress\&.
+477         */
+478         IRad *= rsec; /* Radiation soil evaporation coefficient */ 
+479 
+480         TotalRadiation = IRad * 0\&.235;
+481  
+482         DdryA = TempToDdryA(AirTemp) ;
+483         LHV = TempToLHV(AirTemp) * 1e6 ; 
+484 /* Here LHV is given in MJ kg-1 and this needs to be converted
+485    to Joules kg-1  */
+486         SlopeFS = TempToSFS(AirTemp) * 1e-3;
+487         SWVC = TempToSWVC(AirTemp) * 1e-3;
+488 
+489         PsycParam = (DdryA * SpecificHeat) / LHV;
+490         DeltaPVa = SWVC * (1 - RelH / 100);
+491 
+492         BoundaryLayerThickness = 4e-3 * sqrt(SoilClodSize / winds); 
+493         DiffCoef = 2\&.126e-5 * 1\&.48e-7 * SoilTemp;
+494         SoilBoundaryLayer = DiffCoef / BoundaryLayerThickness;
+495 
+496         Ja = 2 * TotalRadiation * ((1 - SoilReflectance - SoilTransmission) / (1 - SoilTransmission));
+497 
+498         rlc = 4 * StefanBoltzman * pow((273 + SoilTemp),3) * 0\&.005;
+499 /* the last term should be the difference between air temperature and
+500    soil\&. This is not actually calculated at the moment\&. Since this is
+501    mostly relevant to the first soil layer where the temperatures are
+502    similar\&. I will leave it like this for now\&. */
+503 
+504         PhiN = Ja - rlc; /* Calculate the net radiation balance*/
+505         if(PhiN < 0) PhiN = 1e-7;
+506 
+507         /* Priestly-Taylor */
+508         if(method == 0){
+509                 Evaporation = 1\&.26 * (SlopeFS * PhiN) / (LHV * (SlopeFS + PsycParam));
+510         }else{
+511                 /* Penman-Monteith */
+512                 Evaporation = (SlopeFS * PhiN + LHV * PsycParam * SoilBoundaryLayer * DeltaPVa) / (LHV * (SlopeFS + PsycParam));
+513         }
+514 /*  Report back the soil evaporation rate in Units mmoles/m2/s */
+515 /*     Evaporation = Evaporation * 1000:   ' Convert Kg H20/m2/s to g H20/m2/s */
+516 /*     Evaporation = Evaporation / 18:     ' Convert g H20/m2/s to moles H20/m2/s */
+517 /*     Evaporation = Evaporation * 1000:   ' Convert moles H20/m2/s to mmoles H20/m2/s */
+518     
+519 /*     If Evaporation <= 0 Then Evaporation = 0\&.00001: 
+520        ' Prevent any odd looking values which might get through at very low light levels */
+521 
+522         Evaporation *= 1e6/18;
+523         /* Adding the area dependence and the effect of drying */
+524         /* Converting from m2 to ha (times 1e4) */
+525         /* Converting to hour */
+526         Evaporation *= SoilArea * Up * cf2; 
+527         if(Evaporation < 0) Evaporation = 1e-6;
+528 
+529         return(Evaporation);
+530 }
+.fi
+.SS "struct \fBsoilML_str\fP soilML (doubleprecipit, doubletransp, double *cws, doublesoildepth, double *depths, doublefieldc, doublewiltp, doublephi1, doublephi2, struct \fBsoilText_str\fPsoTexS, intwsFun, intlayers, doublerootDB, doubleLAI, doublek, doubleAirTemp, doubleIRad, doublewinds, doubleRelH, inthydrDist, doublerfl, doublersec, doublersdf)"
+
+.PP
+.nf
+807                                                                                                                                                                                                                                                                                                                                                                   {
+808 
+809         struct rd_str tmp4;
+810         struct seqRD_str tmp3;
+811         struct soilML_str tmp;
+812         /* Constant */
+813         /* const double G = 6\&.67428e-11;  m3 / (kg * s-2)  ##  http://en\&.wikipedia\&.org/wiki/Gravitational_constant */
+814         const double g = 9\&.8; /* m / s-2  ##  http://en\&.wikipedia\&.org/wiki/Standard_gravity */
+815         /* Variables */
+816         double waterIn, oldWaterIn = 0\&.0;
+817 /* Here is a convention aw is available water in volume and awc
+818    is available water content as a fraction of the soil section being investigated\&.
+819    paw is plant available water aw - wiltp */
+820         double aw, paw, awc, awc2, Newpawha;
+821         double drainage = 0\&.0;
+822         double wsPhoto = 0\&.0, wsSpleaf = 0\&.0, phi10;
+823         double wsPhotoCol = 0\&.0, wsSpleafCol = 0\&.0;
+824         double slp = 0\&.0, intcpt = 0\&.0, theta = 0\&.0; 
+825         double Nleach = 0\&.0;
+826         double layerDepth;
+827         double diffw;
+828         double rootATdepth, rootDepth;
+829         double EvapoTra = 0\&.0, oldEvapoTra = 0\&.0, Sevap = 0\&.0, Ctransp = 0\&.0;
+830         double psim1 = 0\&.0, psim2 = 0\&.0, K_psim = 0\&.0, J_w = 0\&.0, dPsim = 0\&.0;
+831         double theta_s; /* This is the saturated soil water content\&. Larger than FieldC\&.*/
+832         int i;
+833         int j = layers - 1; 
+834 
+835         /* Specify the soil type */
+836 
+837         if(fieldc < 0){
+838                 fieldc = soTexS\&.fieldc;
+839         }
+840         if(wiltp < 0){
+841                 wiltp = soTexS\&.wiltp;
+842         }
+843 
+844         theta_s = soTexS\&.satur;
+845         /* rooting depth */
+846         /* Crude empirical relationship between root biomass and rooting depth*/
+847         rootDepth = rootDB * rsdf;
+848         if(rootDepth > soildepth) rootDepth = soildepth;
+849 
+850         tmp3 = seqRootDepth(rootDepth,layers);
+851         tmp4 = rootDist(layers,rootDepth,&depths[0],rfl);
+852 
+853         /* unit conversion for precip */
+854         waterIn = precipit * 1e-3; /* convert precip in mm to m*/
+855 
+856         for(j=0,i=layers-1;j<layers;j++,i--){
+857         /* for(i=0;i<layers;i++){ */
+858                 /* It decreases because I increase the water content due to precipitation in the last layer first*/
+859 
+860                 /* This supports unequal depths\&. */
+861                 if(i == 0){
+862                         layerDepth = depths[1];
+863                 }else{
+864                         layerDepth = depths[i] - depths[i-1];
+865                 }
+866 
+867 
+868                 if(hydrDist > 0){
+869                         /* For this section see Campbell and Norman "Environmental BioPhysics" Chapter 9*/
+870                         /* First compute the matric potential */
+871                         psim1 = soTexS\&.air_entry * pow((cws[i]/theta_s),-soTexS\&.b) ; /* This is matric potential of current layer */
+872                         if(i > 0){
+873                                 psim2 = soTexS\&.air_entry * pow((cws[i-1]/theta_s),-soTexS\&.b) ; /* This is matric potential of next layer */
+874                                 dPsim = psim1 - psim2;
+875                                 /* The substraction is from the layer i - (i-1)\&. If this last term is positive then it will move upwards\&. If it is negative it will move downwards\&. Presumably this term is almost always positive\&. */
+876                         }else{
+877                                 dPsim = 0;
+878                         }
+879                         K_psim = soTexS\&.Ks * pow((soTexS\&.air_entry/psim1),2+3/soTexS\&.b); /* This is hydraulic conductivity */
+880                         J_w = K_psim * (dPsim/layerDepth) - g * K_psim ; /*  Campbell, pg 129 do not ignore the graviational effect*/
+881                         /* Notice that K_psim is positive because my
+882                             reference system is reversed */
+883                         /* This last result should be in kg/(m2 * s)*/
+884                          J_w *= 3600 * 0\&.9882 * 1e-3 ; /* This is flow in m3 / (m^2 * hr)\&. */
+885                         /* Rprintf("J_w %\&.10f \n",J_w);  */
+886                         if(i == (layers-1) && J_w < 0){
+887                                         /* cws[i] = cws[i] + J_w /
+888                                          * layerDepth; Although this
+889                                          * should be done it drains
+890                                          * the last layer too much\&.*/
+891                                         drainage += J_w;
+892                         }else{
+893                                 if(i > 0){
+894                                         cws[i] = cws[i] -  J_w / layerDepth;
+895                                         cws[i - 1] =  cws[i-1] +  J_w / layerDepth;
+896                                 }else{
+897                                         cws[i] = cws[i] -  J_w / layerDepth;
+898                                 }
+899                         }
+900                 }
+901 
+902                  if(cws[i] > theta_s) cws[i] = theta_s; 
+903                 /* if(cws[i+1] > fieldc) cws[i+1] = fieldc; */
+904                  if(cws[i] < wiltp) cws[i] = wiltp; 
+905                 /* if(cws[i+1] < wiltp) cws[i+1] = wiltp;  */
+906 
+907                 aw = cws[i] * layerDepth;
+908 /* Available water (for this layer) is the current water status times the layer depth */
+909 
+910                 if(waterIn > 0){
+911                         /* There is some rain\&. Need to add it\&.*/
+912                         aw += waterIn / layers + oldWaterIn; /* They are both in meters so it works */
+913                         /* Adding the same amount to water to each layer */
+914                         /* In case there is overflow */
+915                         diffw = fieldc * layerDepth - aw;
+916 
+917                         if(diffw < 0){
+918                                 /* This means that precipitation exceeded the capacity of the first layer */
+919                                 /* Save this amount of water for the next layer */
+920                                 oldWaterIn = -diffw;
+921                                 aw = fieldc * layerDepth;
+922                         }else{
+923                                 oldWaterIn = 0\&.0;
+924                         }
+925                 }
+926 
+927                 /* Root Biomass */
+928                 rootATdepth = rootDB * tmp4\&.rootDist[i];
+929                 tmp\&.rootDist[i] = rootATdepth;
+930 /* Plant available water is only between current water status and permanent wilting point */
+931                 /* Plant available water */
+932                 paw = aw - wiltp * layerDepth;
+933                 if(paw < 0) paw = 0; 
+934 
+935                 if(i == 0){
+936                         /* Only the first layer is affected by soil evaporation */
+937                         awc2 = aw / layerDepth;
+938                         /* SoilEvapo function needs soil water content  */
+939                         Sevap = SoilEvapo(LAI,k,AirTemp,IRad,awc2,fieldc,wiltp,winds,RelH,rsec);
+940                         /* I assume that crop transpiration is distributed simlarly to
+941                            root density\&.  In other words the crop takes up water proportionally
+942                            to the amount of root in each respective layer\&.*/
+943                         Ctransp = transp*tmp4\&.rootDist[0];
+944                         EvapoTra = Ctransp + Sevap;
+945                         Newpawha = (paw * 1e4) - EvapoTra / 0\&.9982; /* See the watstr function for this last number 0\&.9882 */
+946                         /* The first term in the rhs (paw * 1e4) is the m3 of water available in this layer\&.
+947                            EvapoTra is the Mg H2O ha-1 of transpired and evaporated water\&. 1/0\&.9882 converts from Mg to m3 */
+948                 }else{
+949                         Ctransp = transp*tmp4\&.rootDist[i];
+950                         EvapoTra = Ctransp;
+951                         Newpawha = (paw * 1e4) - (EvapoTra + oldEvapoTra);
+952                 }
+953 
+954                 if(Newpawha < 0){
+955 /* If the Demand is not satisfied by this layer\&. This will be stored and added to subsequent layers*/
+956                         oldEvapoTra = -Newpawha;
+957                          aw = wiltp * layerDepth; 
+958                 }
+959 
+960                 paw = Newpawha / 1e4 ;
+961                 awc = paw / layerDepth + wiltp;   
+962 
+963 /* This might look like a weird place to populate the structure, but is more convenient*/
+964                 tmp\&.cws[i] = awc;
+965                 tmp\&.hourlyWflux[i] =J_w;
+966                 if(wsFun == 0){
+967                         slp = 1/(fieldc - wiltp);
+968                         intcpt = 1 - fieldc * slp;
+969                         wsPhoto = slp * awc + intcpt ;
+970                 }else
+971                 if(wsFun == 1){
+972                         phi10 = (fieldc + wiltp)/2;
+973                         wsPhoto = 1/(1 + exp((phi10 - awc)/ phi1));
+974                 }else
+975                 if(wsFun == 2){
+976                         slp = (1 - wiltp)/(fieldc - wiltp);
+977                         intcpt = 1 - fieldc * slp;
+978                         theta = slp * awc + intcpt ;
+979                         wsPhoto = (1 - exp(-2\&.5 * (theta - wiltp)/(1 - wiltp))) / (1 - exp(-2\&.5));
+980                 }else
+981                 if(wsFun == 3){
+982                         wsPhoto = 1;
+983                 }
+984 
+985                 if(wsPhoto <= 0 )
+986                         wsPhoto = 1e-20; /* This can be mathematically lower than zero in some cases but I should prevent that\&. */
+987 
+988                 wsPhotoCol += wsPhoto;
+989 
+990                 wsSpleaf = pow(awc,phi2) * 1/pow(fieldc,phi2); 
+991                 if(wsFun == 3){ 
+992                         wsSpleaf = 1;
+993                 }
+994                 wsSpleafCol += wsSpleaf;
+995 
+996         }
+997 
+998         if(waterIn > 0){ 
+999                 drainage = waterIn;
+1000                 /* Need to convert to units used in the Parton et al 1988 paper\&. */
+1001                 /* The data comes in mm/hr and it needs to be in cm/month */
+1002                 Nleach = drainage * 0\&.1 * (1/24*30) / (18 * (0\&.2 + 0\&.7 * soTexS\&.sand));
+1003         }
+1004 
+1005 /* Apparently wsPhoto and wsSpleaf can be greater than 1 */
+1006         if(wsPhoto > 1) wsPhoto = 1;
+1007         if(wsSpleaf > 1) wsSpleaf = 1;
+1008 
+1009 /* returning the structure */
+1010         tmp\&.rcoefPhoto = (wsPhotoCol/layers);
+1011         tmp\&.drainage = drainage;
+1012         tmp\&.Nleach = Nleach;
+1013         tmp\&.rcoefSpleaf = (wsSpleafCol/layers);
+1014         tmp\&.SoilEvapo = Sevap;
+1015 
+1016         return(tmp);
+1017 }
+.fi
+.SS "void sunML (doubleIdir, doubleIdiff, doubleLAI, intnlayers, doublecosTheta, doublekd, doublechil, doubleheightf)"
+
+.PP
+.nf
+76 {
+77         extern int sp1, sp2, sp3, sp4, sp5, sp6;
+78         extern double layIdir[], layIdiff[], layItotal[], layFsun[], layFshade[], layHeight[];
+79         double i;
+80         double k0, k1, k;
+81         double LAIi, CumLAI;
+82         double Isolar, Idiffuse, Ibeam, Iscat, Itotal,alphascatter;
+83         double Ls, Ld;
+84         double Fsun, Fshade;
+85         alphascatter=0\&.8;
+86         k0 = sqrt(pow(chil ,2) + pow(tan(acos(cosTheta)),2));
+87         k1 = chil + 1\&.744*pow((chil+1\&.183),-0\&.733);
+88         k = k0/k1;
+89         if(k<0)
+90                 k = -k;
+91 
+92         LAIi = LAI / nlayers;
+93 
+94         for(i=0;i<nlayers;i++)
+95         {
+96                 CumLAI = LAIi * (i+0\&.5);
+97                 
+98                 Ibeam=Idir*cosTheta;
+99                 Iscat = Ibeam * exp(-k *sqrt(alphascatter)* CumLAI)-Ibeam * exp(-k * CumLAI);
+100                 
+101                 
+102                 Isolar = Ibeam*k;
+103                 Idiffuse = Idiff * exp(-kd * CumLAI) + Iscat;
+104                 
+105                 
+106                 Ls = (1-exp(-k*LAIi))*exp(-k*CumLAI)/k;
+107                 Ld=LAIi-Ls;
+108 
+109                 Fsun=Ls/(Ls+Ld);
+110                 Fshade=Ld/(Ls+Ld);
+111                 /*fraction intercepted*/
+112                 Itotal =(Fsun*Isolar + Idiffuse) * (1-exp(-k*LAIi))/k;
+113 
+114                 /* collecting the results */
+115                 layIdir[sp1++] = Isolar + Idiffuse;
+116                 layIdiff[sp2++] = Idiffuse;
+117                 layItotal[sp3++] = Itotal;
+118                 layFsun[sp4++] = Fsun;
+119                 layFshade[sp5++] = Fshade;
+120                 layHeight[sp6++] = CumLAI/heightf;
+121         }
+122 }
+.fi
+.SS "double TempToDdryA (doubleTemp)"
+
+.PP
+.nf
+180 {
+181         double DdryA;
+182         DdryA = 1\&.295163636 + -0\&.004258182 * Temp;
+183         return(DdryA);
+184 }
+.fi
+.SS "double TempToLHV (doubleTemp)"
+
+.PP
+.nf
+187 {
+188         double LHV;
+189         LHV = 2\&.501 + -0\&.002372727 * Temp;
+190         return(LHV);
+191 }
+.fi
+.SS "double TempToSFS (doubleTemp)"
+
+.PP
+.nf
+194 {
+195         double SlopeFS;
+196         SlopeFS = 0\&.338376068 +  0\&.011435897 * Temp +  0\&.001111111 * pow(Temp,2);
+197         return(SlopeFS);
+198 }
+.fi
+.SS "double TempToSWVC (doubleTemp)"
+
+.PP
+.nf
+201 {
+202         double SWVC;
+203         SWVC =  4\&.90820192 +   0\&.06387253 * Temp +    0\&.02745742 * pow(Temp,2);
+204         return(SWVC);
+205 }
+.fi
+.SS "struct \fBws_str\fP watstr (doubleprecipit, doubleevapo, doublecws, doublesoildepth, doublefieldc, doublewiltp, doublephi1, doublephi2, intsoiltype, intwsFun)"
+
+.PP
+.nf
+677 {
+678 
+679         struct ws_str tmp;
+680         struct soilText_str soTexS;
+681         /* Variables */
+682         double precipM;
+683         /* available water and per hectare */
+684         double aw, naw; 
+685         double pawha, Newpawha, npaw; /* new 04-27-2009 */
+686         double runoff = 0\&.0, runoff2 = 0\&.0;
+687         /* variable needed for calculation of water stress*/
+688         double wsPhoto = 0\&.0, wsSpleaf, phi10;
+689         double slp = 0\&.0, intcpt = 0\&.0, theta = 0\&.0; 
+690         double Nleach = 0\&.0;
+691         /* Nleach is the NO3 leached and Ts is the sand content of the soil*/
+692 
+693         /* Specify the soil type */
+694         soTexS = soilTchoose(soiltype);
+695 /*   Ts = soTexS\&.sand; */
+696 
+697         if(fieldc < 0){
+698                 fieldc = soTexS\&.fieldc;
+699         }
+700         if(wiltp < 0){
+701                 wiltp = soTexS\&.wiltp;
+702         }
+703 
+704         /* unit conversion for precip */
+705         precipM = precipit * 1e-3; /* convert precip in mm to m*/
+706 
+707         /*    cws is current water status */
+708         /*    available water */
+709 
+710         aw = precipM + cws;
+711 
+712         /* if(aw > soTexS\&.satur){  */
+713         /*      runoff = aw - soTexS\&.satur; /\* Here runoff is interpreted as water content exceeding saturation level *\/ */
+714         /*      /\* Need to convert to units used in the Parton et al 1988 paper\&. *\/ */
+715         /*      /\* The data comes in mm/hr and it needs to be in cm/month *\/ */
+716         /*      runoff2 = runoff * 0\&.10 * (1/24*30); */
+717         /*      Nleach = runoff /18 * (0\&.2 + 0\&.7 * soTexS\&.sand); */
+718         /*      aw = soTexS\&.satur; */
+719         /* } */
+720 
+721 /* These equations are not correct as runoff would only occur when it exceeds
+722    saturation, but from the point of view of a crop only field capacity matters */
+723 /* I'm not sure about what to do about this */
+724 
+725         if(aw > fieldc){ 
+726                 runoff = aw - fieldc; /* Here runoff is interpreted as water content exceeding saturation level */
+727                 /* Need to convert to units used in the Parton et al 1988 paper\&. */
+728                 /* The data comes in mm/hr and it needs to be in cm/month */
+729                 runoff2 = runoff * 0\&.10 * (1/24*30);
+730                 Nleach = runoff /18 * (0\&.2 + 0\&.7 * soTexS\&.sand);
+731                 aw = fieldc;
+732         }
+733 
+734 
+735         /* Tipping bucket need to collect it if want to estimate runoff */ 
+736         /* plant available water per hectare (pawha) */
+737         pawha = (aw - wiltp) * 1e4 * soildepth;
+738         /* The density of water is 998\&.2 kg/m3 at 20 degrees Celsius */
+739         /* or 0\&.9882 Mg/m3 */
+740         /* pawha is plant available water (m3) per hectare */
+741         /* evapo is demanded water (Mg) per hectare */
+742 
+743         Newpawha = pawha - evapo / 0\&.9882; /* New version 04-27-2009 */
+744 
+745         /*  Here both are in m3 of water per ha-1 so this */
+746         /*  subtraction should be correct */
+747         /* go back to original units of water in the profile */
+748 
+749         npaw = Newpawha * 1e-4 * (1/soildepth); /* New 04-27-2009 */
+750 
+751         if(npaw < 0) npaw = 0\&.0;
+752 
+753         naw = npaw + wiltp;
+754 
+755         /* Calculating the soil water potential based on equations from Norman and Campbell */
+756         /* tmp\&.psim = soTexS\&.air_entry * pow((naw/soTexS\&.fieldc*1\&.1),-soTexS\&.b) ; */
+757         /* New version of the soil water potential is based on
+758          * "Dynamic Simulation of Water Deficit Effects upon Maize
+759          * Yield" R\&. F\&. Grant Agricultural Systems\&. 33(1990) 13-39\&. */
+760         tmp\&.psim = -exp(log(0\&.033) + ((log(fieldc) - log(naw))/(log(fieldc) - log(wiltp)) * (log(1\&.5) - log(0\&.033)))) * 1e3; /* This last term converts from MPa to kPa */
+761 
+762         /* three different type of equations for modeling the effect of water stress on vmax and leaf area expansion\&. 
+763            The equation for leaf area expansion is more severe than the one for vmax\&. */
+764         if(wsFun == 0){ /* linear */
+765                 slp = 1/(fieldc - wiltp);
+766                 intcpt = 1 - fieldc * slp;
+767                 wsPhoto = slp * naw + intcpt ;
+768         }else
+769         if(wsFun == 1){
+770                 phi10 = (fieldc + wiltp)/2;
+771                 wsPhoto = 1/(1 + exp((phi10 - naw)/ phi1));
+772         }else
+773         if(wsFun == 2){
+774                 slp = (1 - wiltp)/(fieldc - wiltp);
+775                 intcpt = 1 - fieldc * slp;
+776                 theta = slp * naw + intcpt ;
+777                 wsPhoto = (1 - exp(-2\&.5 * (theta - wiltp)/(1 - wiltp))) / (1 - exp(-2\&.5));
+778         }else
+779                 if(wsFun == 3){
+780                         wsPhoto = 1;
+781                 }
+782 
+783         if(wsPhoto <= 0 )
+784                 wsPhoto = 1e-20; /* This can be mathematically lower than zero in some cases but I should prevent that\&. */
+785 
+786         wsSpleaf = pow(naw,phi2) * 1/pow(fieldc,phi2); 
+787         if(wsFun == 3){ 
+788                 wsSpleaf = 1;
+789         }
+790 
+791 /* Apparently wsPhoto and wsSpleaf can be greater than 1 */
+792         if(wsPhoto > 1) wsPhoto = 1;
+793         if(wsSpleaf > 1) wsSpleaf = 1;
+794 
+795         /* returning the structure*/
+796         tmp\&.rcoefPhoto = wsPhoto;
+797         tmp\&.rcoefSpleaf = wsSpleaf;
+798         tmp\&.awc = naw;
+799         tmp\&.runoff = runoff;
+800         tmp\&.Nleach = Nleach;
+801         return(tmp);
+802 }
+.fi
+.SS "void WINDprof (doubleWindSpeed, doubleLAI, intnlayers)"
+
+.PP
+.nf
+129 {
+130         int i;
+131         double k=0\&.7;
+132         double LI, CumLAI;
+133         double Wind;
+134 
+135         LI  = LAI / nlayers;
+136         for(i=0;i<nlayers;i++)
+137         {
+138                 CumLAI = LI * (i + 1);
+139                 Wind = WindSpeed * exp(-k * (CumLAI-LI));
+140                 tmp3[tp3++] = Wind;
+141         }
+142 }
+.fi
+.SH "Variable Documentation"
+.PP 
+.SS "double CanopyAssim[8760]"
+
+.SS "double Grainy[8760]"
+
+.SS "double LAIc[8760]"
+
+.SS "double Leafy[8760]"
+
+.SS "double Rhizomey[8760]"
+
+.SS "double Rooty[8760]"
+
+.SS "double Stemy[8760]"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

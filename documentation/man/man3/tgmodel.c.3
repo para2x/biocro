@@ -1,0 +1,251 @@
+.TH "/home/dlebauer/dev/biocro/src/tgmodel.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/tgmodel.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'soilwater\&.h'\fP
+.br
+\fC#include 'n2o_model\&.h'\fP
+.br
+\fC#include 'swconst\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBtrace_gas_model\fP (int *jday, double *time, double *newminrl, double *ammonium, double nitrate[], int *texture, double *sand, double *silt, double *clay, double *afiel, double *bulkd, double *maxt, double *ppt, double *snow, double *avgwfps, double *stormf, double *basef, double frlechd[], double stream[], double *inorglch, double *critflow, double wfluxout[], double *newCO2, double *NOflux, double *Nn2oflux, double *Dn2oflux, double *Dn2flux, double *CH4, int *isdecid, int *isagri, double *grass_lai, double *tree_lai, double *NOabsorp_grass, double *NOabsorp_tree, double *nit_amt, double *nreduce, double dN2lyr[], double dN2Olyr[], \fBSITEPAR_SPT\fP sitepar, \fBLAYERPAR_SPT\fP layers, \fBSOIL_SPT\fP soil)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void trace_gas_model (int *jday, double *time, double *newminrl, double *ammonium, doublenitrate[], int *texture, double *sand, double *silt, double *clay, double *afiel, double *bulkd, double *maxt, double *ppt, double *snow, double *avgwfps, double *stormf, double *basef, doublefrlechd[], doublestream[], double *inorglch, double *critflow, doublewfluxout[], double *newCO2, double *NOflux, double *Nn2oflux, double *Dn2oflux, double *Dn2flux, double *CH4, int *isdecid, int *isagri, double *grass_lai, double *tree_lai, double *NOabsorp_grass, double *NOabsorp_tree, double *nit_amt, double *nreduce, doubledN2lyr[], doubledN2Olyr[], \fBSITEPAR_SPT\fPsitepar, \fBLAYERPAR_SPT\fPlayers, \fBSOIL_SPT\fPsoil)"
+
+.PP
+.nf
+133     {
+134 
+135       /* Local Variables */
+136 
+137       int    debug = 0;
+138       int    ilyr;
+139       int *soilclassification;
+140 /*      double netmn_to_no3 = 0\&.20; */
+141       double netmn_to_no3 = 0\&.0;
+142       double turnovfrac = 0\&.02;
+143       double newNH4;
+144       double newNO3;
+145       double nh4_to_no3;
+146       double krainNO;
+147       double potential_NOflux;
+148       double dDO;
+149       double stdbulkd;
+150       double stdfieldc;
+151       double NO_N2O_ratio;
+152       double NH4_to_NO;
+153       double npool_sum;
+154       double canopy_reduction;
+155       double NOabsorp;
+156       double total_lai;
+157 
+158 //      extern SITEPAR_SPT sitepar;
+159 
+160       *Nn2oflux = 0\&.0;
+161       *NOflux = 0\&.0;
+162       *Dn2oflux = 0\&.0;
+163       *Dn2flux = 0\&.0;
+164 
+165       /* Compute fraction of new mineralization that is converted to NH4 */
+166       /* and NO3 */
+167 
+168       if (debug) {
+169         printf("newminrl = %6\&.4lf\n", *newminrl);
+170       }
+171 
+172       if (*newminrl <= 0\&.0) {
+173 
+174         /* Immobilization */
+175         /* Distribute N loss proportionally between ammonium and nitrate   */
+176         /* layers\&.  There is no check that these N pools won't go negative */
+177         /* once immobilization is accounted for\&.  It is assumed that the   */
+178         /* immobilization calculation by the decomp model is moderated by  */
+179         /* the supply of minerl N\&.                                         */
+180 
+181         npool_sum = (*ammonium > 0\&.0) ? *ammonium : 0\&.0;
+182         for (ilyr=0; ilyr < MAXLYR; ilyr ++) {
+183           npool_sum += (nitrate[ilyr] > 0\&.0) ? nitrate[ilyr] : 0\&.0;
+184         }
+185         if (*ammonium > 0\&.0) {
+186           *ammonium += *newminrl * (*ammonium / npool_sum);
+187         }
+188         for (ilyr=0; ilyr < MAXLYR; ilyr ++) {
+189           if (nitrate[ilyr] > 0\&.0) {
+190             nitrate[ilyr] += *newminrl * (nitrate[ilyr] / npool_sum);
+191           }
+192         }
+193         newNH4 = 0\&.0;
+194         newNO3 = 0\&.0;
+195       } else {
+196         /* Mineralization */
+197         newNH4 = *newminrl * (1\&.0 - netmn_to_no3);
+198         newNO3 = *newminrl * netmn_to_no3;
+199       }
+200 
+201       if (debug) {
+202         printf("newNH4 = %6\&.4lf\n", newNH4);
+203         printf("newNO3 = %6\&.4lf\n", newNO3);
+204       }
+205 
+206       *ammonium += newNH4;
+207 
+208       /* Compute the amount of NH4 that is converted to NO3 due to */
+209       /* nitrification */
+210 
+211      nitrify(ammonium, &nh4_to_no3, maxt, nreduce,sitepar,layers,soil);
+212       *nit_amt = nh4_to_no3;
+213 
+214       if (debug) {
+215         printf("texture = %1d\n", *texture);
+216         printf("nh4_to_no3 = %6\&.4lf\n", nh4_to_no3);
+217         printf("maxt = %6\&.4lf\n", *maxt);
+218       }
+219 
+220       /* Compute fraction of new NO3 that is converted to N2O and NO */
+221 
+222       krainNO = nox_pulse(ppt, snow);
+223 
+224       getsoilprop(sand, silt, clay, &stdbulkd, &stdfieldc, texture,&soilclassification);
+225 
+226       /* Use standard field capacity and bulk density according */
+227       /* to the soil class in the texture triangle -mdh 10/26/99 */
+228 /*      dDO = diffusiv(afiel(1), bulkd, *avgwfps) */
+229       /* No, change back to soils\&.in field capacity and bulk density\&. */
+230       /* -mdh 6/20/00 */
+231 /*      dDO = diffusiv(&stdfieldc, &stdbulkd, avgwfps); */
+232       dDO = diffusiv(afiel, bulkd, avgwfps);
+233 
+234       newNO3 += nh4_to_no3;
+235 
+236       if (newNO3 > 1\&.0E-30) {
+237         *Nn2oflux = newNO3 * turnovfrac * sitepar->N2Oadjust;
+238         newNO3 -= *Nn2oflux; 
+239 
+240         /* Another update to NO flux calculation -mdh 10/26/99 */
+241 
+242 /*        NO_N2O_ratio = 15\&.23 + (35\&.45*atan(0\&.676*PI*(10*dDO-1\&.86)))/PI; */
+243         NO_N2O_ratio = 8\&.0 + (18\&.0*atan(0\&.75*PI*(10*dDO-1\&.86)))/PI;
+244         /* If this is an agricultural system adjust the NO to N2O ratio */
+245         /* cak - 01/28/03 */
+246         if (*isagri) {
+247 /*          NO_N2O_ratio *= 0\&.2; */
+248           NO_N2O_ratio *= 0\&.5;
+249         }
+250         potential_NOflux = NO_N2O_ratio * *Nn2oflux * krainNO;
+251 
+252         if (potential_NOflux <= newNO3) {
+253           *NOflux = potential_NOflux;
+254           newNO3 -= *NOflux;
+255         } else {
+256           /* take N out of ammonimum to get max NOflux possible */
+257           NH4_to_NO = min(*ammonium, (potential_NOflux-newNO3));
+258           *NOflux = newNO3 + NH4_to_NO;
+259           *ammonium -= NH4_to_NO;
+260           newNO3 = 0;
+261         }
+262 
+263         if (*NOflux < 1\&.0E-30) {
+264           *NOflux = 0\&.0;
+265         }
+266 
+267       } else {
+268         NO_N2O_ratio = 0\&.0;
+269       }
+270 
+271       /* Compute the N2O flux (Dn2oflux) and N2 flux (Dn2flux) due to */
+272       /* denitrification */
+273 
+274 denitrify(newCO2, &newNO3, nitrate, wfluxout, critflow, frlechd,
+275                 stream, basef, stormf, inorglch, Dn2oflux, Dn2flux,
+276                 stdfieldc, stdbulkd, dN2lyr, dN2Olyr, jday,sitepar,layers);
+277 
+278 
+279       /* Now compute NOflux from denitrification (new calculation */
+280       /* -mdh 6/1/00 */
+281 /*      potential_NOflux = NO_N2O_ratio * *Dn2oflux * krainNO; */
+282       /* For denitrification, krainNO is >= 1\&.0 -mdh 6/22/00 */
+283 
+284       potential_NOflux = NO_N2O_ratio * *Dn2oflux * min(1\&.0, krainNO);
+285 
+286       if (potential_NOflux <= *ammonium) {
+287         /* Take all N out of ammonimum pool */
+288         *NOflux += potential_NOflux;
+289         *ammonium -= potential_NOflux;
+290       } else {
+291         /* Take N out of available ammonium, then convert some Dn2oflux to */
+292         /* NOflux */
+293         *NOflux += *ammonium;
+294         potential_NOflux -= *ammonium;
+295         *ammonium = 0\&.0;
+296         if (potential_NOflux <= *Dn2oflux) {
+297           *NOflux += potential_NOflux;
+298           *Dn2oflux -= potential_NOflux;
+299         }
+300       }
+301 
+302       /* Compute the amount of the soil NO flux that is absorped by the canopy, cak - 09/23/03 */
+303       total_lai = *grass_lai + *tree_lai;
+304       if (total_lai > 0\&.0) {
+305         canopy_reduction = 0\&.0077 * pow(total_lai,2) + -0\&.13 * total_lai + 0\&.99;
+306         /* We need to retain the soil flux value */
+307 
+308         /* This previous code did not maintain and N balance -Melannie 9/26/2011 */
+309         /* NOsoil = *NOflux; */
+310         /* *NOflux *= canopy_reduction; */
+311         /* NOabsorp = NOsoil - *NOflux; */
+312 
+313         NOabsorp = *NOflux * (1 - canopy_reduction);
+314         if (NOabsorp > 0\&.0)
+315         {
+316             *NOabsorp_grass = NOabsorp * (*grass_lai / total_lai);
+317             *NOabsorp_tree = NOabsorp * (*tree_lai / total_lai);
+318             *NOflux -= NOabsorp;
+319         }
+320 
+321         /* NO absorped by canopy goes to crop storage and forest storage */
+322         /* Reset NOflux using the retained value */
+323         /* *NOflux = NOsoil; */
+324       }
+325 
+326       if (*NOflux < 1\&.0E-30) {
+327         *NOflux = 0\&.0;
+328       }
+329       if (*Nn2oflux < 1\&.0E-30) {
+330         *Nn2oflux = 0\&.0;
+331       }
+332       if (*Dn2oflux < 1\&.0E-30) {
+333         *Dn2oflux = 0\&.0;
+334       }
+335       if (*Dn2flux < 1\&.0E-30) {
+336         *Dn2flux = 0\&.0;
+337       }
+338       
+339       /* Calculate methane oxidation */
+340       methane_oxidation(CH4, isdecid, isagri,layers,soil);
+341   //    wrtsoiln(time, jday,ammonium,nitrate);
+342       return;
+343     }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

@@ -1,0 +1,690 @@
+.TH "/home/dlebauer/dev/biocro/src/soilwater.h" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/soilwater.h \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include 'swconst\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBFLAG_S\fP"
+.br
+.ti -1c
+.RI "struct \fBFILES_S\fP"
+.br
+.ti -1c
+.RI "struct \fBLAYERPAR_S\fP"
+.br
+.ti -1c
+.RI "struct \fBSITEPAR_S\fP"
+.br
+.ti -1c
+.RI "struct \fBSOIL_S\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBFILEPATH_MAX\fP   60   /* Max # of chars in a file path-name */"
+.br
+.ti -1c
+.RI "#define \fBINPTSTRLEN\fP   120    /* Max length of input file \fBline\fP */"
+.br
+.ti -1c
+.RI "#define \fBOTPTSTRLEN\fP   80     /* Max length of output file string */"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct \fBFLAG_S\fP * \fBFLAG_SPT\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBFILES_S\fP * \fBFILES_SPT\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBLAYERPAR_S\fP * \fBLAYERPAR_SPT\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBSITEPAR_S\fP * \fBSITEPAR_SPT\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBSOIL_S\fP * \fBSOIL_SPT\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "double \fBc_shwave\fP (int month, double rlatitude, int jday)"
+.br
+.ti -1c
+.RI "void \fBgetdiff\fP (double *valsubt, double valtochk, double valmin)"
+.br
+.ti -1c
+.RI "void \fBinitdaily\fP (int month, double biolive, double biodead, double blitter, double *biomass, double *blivelai, double *vegcov, double *totagb, double *stcrlai, \fBLAYERPAR_SPT\fP layers)"
+.br
+.ti -1c
+.RI "void \fBinitlyrs\fP (char *soilname, \fBLAYERPAR_SPT\fP layers, \fBFLAG_SPT\fP flags, \fBSITEPAR_SPT\fP sitepar)"
+.br
+.ti -1c
+.RI "void \fBinitsite\fP (char *sitename, \fBSITEPAR_SPT\fP sitepar, \fBLAYERPAR_SPT\fP layers, \fBFLAG_SPT\fP flags, double sradadj[\fBNMONTH\fP], double *tminslope, double *tminintercept, double *maxphoto, double *bioabsorp)"
+.br
+.ti -1c
+.RI "void \fBinitsrad\fP (double elevation, double latitude, double aspect, double slope, double ehoriz, double whoriz, double daylength[\fBNDAY\fP])"
+.br
+.ti -1c
+.RI "void \fBlitstcr_evap\fP (double *cwlit, double *cwstcr, double *petleft, double *aet, double totlit, double totstcr)"
+.br
+.ti -1c
+.RI "double \fBpetrad\fP (int jday, int month, double cldcov, double windsp, double rhumid, double rlatitude, double avgtemp, double reflec, double solrad, double albedo, double snowpack)"
+.br
+.ti -1c
+.RI "double \fBpevapdly\fP (double tmin, double tmax, double sitlat, double tmn2m[], double tmx2m[], int jday, int month)"
+.br
+.ti -1c
+.RI "void \fBsetamov\fP (double amovdly[\fBCENTMAXLYR\fP], int nlayer, double wfluxout[\fBMAXLYR\fP], int numlyrs, int lbnd[\fBCENTMAXLYR\fP])"
+.br
+.ti -1c
+.RI "void \fBsetasmos\fP (double asmos[\fBCENTMAXLYR\fP], int *nlayer, double swcinit[\fBMAXLYR\fP], int *numlyrs, double avh2o[3], double rwcf[\fBCENTMAXLYR\fP])"
+.br
+.ti -1c
+.RI "void \fBshowlyrs\fP (double swc[\fBMAXLYR\fP], int numlyrs)"
+.br
+.ti -1c
+.RI "double \fBsvapor\fP (double atemp)"
+.br
+.ti -1c
+.RI "double \fBtanfunc\fP (double z, double a, double b, double c, double d)"
+.br
+.ti -1c
+.RI "void \fBwfps\fP (\fBLAYERPAR_SPT\fP layers)"
+.br
+.ti -1c
+.RI "double \fBwfunc_pulse\fP (double *ppt, double *snow)"
+.br
+.ti -1c
+.RI "void \fBnitrify\fP (double *ammonium, double *nh4_2_no3, double *maxt, double *nreduce, \fBSITEPAR_SPT\fP sitepar, \fBLAYERPAR_SPT\fP layers, \fBSOIL_SPT\fP soil)"
+.br
+.ti -1c
+.RI "void \fBdenitrify\fP (double *newCO2, double *newNO3, double nitrate[], double tfluxout[], double *critflow, double frlechd[], double stream[], double *basef, double *stormf, double *inorglch, double *Dn2oflux, double *Dn2flux, double stdfieldc, double stdbulkd, double dN2lyr[], double dN2Olyr[], int *jday, \fBSITEPAR_SPT\fP sitepar, \fBLAYERPAR_SPT\fP layers)"
+.br
+.ti -1c
+.RI "void \fBmethane_oxidation\fP (double *CH4, int *isdecid, int *isagri, \fBLAYERPAR_SPT\fP layers, \fBSOIL_SPT\fP soil)"
+.br
+.ti -1c
+.RI "void \fBtrace_gas_model\fP (int *jday, double *time, double *newminrl, double *ammonium, double nitrate[], int *texture, double *sand, double *silt, double *clay, double *afiel, double *bulkd, double *maxt, double *ppt, double *snow, double *avgwfps, double *stormf, double *basef, double frlechd[], double stream[], double *inorglch, double *critflow, double wfluxout[], double *newCO2, double *NOflux, double *Nn2oflux, double *Dn2oflux, double *Dn2flux, double *CH4, int *isdecid, int *isagri, double *grass_lai, double *tree_lai, double *NOabsorp_grass, double *NOabsorp_tree, double *nit_amt, double *nreduce, double dN2lyr[], double dN2Olyr[], \fBSITEPAR_SPT\fP sitepar, \fBLAYERPAR_SPT\fP layers, \fBSOIL_SPT\fP soil)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define FILEPATH_MAX   60   /* Max # of chars in a file path-name */"
+
+.SS "#define INPTSTRLEN   120    /* Max length of input file \fBline\fP */"
+
+.SS "#define OTPTSTRLEN   80     /* Max length of output file string */"
+
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef  struct \fBFILES_S\fP * \fBFILES_SPT\fP"
+
+.SS "typedef  struct \fBFLAG_S\fP * \fBFLAG_SPT\fP"
+
+.SS "typedef  struct \fBLAYERPAR_S\fP * \fBLAYERPAR_SPT\fP"
+
+.SS "typedef  struct \fBSITEPAR_S\fP * \fBSITEPAR_SPT\fP"
+
+.SS "typedef  struct \fBSOIL_S\fP * \fBSOIL_SPT\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "double c_shwave (intmonth, doublerlatitude, intjday)"
+
+.SS "void denitrify (double *newCO2, double *newNO3, doublenitrate[], doubletfluxout[], double *critflow, doublefrlechd[], doublestream[], double *basef, double *stormf, double *inorglch, double *Dn2oflux, double *Dn2flux, doublestdfieldc, doublestdbulkd, doubledN2lyr[], doubledN2Olyr[], int *jday, \fBSITEPAR_SPT\fPsitepar, \fBLAYERPAR_SPT\fPlayers)"
+
+.SS "void getdiff (double *valsubt, doublevaltochk, doublevalmin)"
+
+.SS "void initdaily (intmonth, doublebiolive, doublebiodead, doubleblitter, double *biomass, double *blivelai, double *vegcov, double *totagb, double *stcrlai, \fBLAYERPAR_SPT\fPlayers)"
+
+.SS "void initlyrs (char *soilname, \fBLAYERPAR_SPT\fPlayers, \fBFLAG_SPT\fPflags, \fBSITEPAR_SPT\fPsitepar)"
+
+.SS "void initsite (char *sitename, \fBSITEPAR_SPT\fPsitepar, \fBLAYERPAR_SPT\fPlayers, \fBFLAG_SPT\fPflags, doublesradadj[NMONTH], double *tminslope, double *tminintercept, double *maxphoto, double *bioabsorp)"
+
+.SS "void initsrad (doubleelevation, doublelatitude, doubleaspect, doubleslope, doubleehoriz, doublewhoriz, doubledaylength[NDAY])"
+
+.SS "void litstcr_evap (double *cwlit, double *cwstcr, double *petleft, double *aet, doubletotlit, doubletotstcr)"
+
+.SS "void methane_oxidation (double *CH4, int *isdecid, int *isagri, \fBLAYERPAR_SPT\fPlayers, \fBSOIL_SPT\fPsoil)"
+
+.PP
+.nf
+98     { 
+99       int    ilyr;
+100       double  bulkdensity;
+101       double  fieldcapacity;
+102       double soiltemp;
+103       double soilwater;
+104       double wfps;
+105       double CH4max;
+106       double  Dopt;
+107       double Wmin;
+108       double Wmax;
+109       double  Wopt;
+110       double agri_adjust;
+111       double temp_adjust;
+112       double watr_adjust;
+113       double wfps_adjust;
+114       double  percentlayer;
+115       double  temp;
+116 
+117 /*
+118       extern LAYERPAR_SPT layers;
+119       extern SOIL_SPT soil;
+120 */
+121       /* Compute a weighted average for soil temperature, field capacity, */
+122       /* bulk density, water filled pore space, and volumetric soil water */
+123       /* content in top 15 cm of soil profile */
+124       ilyr = 0;
+125       bulkdensity = 0\&.0;
+126       fieldcapacity = 0\&.0;
+127       soiltemp = 0\&.0;
+128       soilwater = 0\&.0;
+129       wfps = 0\&.0;
+130       for (ilyr = 0; ilyr < layers->numlyrs; ilyr++) {
+131         if (layers->dpthmn[ilyr] < CH4DEPTH) {
+132           if (layers->dpthmx[ilyr] <= CH4DEPTH) {
+133             bulkdensity += layers->bulkd[ilyr] * layers->width[ilyr] / 
+134                            CH4DEPTH;
+135             fieldcapacity += layers->fieldc[ilyr] * layers->width[ilyr] /
+136                              CH4DEPTH;
+137             soiltemp += soil->soiltavg[ilyr] * layers->width[ilyr] / CH4DEPTH;
+138             soilwater += layers->wfps[ilyr] * layers->width[ilyr] / CH4DEPTH;
+139             wfps += layers->wfps[ilyr] * layers->width[ilyr] / CH4DEPTH;
+140           } else if ((layers->dpthmx[ilyr] - layers->dpthmn[ilyr]) > 0\&.0) {
+141             percentlayer = (CH4DEPTH - layers->dpthmn[ilyr]) / 
+142                            (layers->dpthmx[ilyr] - layers->dpthmn[ilyr]);
+143             bulkdensity += layers->bulkd[ilyr] * layers->width[ilyr] /
+144                            CH4DEPTH * percentlayer;
+145             fieldcapacity += layers->fieldc[ilyr] * layers->width[ilyr] /
+146                              CH4DEPTH * percentlayer;
+147             soiltemp += soil->soiltavg[ilyr] * layers->width[ilyr] /
+148                         CH4DEPTH * percentlayer;
+149             soilwater += layers->wfps[ilyr] * layers->width[ilyr] / CH4DEPTH *
+150                          percentlayer;
+151             wfps += layers->wfps[ilyr] * layers->width[ilyr] / CH4DEPTH *
+152                     percentlayer;
+153           }
+154         }
+155       }
+156       /* Convert from water filled pore space to volumetric water */
+157       soilwater = soilwater * (1\&.0 - (bulkdensity / PARTDENS));
+158       soilwater *= 100\&.0;
+159 
+160       /* CH4 oxidation for a deciduous system */
+161       if (*isdecid) {
+162         CH4max = 40\&.0 - 18\&.3 * bulkdensity;
+163         temp_adjust = 0\&.0209 * soiltemp + 0\&.845;
+164         /* Use bounded value for wfps_adjust if wfps falls below a critical */
+165         /* value, cak - 11/12/02 */
+166         if (wfps <= 0\&.05) {
+167           wfps_adjust = 0\&.1;
+168         } else {
+169           wfps_adjust = pow((10\&.0 * wfps - 0\&.5) / (1\&.84 - 0\&.5), 0\&.13);
+170           wfps_adjust *= pow((10\&.0 * wfps - 55) / (1\&.84 - 55),
+171                              (0\&.13 * (55 - 1\&.84)) / (1\&.84 - 0\&.5));
+172           wfps_adjust = max(0\&.1, wfps_adjust);
+173         }
+174         *CH4 = CH4max * wfps_adjust * temp_adjust;
+175 
+176       } else {
+177         /* CH4 oxidation for a grassland/coniferous/tropical system */
+178         Wmin = 3\&.0 * fieldcapacity - 0\&.28;
+179         Wopt = 6\&.3 * fieldcapacity - 0\&.58;
+180         Wmax = 10\&.6 * fieldcapacity + 1\&.9;
+181         temp = Wopt * 0\&.1 / (1\&.0 - (bulkdensity / PARTDENS));
+182         Dopt = diffusiv(&fieldcapacity, &bulkdensity, &temp);
+183         CH4max = 53\&.8 * Dopt + 0\&.58;
+184         if ((0\&.1*soilwater < Wmin) || 0\&.1*soilwater > Wmax) {
+185           watr_adjust = 0\&.1;
+186         } else {
+187           watr_adjust = pow(((0\&.1 * soilwater - Wmin) / (Wopt - Wmin)), 0\&.4) *
+188                         pow(((0\&.1 * soilwater - Wmax) / (Wopt - Wmax)), 
+189                              ((0\&.4 * (Wmax - Wopt)) / (Wopt - Wmin))); 
+190           watr_adjust = max(0\&.1, watr_adjust);
+191         }
+192         if (*isagri) {
+193           if (Dopt < 0\&.15) {
+194             agri_adjust = 0\&.9;
+195           } else if (Dopt > 0\&.28) {
+196             agri_adjust = 0\&.28;
+197           } else {
+198             agri_adjust = -4\&.6 * Dopt + 1\&.6;
+199           }
+200         } else {
+201           agri_adjust = 1\&.0;
+202         }
+203         temp_adjust = (soiltemp * max(0\&.11, Dopt) * 0\&.095) + 0\&.9;
+204         *CH4 = CH4max * watr_adjust * temp_adjust * agri_adjust;
+205       }
+206 
+207       return;
+208     }
+.fi
+.SS "void nitrify (double *ammonium, double *nh4_2_no3, double *maxt, double *nreduce, \fBSITEPAR_SPT\fPsitepar, \fBLAYERPAR_SPT\fPlayers, \fBSOIL_SPT\fPsoil)"
+
+.PP
+.nf
+86     {
+87       int debug = 0;
+88       int ilyr;
+89       double MaxRate = 0\&.15;
+90       double base_flux;
+91       double fNsoilt; 
+92       double fNwfps;
+93       double fNnh4;
+94       double fNph;
+95       double A[4];    /* parameters to parton-innis functions */
+96       double grams_soil;
+97       double nh4_conc;
+98       double avgwfps;
+99       double min_ammonium = 0\&.03;
+100       double abiotic;
+101       double  rel_wc[4], avg_rel_wc, avgfc, avgstemp;
+102       double absoluteMaxRate;
+103 
+104 /*
+105       extern LAYERPAR_SPT layers;
+106       extern SITEPAR_SPT sitepar;
+107       extern SOIL_SPT soil;
+108 */
+109 
+110       *nh4_2_no3 = 0\&.0;
+111 
+112       if (*ammonium < min_ammonium) {
+113         if (debug) {
+114           fprintf(stdout, "CANNOT NITRIFY, ammonium too small\n");
+115         }
+116         goto RET;
+117       }
+118 
+119       /* Convert ammonium (g/m2) to nh4_conc (ppm) */
+120       /* Assume all ammonium occurs in the top 15 cm */
+121 /* NOTE:  This should be changed so that nitrification occurs as a continuous
+122           function by depth rather than assuming that the top 3 soil layers
+123           will sum to 15 cm */
+124 
+125       grams_soil = (layers->bulkd[0]*layers->width[0] +
+126                     layers->bulkd[1]*layers->width[1] +
+127                     layers->bulkd[2]*layers->width[2])*100*100;
+128 
+129       nh4_conc = *ammonium/grams_soil*1\&.0E6;
+130 
+131       if (debug > 1) {
+132         fprintf(stdout, "ammonium = %10\&.4lf\n", *ammonium);
+133         fprintf(stdout, "nh4_conc = %10\&.4lf\n", nh4_conc);
+134       }
+135 
+136       /* Compute the effect of soil water on Nitrification (0-1)\&. */
+137       /* Use relative water content for this calculation when the */
+138       /* soil is drier than field capacity\&.  When the soil is wetter */
+139       /* field capacity use water filled pore space\&.  cak - 06/16/04 */
+140 
+141       /* Compute relative water content in the 2nd and 3rd soil layers, */
+142       /* cak - 08/19/04 */
+143       for (ilyr = 1; ilyr < 3; ilyr ++) {
+144         rel_wc[ilyr] = (layers->swc[ilyr]/(layers->width[ilyr]) -
+145                         layers->swclimit[ilyr]) /
+146                         (layers->fieldc[ilyr] - layers->swclimit[ilyr]);
+147         if (rel_wc[ilyr] < 0\&.0) {
+148           rel_wc[ilyr] = 0\&.0;
+149         } else if (rel_wc[ilyr] > 1\&.0) {
+150           rel_wc[ilyr] = 1\&.0;
+151         }
+152         rel_wc[ilyr] *= layers->width[ilyr];
+153       }
+154       avg_rel_wc = (rel_wc[1] + rel_wc[2]) /
+155                    (layers->width[1] + layers->width[2]);
+156 
+157       if (avg_rel_wc < 1\&.0) {
+158         fNwfps = 1\&.0/(1\&.0 + 30\&.0 * exp(-9\&.0 * avg_rel_wc));
+159       } else {
+160         /* Compute average water filled pore space in 2nd and 3rd soil */
+161         /* layers, cak - 08/19/04 */
+162         wfps(layers);
+163         avgwfps = (layers->wfps[1]*layers->width[1] +
+164                    layers->wfps[2]*layers->width[2]) /
+165                   (layers->width[1] + layers->width[2]);
+166         if (debug > 1) {
+167           fprintf(stdout, "avgwfps = %6\&.2lf\n", avgwfps);
+168         }
+169         avgfc = (layers->fieldc[1]*layers->width[1] +
+170                  layers->fieldc[2]*layers->width[2]) /
+171                 (layers->width[1] + layers->width[2]);
+172         /* Line function with two known points and a new X, calculate Y */
+173         /* slope = (y2 - y1) / (x2 - x1) */
+174         /* y = slope * (x - x2) + y2 */
+175         fNwfps = (0\&.0 - 1\&.0) / (1\&.0 - avgfc) * (avgwfps - 1\&.0) + 0\&.0;
+176       }
+177 
+178       /* Compute the soil temperature effect on Nitrification */
+179       A[0] = 35\&.0;
+180       A[1] = -5\&.0;
+181       A[2] = 4\&.5;
+182       A[3] = 7\&.0;
+183       /* Rates of nitrification were too low at low soil temperatures, */
+184       /* shift the curve so that the nitrification rates are effectively */
+185       /* higher for cooler sites, this change does not affect sites with */
+186       /* hot temperatures, cak - 11/25/03 */
+187       avgstemp = (soil->soiltavg[1] * layers->width[1] + 
+188                   soil->soiltavg[2] * layers->width[2]) /
+189                  (layers->width[1] + layers->width[2]);
+190       if (*maxt >= 35\&.0) {
+191         A[0] = *maxt;
+192         fNsoilt = f_gen_poisson_density(avgstemp,A);
+193       } else {
+194         fNsoilt = f_gen_poisson_density(avgstemp+(A[0]-*maxt),A);
+195       }
+196 
+197       /* Compute pH effect on nitrification */
+198       A[0] = 5\&.0;
+199       A[1] = 0\&.56;
+200       A[2] = 1\&.0;
+201       A[3] = 0\&.45;
+202       fNph = f_arctangent(layers->pH[1], A);
+203 
+204       /* Compute the Ammonium effect on Nitrification */
+205       A[0] = 1\&.0;
+206       A[1] = -0\&.0105;
+207       A[2] = 0\&.0;
+208       A[3] = 0\&.0;
+209       fNnh4 = 1\&.0 - f_exponential(nh4_conc, A);
+210 
+211       /* Compute amount of ammonium that goes to nitrate during */
+212       /* nitrification */
+213       if (debug > 1) {
+214         fprintf(stdout, "%6s  %6s  %6s  %6s\n","fNwfps","fNsoilt", "fNph",
+215                 "fNnh4");
+216         fprintf(stdout, "%6\&.4lf  %6\&.4lf  %6\&.4lf  %6\&.4lf\n", fNwfps, fNsoilt, fNph,
+217                 fNnh4);
+218       }
+219       /* The base_flux is equivalent to 0\&.1 gN/ha/day */
+220       base_flux = 0\&.1/10000\&.0;
+221       abiotic = max(fNwfps * fNsoilt, sitepar->Ncoeff);
+222       absoluteMaxRate = min(0\&.4, *ammonium * MaxRate);
+223       *nh4_2_no3 = absoluteMaxRate * fNph * abiotic * *nreduce +
+224                    base_flux;
+225 
+226       if ((*ammonium - *nh4_2_no3) > min_ammonium) {
+227         *ammonium -= *nh4_2_no3;
+228       } else {
+229         *nh4_2_no3 = min(*nh4_2_no3, *ammonium - min_ammonium);
+230         *ammonium = min_ammonium;
+231       }
+232 
+233 RET:  return;
+234     }
+.fi
+.SS "double petrad (intjday, intmonth, doublecldcov, doublewindsp, doublerhumid, doublerlatitude, doubleavgtemp, doublereflec, doublesolrad, doublealbedo, doublesnowpack)"
+
+.SS "double pevapdly (doubletmin, doubletmax, doublesitlat, doubletmn2m[], doubletmx2m[], intjday, intmonth)"
+
+.SS "void setamov (doubleamovdly[CENTMAXLYR], intnlayer, doublewfluxout[MAXLYR], intnumlyrs, intlbnd[CENTMAXLYR])"
+
+.SS "void setasmos (doubleasmos[CENTMAXLYR], int *nlayer, doubleswcinit[MAXLYR], int *numlyrs, doubleavh2o[3], doublerwcf[CENTMAXLYR])"
+
+.SS "void showlyrs (doubleswc[MAXLYR], intnumlyrs)"
+
+.SS "double svapor (doubleatemp)"
+
+.SS "double tanfunc (doublez, doublea, doubleb, doublec, doubled)"
+
+.SS "void trace_gas_model (int *jday, double *time, double *newminrl, double *ammonium, doublenitrate[], int *texture, double *sand, double *silt, double *clay, double *afiel, double *bulkd, double *maxt, double *ppt, double *snow, double *avgwfps, double *stormf, double *basef, doublefrlechd[], doublestream[], double *inorglch, double *critflow, doublewfluxout[], double *newCO2, double *NOflux, double *Nn2oflux, double *Dn2oflux, double *Dn2flux, double *CH4, int *isdecid, int *isagri, double *grass_lai, double *tree_lai, double *NOabsorp_grass, double *NOabsorp_tree, double *nit_amt, double *nreduce, doubledN2lyr[], doubledN2Olyr[], \fBSITEPAR_SPT\fPsitepar, \fBLAYERPAR_SPT\fPlayers, \fBSOIL_SPT\fPsoil)"
+
+.PP
+.nf
+133     {
+134 
+135       /* Local Variables */
+136 
+137       int    debug = 0;
+138       int    ilyr;
+139       int *soilclassification;
+140 /*      double netmn_to_no3 = 0\&.20; */
+141       double netmn_to_no3 = 0\&.0;
+142       double turnovfrac = 0\&.02;
+143       double newNH4;
+144       double newNO3;
+145       double nh4_to_no3;
+146       double krainNO;
+147       double potential_NOflux;
+148       double dDO;
+149       double stdbulkd;
+150       double stdfieldc;
+151       double NO_N2O_ratio;
+152       double NH4_to_NO;
+153       double npool_sum;
+154       double canopy_reduction;
+155       double NOabsorp;
+156       double total_lai;
+157 
+158 //      extern SITEPAR_SPT sitepar;
+159 
+160       *Nn2oflux = 0\&.0;
+161       *NOflux = 0\&.0;
+162       *Dn2oflux = 0\&.0;
+163       *Dn2flux = 0\&.0;
+164 
+165       /* Compute fraction of new mineralization that is converted to NH4 */
+166       /* and NO3 */
+167 
+168       if (debug) {
+169         printf("newminrl = %6\&.4lf\n", *newminrl);
+170       }
+171 
+172       if (*newminrl <= 0\&.0) {
+173 
+174         /* Immobilization */
+175         /* Distribute N loss proportionally between ammonium and nitrate   */
+176         /* layers\&.  There is no check that these N pools won't go negative */
+177         /* once immobilization is accounted for\&.  It is assumed that the   */
+178         /* immobilization calculation by the decomp model is moderated by  */
+179         /* the supply of minerl N\&.                                         */
+180 
+181         npool_sum = (*ammonium > 0\&.0) ? *ammonium : 0\&.0;
+182         for (ilyr=0; ilyr < MAXLYR; ilyr ++) {
+183           npool_sum += (nitrate[ilyr] > 0\&.0) ? nitrate[ilyr] : 0\&.0;
+184         }
+185         if (*ammonium > 0\&.0) {
+186           *ammonium += *newminrl * (*ammonium / npool_sum);
+187         }
+188         for (ilyr=0; ilyr < MAXLYR; ilyr ++) {
+189           if (nitrate[ilyr] > 0\&.0) {
+190             nitrate[ilyr] += *newminrl * (nitrate[ilyr] / npool_sum);
+191           }
+192         }
+193         newNH4 = 0\&.0;
+194         newNO3 = 0\&.0;
+195       } else {
+196         /* Mineralization */
+197         newNH4 = *newminrl * (1\&.0 - netmn_to_no3);
+198         newNO3 = *newminrl * netmn_to_no3;
+199       }
+200 
+201       if (debug) {
+202         printf("newNH4 = %6\&.4lf\n", newNH4);
+203         printf("newNO3 = %6\&.4lf\n", newNO3);
+204       }
+205 
+206       *ammonium += newNH4;
+207 
+208       /* Compute the amount of NH4 that is converted to NO3 due to */
+209       /* nitrification */
+210 
+211      nitrify(ammonium, &nh4_to_no3, maxt, nreduce,sitepar,layers,soil);
+212       *nit_amt = nh4_to_no3;
+213 
+214       if (debug) {
+215         printf("texture = %1d\n", *texture);
+216         printf("nh4_to_no3 = %6\&.4lf\n", nh4_to_no3);
+217         printf("maxt = %6\&.4lf\n", *maxt);
+218       }
+219 
+220       /* Compute fraction of new NO3 that is converted to N2O and NO */
+221 
+222       krainNO = nox_pulse(ppt, snow);
+223 
+224       getsoilprop(sand, silt, clay, &stdbulkd, &stdfieldc, texture,&soilclassification);
+225 
+226       /* Use standard field capacity and bulk density according */
+227       /* to the soil class in the texture triangle -mdh 10/26/99 */
+228 /*      dDO = diffusiv(afiel(1), bulkd, *avgwfps) */
+229       /* No, change back to soils\&.in field capacity and bulk density\&. */
+230       /* -mdh 6/20/00 */
+231 /*      dDO = diffusiv(&stdfieldc, &stdbulkd, avgwfps); */
+232       dDO = diffusiv(afiel, bulkd, avgwfps);
+233 
+234       newNO3 += nh4_to_no3;
+235 
+236       if (newNO3 > 1\&.0E-30) {
+237         *Nn2oflux = newNO3 * turnovfrac * sitepar->N2Oadjust;
+238         newNO3 -= *Nn2oflux; 
+239 
+240         /* Another update to NO flux calculation -mdh 10/26/99 */
+241 
+242 /*        NO_N2O_ratio = 15\&.23 + (35\&.45*atan(0\&.676*PI*(10*dDO-1\&.86)))/PI; */
+243         NO_N2O_ratio = 8\&.0 + (18\&.0*atan(0\&.75*PI*(10*dDO-1\&.86)))/PI;
+244         /* If this is an agricultural system adjust the NO to N2O ratio */
+245         /* cak - 01/28/03 */
+246         if (*isagri) {
+247 /*          NO_N2O_ratio *= 0\&.2; */
+248           NO_N2O_ratio *= 0\&.5;
+249         }
+250         potential_NOflux = NO_N2O_ratio * *Nn2oflux * krainNO;
+251 
+252         if (potential_NOflux <= newNO3) {
+253           *NOflux = potential_NOflux;
+254           newNO3 -= *NOflux;
+255         } else {
+256           /* take N out of ammonimum to get max NOflux possible */
+257           NH4_to_NO = min(*ammonium, (potential_NOflux-newNO3));
+258           *NOflux = newNO3 + NH4_to_NO;
+259           *ammonium -= NH4_to_NO;
+260           newNO3 = 0;
+261         }
+262 
+263         if (*NOflux < 1\&.0E-30) {
+264           *NOflux = 0\&.0;
+265         }
+266 
+267       } else {
+268         NO_N2O_ratio = 0\&.0;
+269       }
+270 
+271       /* Compute the N2O flux (Dn2oflux) and N2 flux (Dn2flux) due to */
+272       /* denitrification */
+273 
+274 denitrify(newCO2, &newNO3, nitrate, wfluxout, critflow, frlechd,
+275                 stream, basef, stormf, inorglch, Dn2oflux, Dn2flux,
+276                 stdfieldc, stdbulkd, dN2lyr, dN2Olyr, jday,sitepar,layers);
+277 
+278 
+279       /* Now compute NOflux from denitrification (new calculation */
+280       /* -mdh 6/1/00 */
+281 /*      potential_NOflux = NO_N2O_ratio * *Dn2oflux * krainNO; */
+282       /* For denitrification, krainNO is >= 1\&.0 -mdh 6/22/00 */
+283 
+284       potential_NOflux = NO_N2O_ratio * *Dn2oflux * min(1\&.0, krainNO);
+285 
+286       if (potential_NOflux <= *ammonium) {
+287         /* Take all N out of ammonimum pool */
+288         *NOflux += potential_NOflux;
+289         *ammonium -= potential_NOflux;
+290       } else {
+291         /* Take N out of available ammonium, then convert some Dn2oflux to */
+292         /* NOflux */
+293         *NOflux += *ammonium;
+294         potential_NOflux -= *ammonium;
+295         *ammonium = 0\&.0;
+296         if (potential_NOflux <= *Dn2oflux) {
+297           *NOflux += potential_NOflux;
+298           *Dn2oflux -= potential_NOflux;
+299         }
+300       }
+301 
+302       /* Compute the amount of the soil NO flux that is absorped by the canopy, cak - 09/23/03 */
+303       total_lai = *grass_lai + *tree_lai;
+304       if (total_lai > 0\&.0) {
+305         canopy_reduction = 0\&.0077 * pow(total_lai,2) + -0\&.13 * total_lai + 0\&.99;
+306         /* We need to retain the soil flux value */
+307 
+308         /* This previous code did not maintain and N balance -Melannie 9/26/2011 */
+309         /* NOsoil = *NOflux; */
+310         /* *NOflux *= canopy_reduction; */
+311         /* NOabsorp = NOsoil - *NOflux; */
+312 
+313         NOabsorp = *NOflux * (1 - canopy_reduction);
+314         if (NOabsorp > 0\&.0)
+315         {
+316             *NOabsorp_grass = NOabsorp * (*grass_lai / total_lai);
+317             *NOabsorp_tree = NOabsorp * (*tree_lai / total_lai);
+318             *NOflux -= NOabsorp;
+319         }
+320 
+321         /* NO absorped by canopy goes to crop storage and forest storage */
+322         /* Reset NOflux using the retained value */
+323         /* *NOflux = NOsoil; */
+324       }
+325 
+326       if (*NOflux < 1\&.0E-30) {
+327         *NOflux = 0\&.0;
+328       }
+329       if (*Nn2oflux < 1\&.0E-30) {
+330         *Nn2oflux = 0\&.0;
+331       }
+332       if (*Dn2oflux < 1\&.0E-30) {
+333         *Dn2oflux = 0\&.0;
+334       }
+335       if (*Dn2flux < 1\&.0E-30) {
+336         *Dn2flux = 0\&.0;
+337       }
+338       
+339       /* Calculate methane oxidation */
+340       methane_oxidation(CH4, isdecid, isagri,layers,soil);
+341   //    wrtsoiln(time, jday,ammonium,nitrate);
+342       return;
+343     }
+.fi
+.SS "void wfps (\fBLAYERPAR_SPT\fPlayers)"
+
+.PP
+.nf
+51     {
+52       int ilyr;
+53       double swcfrac;
+54       double porespace;
+55 
+56       for(ilyr=0; ilyr < layers->numlyrs; ilyr++) {
+57 
+58         swcfrac = layers->swc[ilyr] / layers->width[ilyr];
+59         porespace = 1\&.0 - layers->bulkd[ilyr] / PARTDENS;
+60         layers->wfps[ilyr] = swcfrac/porespace;
+61       }
+62 
+63       return;
+64     }
+.fi
+.SS "double wfunc_pulse (double *ppt, double *snow)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

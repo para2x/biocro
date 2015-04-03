@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>Rmiscanmod. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>RUE-based model to calculate miscanthus growth and yield.</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>Rmiscanmod(data, RUE&nbsp;=&nbsp;2.4, LER&nbsp;=&nbsp;0.01, Tb&nbsp;=&nbsp;10, k&nbsp;=&nbsp;0.67, LAIdrd&nbsp;=&nbsp;0.8, LAIStop&nbsp;=&nbsp;1.8, RUEdrd&nbsp;=&nbsp;1.3, RUEStop&nbsp;=&nbsp;2.5, SMDdrd&nbsp;=&nbsp;-30, SMDStop&nbsp;=&nbsp;-120, FieldC&nbsp;=&nbsp;45, iWatCont&nbsp;=&nbsp;45, a&nbsp;=&nbsp;6682.2, b&nbsp;=&nbsp;-0.33, soildepth&nbsp;=&nbsp;0.6)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>data</dt>
+      <dd>data.frame or matrix described in details.</dd>
+      <dt>RUE</dt>
+      <dd>Radiation use efficiency (g/MJ).</dd>
+      <dt>LER</dt>
+      <dd>Leaf expansion rate LAI/GDD.</dd>
+      <dt>Tb</dt>
+      <dd>Base Temperature (Celsius).</dd>
+      <dt>k</dt>
+      <dd>extinction coefficient of light in the canopy.</dd>
+      <dt>LAIdrd</dt>
+      <dd>Leaf Area Index 'down regulation decline'.</dd>
+      <dt>LAIStop</dt>
+      <dd>Leaf Area Index 'down regulation decline'
+  threshold .</dd>
+      <dt>RUEdrd</dt>
+      <dd>Radiation Use Efficieny 'down regulation
+  decline'.</dd>
+      <dt>RUEStop</dt>
+      <dd>Radiation Use Efficieny 'down regulation
+  decline' threshold.</dd>
+      <dt>SMDdrd</dt>
+      <dd>Soil Moisture Deficit 'down regulation
+  decline'.</dd>
+      <dt>SMDStop</dt>
+      <dd>Soil Moisture Deficit 'down regulation
+  decline' threshold.</dd>
+      <dt>FieldC</dt>
+      <dd>Soil field capacity.</dd>
+      <dt>iWatCont</dt>
+      <dd>Initial water content.</dd>
+      <dt>a</dt>
+      <dd>Soil parameter.</dd>
+      <dt>b</dt>
+      <dd>Soil parameter.</dd>
+      <dt>soildepth</dt>
+      <dd>Soil depth.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+returns a list
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Simple model to calculate crop growth and yield based on
+MISCANMOD (see references).</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>The data.frame or matrix should contain</p>
+  
+      <p>column 1: year column 2: month column 3: day column 4: JD
+column 5: max T (Celsius) column 6: min T (Celsius) column
+7: PPFD or solar radiation divided by 2 (MJ/m2) column 8:
+Potential evaporation column 9: precip (mm)</p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p>Clifton-Brown, J. C.; Neilson, B.; Lewandowski, I. and
+Jones, M. B. The modelled productivity of Miscanthus x
+giganteus (GREEF et DEU) in Ireland. Industrial Crops and
+Products, 2000, 12, 97-109.</p>
+  
+      <p>Clifton-brown, J. C.; Stampfl, P. F. and Jones, M. B.
+Miscanthus biomass production for energy in Europe and its
+potential contribution to decreasing fossil fuel carbon
+emissions. Global Change Biology, 2004, 10, 509-518.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## Need to get an example data set and then run it
+## &lt;strong&gt;Not run&lt;/strong&gt;: 
+# data(WD1979)
+# 
+# res &lt;- Rmiscanmod(WD1979)
+# 
+# ## convert to Mg/ha
+# 
+# Yld &lt;- res$Yield / 100
+# 
+# xyplot(Yld ~ 1:365 ,
+#        xlab=&#39;doy&#39;,
+#        ylab=&#39;Dry biomass (Mg/ha)&#39;)
+# 
+# ## although the default value for Field Capacity is 45
+# ## a more reasonable value is closer to 27
+# 
+# 
+# ## &lt;strong&gt;End(Not run)&lt;/strong&gt;
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>Rmiscanmod</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

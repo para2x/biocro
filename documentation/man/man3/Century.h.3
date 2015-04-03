@@ -1,0 +1,131 @@
+.TH "/home/dlebauer/dev/biocro/src/Century.h" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/Century.h \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBcenT_str\fP"
+.br
+.ti -1c
+.RI "struct \fBFL_str\fP"
+.br
+.ti -1c
+.RI "struct \fBflow_str\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fBflow_str\fP \fBflow\fP (double *SC, double CNratio, double A, double Lc, double Tm, double \fBresp\fP, int kno, double Ks[8])"
+.br
+.ti -1c
+.RI "struct \fBFL_str\fP \fBFmLcFun\fP (double Lig, double Nit)"
+.br
+.ti -1c
+.RI "double \fBAbiotEff\fP (double smoist, double stemp)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "double AbiotEff (doublesmoist, doublestemp)"
+
+.PP
+.nf
+570                                             {
+571 
+572   double ans;
+573   double TempEff = 0\&.0, MoisEff;
+574 
+575   if(stemp < 35){
+576     TempEff = 1\&.0087 / (1 + (46\&.2 * exp(-0\&.1899 * stemp)));
+577   }else{
+578     TempEff = -0\&.0826 * stemp + 3\&.84;
+579   }
+580   
+581   MoisEff = 1\&.0267 / (1 + 14\&.7 * exp(-6\&.5 * smoist));
+582 
+583   ans = TempEff * MoisEff;
+584 
+585   return(ans);
+586 
+587 }
+.fi
+.SS "struct \fBflow_str\fP \fBflow\fP (double *SC, doubleCNratio, doubleA, doubleLc, doubleTm, doubleresp, intkno, doubleKs[8])"
+
+.PP
+.nf
+523                                                                                                                     {
+524 
+525   struct flow_str tmp;
+526 
+527   double Kf = 0\&.0, fC = 0\&.0;
+528   double Resp, MinN;
+529 
+530   if(kno < 3){
+531     Kf = Ks[kno-1] * Lc * A ;
+532     fC = Kf * *SC;
+533   }else
+534   if(kno == 3){
+535     Kf = Ks[kno-1] * A * Tm ;
+536     fC = Kf * *SC;
+537   }else
+538   if(kno > 3){
+539     Kf = Ks[kno-1] * A;
+540     fC = Kf * *SC;
+541   }
+542 
+543   if(Kf > 1){
+544     Rprintf("Kf greater than 1: %d %f %f %f %f \n", kno, Ks[kno-1], Kf, A, Tm);
+545   }
+546 
+547   Resp = fC * resp;
+548 
+549   /*  Mineralized N */
+550   MinN = Resp / CNratio;
+551 
+552   *SC = *SC - fC;
+553   
+554   fC = fC - Resp;
+555 /*   fN = fC / CNratio; */
+556 
+557 /*  It is important to keep track of C emissions because */
+558 /*  I might need to validate it against Eddy flux data */
+559   tmp\&.SC = *SC;
+560   tmp\&.fC = fC;
+561   tmp\&.Resp = Resp;
+562   tmp\&.MinN = MinN;  
+563 
+564   return(tmp);
+565 
+566 }
+.fi
+.SS "struct \fBFL_str\fP FmLcFun (doubleLig, doubleNit)"
+
+.PP
+.nf
+496                                              {
+497 
+498   double Fm, Ls, Lc;
+499   struct FL_str tmp;
+500 
+501   Fm = 0\&.85 - 0\&.018 *(Lig/Nit);
+502   Ls = Lig / (1 - Fm);
+503   Lc = exp(-3 * Ls);
+504 
+505   tmp\&.Lc = Lc;
+506   tmp\&.Fm = Fm;
+507 
+508   return(tmp);
+509 
+510 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

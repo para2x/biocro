@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>WD1979. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Randomly picked dataset from the Illinois area from 1979</h1>
+
+<div class="row">
+  <div class="span8">
+        
+    <div class="Format">
+      <h2>Format</h2>
+
+      <p>A data frame with 365 observations on the following 9 variables.
+<dl>
+<dt>list('year')</dt><dd>year</dd>
+ <dt>list('month')</dt><dd>month (not really
+needed)</dd>
+ <dt>list('day')</dt><dd>day of the month (not really needed)</dd></p>
+  
+      <p><dt>list('JD')</dt><dd>day of the year (1-365)</dd>
+ <dt>list('maxTemp')</dt><dd>maximum
+temperature (Celsius)</dd>
+ <dt>list('minTemp')</dt><dd>minimum temperature
+(Celsius)</dd>
+ <dt>list('SolarR')</dt><dd>solar radiation (MJ/m2)</dd></p>
+  
+      <p><dt>list('PotEv')</dt><dd>potential evaporation (kg/m2). Approx. mm.</dd></p>
+  
+      <p><dt>list('precip')</dt><dd>precipitation (kg/m2). Approx. mm.</dd>
+ </dl></p>
+  
+    </div>
+
+    <div class="Randomly picked dataset from the Illinois area from 1979">
+      <h2>Randomly picked dataset from the Illinois area from 1979</h2>
+
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Data from the Illinois area from one point from the 32km
+grid from NOAA from 1979. the purpuse is to illustrate the
+<code><a href='Rmiscanmod.html'>Rmiscanmod</a></code> function.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>data(WD1979)
+summary(WD1979)
+</div>
+<div class='output'>      year       month           day                JD         maxTemp      
+ Min.   :1979   Mode:logical   Mode:logical   Min.   :  1   Min.   :-10.60  
+ 1st Qu.:1979   NA&#39;s:365       NA&#39;s:365       1st Qu.: 92   1st Qu.: 11.50  
+ Median :1979                                 Median :183   Median : 21.66  
+ Mean   :1979                                 Mean   :183   Mean   : 18.91  
+ 3rd Qu.:1979                                 3rd Qu.:274   3rd Qu.: 27.78  
+ Max.   :1979                                 Max.   :365   Max.   : 33.19  
+    minTemp             SolarR           PotEv             precip      
+ Min.   :-22.3562   Min.   : 1.650   Min.   :-0.0790   Min.   : 0.000  
+ 1st Qu.:  0.2715   1st Qu.: 6.744   1st Qu.: 0.2840   1st Qu.: 0.000  
+ Median :  9.5810   Median : 9.694   Median : 0.5760   Median : 0.000  
+ Mean   :  8.0733   Mean   : 9.751   Mean   : 0.5498   Mean   : 2.601  
+ 3rd Qu.: 17.0856   3rd Qu.:12.882   3rd Qu.: 0.8030   3rd Qu.: 2.600  
+ Max.   : 24.6433   Max.   :16.753   Max.   : 1.0800   Max.   :42.900  
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>WD1979</li>
+    </ul>
+    <ul>
+      <li>datasets</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

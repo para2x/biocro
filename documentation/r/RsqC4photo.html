@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>RsqC4photo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>R-squared for C4 photosynthesis simulation (Collatz model)</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>RsqC4photo(data, vmax&nbsp;=&nbsp;39, alph&nbsp;=&nbsp;0.04, kparm&nbsp;=&nbsp;0.7, theta&nbsp;=&nbsp;0.83, beta&nbsp;=&nbsp;0.93, Rd&nbsp;=&nbsp;0.8, iupperT&nbsp;=&nbsp;37.5, ilowerT&nbsp;=&nbsp;3, Catm&nbsp;=&nbsp;380, b0&nbsp;=&nbsp;0.08, b1&nbsp;=&nbsp;3, StomWS&nbsp;=&nbsp;1, response&nbsp;=&nbsp;c("Assim", "StomCond"))</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>data</dt>
+      <dd>observed assimilation data, which should be a
+  data frame or matrix.  The first column should be
+  observed net assimilation rate (<code class = 'eq'>\mu</code> mol
+  <code class = 'eq'>m^{-2}</code> <code class = 'eq'>s^{-1}</code>).  The second column should be
+  the observed quantum flux (<code class = 'eq'>\mu</code> mol <code class = 'eq'>m^{-2}</code>
+  <code class = 'eq'>s^{-1}</code>).  The third column should be observed
+  temperature of the leaf (Celsius).  The fourth column
+  should be the observed relative humidity in proportion
+  (e.g. 0.7).</dd>
+      <dt>vmax</dt>
+      <dd>Vcmax (default = 39); for more details see
+  the <code><a href='c4photo.html'>c4photo</a></code> function.</dd>
+      <dt>alph</dt>
+      <dd>alpha as in Collatz (default = 0.04); for
+  more details see the <code><a href='c4photo.html'>c4photo</a></code> function.</dd>
+      <dt>kparm</dt>
+      <dd>k as in Collatz (default = 0.70); for more
+  details see the <code><a href='c4photo.html'>c4photo</a></code> function.</dd>
+      <dt>theta</dt>
+      <dd>theta as in Collatz (default = 0.83); for
+  more details see the <code><a href='c4photo.html'>c4photo</a></code> function.</dd>
+      <dt>beta</dt>
+      <dd>beta as in Collatz (default = 0.93); for more
+  details see the <code><a href='c4photo.html'>c4photo</a></code> function.</dd>
+      <dt>Rd</dt>
+      <dd>Rd as in Collatz (default = 0.8); for more
+  details see the <code><a href='c4photo.html'>c4photo</a></code> function.</dd>
+      <dt>StomWS</dt>
+      <dd>StomWS as in Collatz (default = 1); for
+  more details see the <code><a href='c4photo.html'>c4photo</a></code> function.</dd>
+      <dt>Catm</dt>
+      <dd>Atmospheric CO2 in ppm (or
+  <code class = 'eq'>\mu</code>mol/mol).</dd>
+      <dt>b0</dt>
+      <dd>Intercept for the Ball-Berry model.</dd>
+      <dt>b1</dt>
+      <dd>Slope for the Ball-Berry model.</dd>
+      <dt>response</dt>
+      <dd>Use <code>'Assim'</code> if you want an
+  <code class = 'eq'>R^2</code> for assimilation data and use <code>'StomCond'</code>
+  if you want an <code class = 'eq'>R^2</code> for stomatal conductance data.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+a <code><a href='http://www.inside-r.org/r-doc/base/numeric'>numeric</a></code> object</p>
+  
+      <p>It simply returns the <code class = 'eq'>R^2</code> value for the given data
+and coefficients.
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>This is an auxiliary function which is made available in
+case it is useful. It calculates the R-squared based on
+observed assimilation (or stomatal conductance) data and
+coefficients for the Collatz C4 photosynthesis model. The
+only coefficients being considered are Vcmax and alpha as
+described in the Collatz paper. At the moment it does not
+optimize k; this will be added soon.  Notice that to be
+able to optimize k A/Ci type data are needed.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>data(obsNaid)
+## These data are from Naidu et al. (2003)
+## in the correct format
+res &lt;- RsqC4photo(obsNaid)
+## Other example using Beale, Bint and Long (1996)
+data(obsBea)
+resB &lt;- RsqC4photo(obsBea)
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>RsqC4photo</li>
+    </ul>
+    <ul>
+      <li>univar</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

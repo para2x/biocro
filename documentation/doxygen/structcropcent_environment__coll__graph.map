@@ -1,0 +1,9 @@
+<map id="cropcentEnvironment" name="cropcentEnvironment">
+<area shape="rect" id="node2" href="$struct_soil_texture.html" title="SoilTexture" alt="" coords="259,5,347,32"/>
+<area shape="rect" id="node3" href="$struct_erosion_parms.html" title="ErosionParms" alt="" coords="251,56,355,83"/>
+<area shape="rect" id="node4" href="$struct_c13_parms.html" title="C13Parms" alt="" coords="261,107,345,133"/>
+<area shape="rect" id="node5" href="$struct_bio_cro_to_cropcent_parms.html" title="BioCroToCropcentParms" alt="" coords="219,157,387,184"/>
+<area shape="rect" id="node6" href="$struct_org_leach_parms.html" title="OrgLeachParms" alt="" coords="245,208,361,235"/>
+<area shape="rect" id="node7" href="$structminerals.html" title="minerals" alt="" coords="6,208,77,235"/>
+<area shape="rect" id="node8" href="$struct_symb_n_fixation_parms.html" title="SymbNFixationParms" alt="" coords="227,259,378,285"/>
+</map>

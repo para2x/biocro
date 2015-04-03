@@ -1,0 +1,9 @@
+<map id="c3tree" name="c3tree">
+<area shape="rect" id="node2" href="$structrhizome.html" title="rhizome" alt="" coords="5,96,72,123"/>
+<area shape="rect" id="node3" href="$structminerals.html" title="minerals" alt="" coords="118,5,188,32"/>
+<area shape="rect" id="node4" href="$structroot.html" title="root" alt="" coords="97,96,140,123"/>
+<area shape="rect" id="node7" href="$structstem.html" title="stem" alt="" coords="165,96,216,123"/>
+<area shape="rect" id="node8" href="$structleaf.html" title="leaf" alt="" coords="240,96,283,123"/>
+<area shape="rect" id="node5" href="$structdailyvec.html" title="dailyvec" alt="" coords="307,96,377,123"/>
+<area shape="rect" id="node6" href="$struct_daily_auto_resp.html" title="DailyAutoResp" alt="" coords="402,96,512,123"/>
+</map>

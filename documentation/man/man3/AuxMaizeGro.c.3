@@ -1,0 +1,312 @@
+.TH "/home/dlebauer/dev/biocro/src/AuxMaizeGro.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/AuxMaizeGro.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <math\&.h>\fP
+.br
+\fC#include 'AuxMaizeGro\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fBlai_str\fP \fBlaiLizasoFun\fP (double thermalt, double phenostage, double phyllochron1, double phyllochron2, double Ax, double LT, double k0, double a1, double a2, double L0, double LLx, double Lx, double LNl)"
+.br
+.ti -1c
+.RI "struct \fBlai_str\fP \fBlaiBirchdiscontinuousFun\fP (double phenostage, double LT, double Amax, double c1, double c2, double c3, double c4)"
+.br
+.ti -1c
+.RI "struct \fBlai_str\fP \fBlaiBirchcontinuousFun\fP (double phenostage, double a, double b, double Amax, double x0, double f, double g, double TT, double LT)"
+.br
+.ti -1c
+.RI "double \fBAei\fP (double leafnumber, double Ax, double LNx, double a1, double a2)"
+.br
+.ti -1c
+.RI "double \fBAlogistic\fP (double time, double A, double kei, double tei)"
+.br
+.ti -1c
+.RI "struct \fBmaize_dbp_str\fP \fBmaize_sel_dbp_coef\fP (double dbpCoefs[13], double phenoStage)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "double Aei (doubleleafnumber, doubleAx, doubleLNx, doublea1, doublea2)"
+
+.PP
+.nf
+206                                             {
+207 /* Eq 4 in Lizaso 2003 */
+208 
+209         double res1, res2, res3, res;
+210 
+211         res1 = (leafnumber - LNx)/(LNx - 1);
+212         res2 = res1 * res1;
+213         res3 = res2 * res1;
+214 
+215         res = Ax * exp(a1 * res2 + a2 * res3);
+216 
+217         return(res);
+218 
+219 }
+.fi
+.SS "double Alogistic (doubletime, doubleA, doublekei, doubletei)"
+
+.PP
+.nf
+221                                                                {
+222 /* Eq 2 in Lizaso 2003 */
+223         double ans;
+224 
+225         ans = A / (1 + exp(-kei * (time - tei)));
+226 
+227         return ans;
+228 
+229 }
+.fi
+.SS "struct \fBlai_str\fP laiBirchcontinuousFun (doublephenostage, doublea, doubleb, doubleAmax, doublex0, doublef, doubleg, doubleTT, doubleLT)"
+
+.PP
+.nf
+143                                                {
+144         struct lai_str tmp;
+145         double leafnumber = 0\&.0, totalLAI = 0\&.0, SLA = 0\&.0, TPLAmax = 0\&.0;
+146 
+147         int i, i2, i3, ln, ln2;
+148 
+149         for(i2 = 0; i2 < MAXLEAFNUMBER; i2++){
+150                 tmp\&.leafarea[i2] = 0\&.0;
+151         }
+152 
+153         if (phenostage <= 0) {
+154           leafnumber = 0;
+155         }else{
+156           if (phenostage < 1){
+157             leafnumber = phenostage* 100;
+158           }else{
+159             leafnumber = LT;
+160           }
+161         }         
+162         if (Amax == -1){
+163                 /* Eq 13 in Birch*/
+164                 Amax = 1000 * exp(-1\&.17 + 0\&.047 * LT);
+165         }
+166         if (a == -1){
+167                 /* Eq 18 in Birch */
+168                 a = -0\&.009 - exp(-0\&.2 * LT);
+169         }
+170         if (b == -1){
+171                 /* Eq 19 in Birch */
+172                 b = 0\&.0006 - exp(-0\&.43 * LT);
+173         }
+174         if (x0 == -1){
+175                 /* Eq 14 in Birch */
+176                 x0 = 0\&.67 * LT;
+177         }
+178         if (g == -1){
+179                 /* Eq 20 in Birch */
+180                 g = 107\&.9 * LT - 327;
+181         }
+182 
+183         for(i3 = 0; i3 < LT; i3++){
+184                 ln2 = i3 + 1;
+185                 TPLAmax += Amax * exp(a * (ln2 - x0) * (ln2 - x0) + b *
+186                              (ln2 - x0) * (ln2 - x0) * (ln2 - x0));
+187         }
+188 
+189         /* Birch Eq 11*/
+190         SLA = TPLAmax / (1 + exp(-f * (TT - g)));
+191 
+192         for (i = 0; i < leafnumber; i++){
+193           ln = i + 1;
+194           tmp\&.leafarea[i] = Amax * exp(a * (ln - x0) * (ln - x0) + b *
+195                              (ln - x0) * (ln - x0) * (ln - x0));
+196 
+197            totalLAI += tmp\&.leafarea[i];
+198          }
+199          tmp\&.totalLeafArea = totalLAI - SLA;
+200          return (tmp);
+201 }
+.fi
+.SS "struct \fBlai_str\fP laiBirchdiscontinuousFun (doublephenostage, doubleLT, doubleAmax, doublec1, doublec2, doublec3, doublec4)"
+
+.PP
+.nf
+99                                                              {
+100         struct lai_str tmp;
+101         double leafnumber, totalLAI = 0\&.0;
+102         if (phenostage <= 0) {
+103           leafnumber = 0;
+104         }else{
+105           if (phenostage < 1){
+106             leafnumber = phenostage* 100;
+107           }else{
+108             leafnumber = LT;
+109           }
+110         }         
+111         if (Amax == -1){
+112           /* Eq 13 in Birch*/
+113           Amax = 1000 * exp(-1\&.17 + 0\&.047 * LT);
+114         }
+115         int i, i2, ln;
+116         for(i2=0;i2<MAXLEAFNUMBER;i2++){
+117           tmp\&.leafarea[i2] = 0\&.0;
+118         }
+119         for (i = 0; i<leafnumber; i++){
+120           ln = i + 1;
+121           if (ln <= 3){
+122             /* Eq 14 in Birch */
+123             tmp\&.leafarea[i] = c1 * ln;
+124           }else{
+125             if (ln <= 11){
+126               /* Eq 15 in Birch */
+127               tmp\&.leafarea[i] = c2* ln * ln;
+128             }else{
+129               /* Eq 16 in Birch */
+130               tmp\&.leafarea[i] = c3 * Amax + c4 * ln * ln;
+131             }
+132           }
+133           totalLAI += tmp\&.leafarea[i];
+134         }
+135         tmp\&.totalLeafArea = totalLAI;
+136         return (tmp);
+137 }
+.fi
+.SS "struct \fBlai_str\fP laiLizasoFun (doublethermalt, doublephenostage, doublephyllochron1, doublephyllochron2, doubleAx, doubleLT, doublek0, doublea1, doublea2, doubleL0, doubleLLx, doubleLx, doubleLNl)"
+
+.PP
+.nf
+13                                                                                     {
+14 
+15         struct lai_str tmp;
+16         double A, kei, tei;
+17         double LNx = 0\&.67 * LT;
+18         double te1 = 25;
+19         double te2 = 50;
+20         double tti;
+21         double tsi;
+22         double leafnumber ;
+23         double totalLAI = 0\&.0;
+24 
+25         if (phenostage <= 0) {
+26           leafnumber = 0;
+27         }else{
+28           if (phenostage < 1){
+29             leafnumber = phenostage* 100;
+30           }else{
+31             leafnumber = LT;
+32           }
+33         }
+34 
+35 /* Longevity */
+36 
+37         /* Eq 11 in Lisazo 2003 */
+38         if (LNl == -1){ 
+39             LNl = 3\&.59 + 0\&.498 * LT;
+40         }
+41         /* Eq 12 in Lisazo 2003 */
+42         /* double Wl = 0\&.333333 * LT; not used ? */
+43         double LLi;
+44 
+45         double Wk = LT / 8\&.18;
+46 
+47         int i, i2, ln = 0;
+48 
+49         for(i2=0;i2<MAXLEAFNUMBER;i2++){
+50                 tmp\&.leafarea[i2] = 0\&.0;
+51         }
+52 
+53         for(i=0;i<leafnumber;i++){
+54 
+55                 /* Eq 7 in Lizaso 2003 */
+56                 ln = i + 1;
+57                 tti = (ln - 2) * phyllochron1 + te2;
+58 
+59                 /* Eq 8 in Lizaso 2003 */
+60                 kei = k0 + 0\&.174 * exp( - ((ln - 1)*(ln - 1))/(2 * Wk * Wk));
+61 
+62                 /* Eq 10 in Lizaso 2003 */
+63                 LLi = L0 + Lx * exp( - (ln - LNl)*(ln - LNl)/ (2*Wk*Wk));
+64                 
+65 
+66                 /* Eq 6 in Lizaso 2003 */
+67                 if(ln == 1) tei = te1;
+68                 if(ln == 2){
+69                         tei = te2;
+70                 }else{
+71                         tei = tti + (2\&.197 /kei);
+72                 }
+73                 
+74                 /* calculating time of 50% senescence from time of 50%
+75                  * expansion and leaf longevity */
+76                 tsi = LLi + tei;
+77 
+78                 /* Applying Eq 4 in Lizaso 2003 */
+79                 A = Aei(ln, Ax, LNx, a1, a2);
+80 
+81                 /* Applying Eq 2 in Lizaso 2003 */
+82                 tmp\&.leafarea[i] = Alogistic(thermalt, A, kei, tei);
+83 
+84                 /* calculating senesced area for this leaf */
+85                 tmp\&.leafarea[i] -= Alogistic(thermalt, A, kei, tsi);
+86 
+87                 /* Rprintf("leaf area %\&.1f \n", tmp\&.leafarea[i]);  */
+88                 totalLAI += tmp\&.leafarea[i];
+89         }
+90 
+91         tmp\&.totalLeafArea = totalLAI;
+92         return(tmp);
+93 
+94 
+95 }
+.fi
+.SS "struct \fBmaize_dbp_str\fP maize_sel_dbp_coef (doubledbpCoefs[13], doublephenoStage)"
+
+.PP
+.nf
+231                                                                                {
+232 
+233         struct maize_dbp_str tmp;
+234 
+235         tmp\&.kLeaf = 0\&.0;
+236         tmp\&.kStem = 0\&.0;
+237         tmp\&.kRoot = 0\&.0;
+238         tmp\&.kGrain = 0\&.0;
+239 
+240         if(phenoStage < 0\&.06){
+241 /* For now there is one set of coefficients for V6 */
+242                 tmp\&.kStem = dbpCoefs[0];
+243                 tmp\&.kLeaf = dbpCoefs[1];
+244                 tmp\&.kRoot = dbpCoefs[2];
+245         }else
+246         if(phenoStage < 0\&.12){
+247 /* For now there is one set of coefficients until V12 */
+248                 tmp\&.kStem = dbpCoefs[3];
+249                 tmp\&.kLeaf = dbpCoefs[4];
+250                 tmp\&.kRoot = dbpCoefs[5];
+251         }else
+252         if(phenoStage < 1){
+253 /* For now there is one set of coefficients after V12 but before R1*/
+254                 tmp\&.kStem = dbpCoefs[6];
+255                 tmp\&.kLeaf = dbpCoefs[7];
+256                 tmp\&.kRoot = dbpCoefs[8];
+257         }else
+258                 if(phenoStage >= 1){
+259 /* For now there is one set of coefficients after R1*/
+260                         tmp\&.kStem = dbpCoefs[9];
+261                         tmp\&.kLeaf = dbpCoefs[10];
+262                         tmp\&.kRoot = dbpCoefs[11];
+263                         tmp\&.kGrain = dbpCoefs[12];
+264                 }
+265 
+266         return(tmp);
+267 
+268 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

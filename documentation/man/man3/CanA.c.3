@@ -1,0 +1,288 @@
+.TH "/home/dlebauer/dev/biocro/src/CanA.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/CanA.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include 'c4photo\&.h'\fP
+.br
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+\fC#include 'CanA\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "SEXP \fBCanA\fP (SEXP Lai, SEXP Doy, SEXP HR, SEXP SOLAR, SEXP TEMP, SEXP ReH, SEXP windspeed, SEXP LAT, SEXP NLAYERS, SEXP STOMATAWS, SEXP VMAX, SEXP ALPH, SEXP KPARM, SEXP THETA, SEXP BETA, SEXP RD, SEXP B0, SEXP B1, SEXP CATM, SEXP KD, SEXP HEIGHTF, SEXP WS, SEXP LEAFN, SEXP KPLN, SEXP LNB0, SEXP LNB1, SEXP LNFUN, SEXP CHIL, SEXP UPPERTEMP, SEXP LOWERTEMP, SEXP NNITROP)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "SEXP CanA (SEXPLai, SEXPDoy, SEXPHR, SEXPSOLAR, SEXPTEMP, SEXPReH, SEXPwindspeed, SEXPLAT, SEXPNLAYERS, SEXPSTOMATAWS, SEXPVMAX, SEXPALPH, SEXPKPARM, SEXPTHETA, SEXPBETA, SEXPRD, SEXPB0, SEXPB1, SEXPCATM, SEXPKD, SEXPHEIGHTF, SEXPWS, SEXPLEAFN, SEXPKPLN, SEXPLNB0, SEXPLNB1, SEXPLNFUN, SEXPCHIL, SEXPUPPERTEMP, SEXPLOWERTEMP, SEXPNNITROP)"
+
+.PP
+.nf
+26 {
+27 
+28     double upperT=REAL(UPPERTEMP)[0];
+29     double lowerT=REAL(LOWERTEMP)[0];
+30 /* Declaring the struct for the Evaop Transpiration */
+31    struct ET_Str tmp5_ET , tmp6_ET; 
+32    struct c4_str tmpc4, tmpc42; 
+33    //NITROPARMS STRUCTURE IS PASSED and READ
+34   struct nitroParms nitroparms;
+35         double TEMPdoubletoint;
+36         nitroparms\&.ileafN=REAL(NNITROP)[0];
+37         nitroparms\&.kln=REAL(NNITROP)[1];
+38         nitroparms\&.Vmaxb1=REAL(NNITROP)[2];
+39         nitroparms\&.Vmaxb0=REAL(NNITROP)[3];
+40         nitroparms\&.alphab1=REAL(NNITROP)[4];
+41         nitroparms\&.alphab0=REAL(NNITROP)[5];
+42         nitroparms\&.Rdb1=REAL(NNITROP)[6];
+43         nitroparms\&.Rdb0=REAL(NNITROP)[7];
+44         nitroparms\&.kpLN=REAL(NNITROP)[8];
+45         nitroparms\&.lnb0=REAL(NNITROP)[9];
+46         nitroparms\&.lnb1=REAL(NNITROP)[10];
+47         TEMPdoubletoint=REAL(NNITROP)[11];
+48         nitroparms\&.lnFun=(int)TEMPdoubletoint;
+49         nitroparms\&.maxln=REAL(NNITROP)[12];
+50         nitroparms\&.minln=REAL(NNITROP)[13];
+51         nitroparms\&.daymaxln=REAL(NNITROP)[14];
+53 
+54   const double cf = 3600 * 1e-6 * 30 * 1e-6 * 10000;
+55 /* Need a different conversion factor for transpiration */
+56   const double cf2 = 3600 * 1e-3 * 18 * 1e-6 * 10000; 
+57   /* 3600 - number of seconds in an hour */
+58   /* 1e-3 - mili mols to mols */
+59   /* 18 - grams in one mol of H20 */
+60   /* 1e-6 - grams to mega grams */
+61   /* 10000 - meters in one hectare */
+62 
+63   int i;
+64   double Idir, Idiff, cosTh;
+65   double LAIc;
+66   double IDir, IDiff, Itot,rh, WindS;
+67   double TempIdir,TempIdiff,AssIdir,AssIdiff,GAssIdir,GAssIdiff;
+68   double pLeafsun, pLeafshade;
+69   double Leafsun, Leafshade;
+70 
+71   double CanopyA,GCanopyA ;
+72   double CanopyT , CanopyPe = 0\&.0, CanopyPr = 0\&.0;
+73   double CanopyC = 0\&.0;
+74   double CanHeight;
+75   /* Need to label them something different from the arguments of the c4photoC
+76      function because these need to be modified by the water stress effect on
+77      the stomata and assimilation\&. The Ball-Berry parameters are not implemented
+78      yet (I need to think about this a bit harder)\&. */
+79   double vmax1;
+80   double leafN_lay;
+81 
+82 
+83   /* INTEGERS */
+84   int DOY = INTEGER(Doy)[0];
+85   int hr = INTEGER(HR)[0];
+86   int nlayers = INTEGER(NLAYERS)[0];
+87 
+88   /* REALS */
+89   double LAI = REAL(Lai)[0];
+90   double solarR = REAL(SOLAR)[0];
+91   double Temp = REAL(TEMP)[0];
+92   double RlH = REAL(ReH)[0];
+93   double WindSpeed = REAL(windspeed)[0];
+94   double lat = REAL(LAT)[0];
+95   double kd = REAL(KD)[0];
+96   double heightf = REAL(HEIGHTF)[0];
+97   double chil = REAL(CHIL)[0];
+98   double Catm = REAL(CATM)[0];
+99 
+100   /* Photosynthesis parameters */
+101 
+102   double alpha1 = REAL(ALPH)[0];
+103   double kparm1 = REAL(KPARM)[0];
+104   double theta = REAL(THETA)[0];
+105   double beta = REAL(BETA)[0];
+106   double Rd1 = REAL(RD)[0];
+107   double b01 = REAL(B0)[0];
+108   double b11 = REAL(B1)[0];
+109   double stomataws = REAL(STOMATAWS)[0];
+110   double  LeafN = REAL(LEAFN)[0];
+111   double  kpLN = REAL(KPLN)[0];
+112   double lnb0 = REAL(LNB0)[0];
+113   double lnb1 = REAL(LNB1)[0];
+114   int lnfun = INTEGER(LNFUN)[0];
+115 
+116   SEXP lists;
+117   SEXP names;
+118   SEXP growth;
+119   SEXP Ggrowth;
+120   SEXP trans;
+121   SEXP epen;
+122   SEXP epries;
+123   SEXP cond;
+124 
+125   SEXP mat1;
+126 
+127   PROTECT(lists = allocVector(VECSXP,7));
+128   PROTECT(names = allocVector(STRSXP,7));
+129   PROTECT(growth = allocVector(REALSXP,1));
+130   PROTECT(trans = allocVector(REALSXP,1));
+131   PROTECT(epen = allocVector(REALSXP,1));
+132   PROTECT(epries = allocVector(REALSXP,1));
+133   PROTECT(cond = allocVector(REALSXP,1));
+134   PROTECT(Ggrowth = allocVector(REALSXP,1));
+135   PROTECT(mat1 = allocMatrix(REALSXP,19,nlayers));
+136 
+137 
+138   /* Light Macro Environment\&. As a side effect it populates tmp1\&. This
+139    * should eventually be replaced by a structure\&. */
+140 
+141      lightME(lat,DOY,hr);
+142 
+143     Idir = tmp1[0] * solarR;
+144     Idiff = tmp1[1] * solarR;
+145     cosTh = tmp1[2];
+146 
+147 /* sun multilayer model\&. As a side effect it populates the layIdir, layItotal, layFsun, layHeight,
+148 layIdiff, layShade vectors\&. */
+149     
+150     sunML(Idir,Idiff,LAI,nlayers,cosTh,kd,chil,heightf);
+151 
+152     /* results from multilayer model */
+153     LAIc = LAI / nlayers;
+154     /* Next I need the RH and wind profile */
+155 
+156     RHprof(RlH,nlayers);
+157     /* It populates tmp4\&. */
+158 
+159      WINDprof(WindSpeed,LAI,nlayers);
+160     /* It populates tmp3\&. */
+161 
+162      LNprof(LeafN, LAI, nlayers, kpLN);
+163     /* It populates tmp5 */
+164 
+165     /* Next use the EvapoTrans function */
+166     CanopyA=0\&.0;
+167     CanopyT=0\&.0;
+168 
+169     for(i=0;i<nlayers;i++)
+170     {
+171 /* vmax depends on leaf nitrogen and this in turn depends on the layer */
+172             leafN_lay = tmp5[--tp5];
+173     if(lnfun == 0){
+174                         vmax1 = REAL(VMAX)[0];
+175                 }else{
+176                         vmax1=nitroparms\&.Vmaxb1*leafN_lay+nitroparms\&.Vmaxb0;
+177                         if(vmax1<0) vmax1=0\&.0;
+178       if(vmax1>REAL(VMAX)[0]) vmax1=REAL(VMAX)[0];
+179                         alpha1=nitroparms\&.alphab1*leafN_lay+nitroparms\&.alphab0;
+180                         Rd1=nitroparms\&.Rdb1*leafN_lay+nitroparms\&.Rdb0;
+181                 }
+182 
+183 
+184             IDir = layIdir[--sp1];
+185             Itot = layItotal[--sp3];
+186             
+187             rh = tmp4[--tp4];
+188             WindS = tmp3[--tp3];
+189 
+190             pLeafsun = layFsun[--sp4];
+191             CanHeight = layHeight[--sp6];
+192             Leafsun = LAIc * pLeafsun;
+193             tmp5_ET = EvapoTrans(IDir,Itot,Temp,rh,WindS,LAIc,CanHeight,stomataws,
+194                                  INTEGER(WS)[0],vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,upperT,lowerT);
+195             TempIdir = Temp + tmp5_ET\&.Deltat;
+196             tmpc4 = c4photoC(IDir,TempIdir,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0],upperT,lowerT);
+197             AssIdir = tmpc4\&.Assim;
+198       GAssIdir=tmpc4\&.GrossAssim;
+199 
+200             IDiff = layIdiff[--sp2];
+201             pLeafshade = layFshade[--sp5];
+202             Leafshade = LAIc * pLeafshade;
+203             tmp6_ET = EvapoTrans(IDiff,Itot,Temp,rh,WindS,LAIc,CanHeight,
+204                                  stomataws,INTEGER(WS)[0],vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,upperT,lowerT);
+205             TempIdiff = Temp + tmp6_ET\&.Deltat;
+206             tmpc42 = c4photoC(IDiff,TempIdiff,rh,vmax1,alpha1,kparm1,theta,beta,Rd1,b01,b11,stomataws, Catm,INTEGER(WS)[0],upperT,lowerT);
+207             AssIdiff = tmpc42\&.Assim;
+208       GAssIdiff = tmpc42\&.GrossAssim;
+209 
+210     /* Collect direct radiation assim and trans in a matrix */
+211             REAL(mat1)[i*19] = IDir;
+212             REAL(mat1)[1 + i*19] = IDiff;
+213             REAL(mat1)[2 + i*19] = Leafsun;
+214             REAL(mat1)[3 + i*19] = Leafshade;
+215             REAL(mat1)[4 + i*19] = tmp5_ET\&.TransR;
+216             REAL(mat1)[5 + i*19] = tmp6_ET\&.TransR;
+217             REAL(mat1)[6 + i*19] = AssIdir;
+218             /*REAL(mat1)[7 + i*19] = AssIdiff;*/
+219       REAL(mat1)[7 + i*19] = AssIdiff;
+220             REAL(mat1)[8 + i*19] = tmp5_ET\&.Deltat;
+221             REAL(mat1)[9 + i*19] = tmp6_ET\&.Deltat;
+222             REAL(mat1)[10 + i*19] = tmp5_ET\&.LayerCond; 
+223             REAL(mat1)[11 + i*19] = tmp6_ET\&.LayerCond; 
+224             REAL(mat1)[12 + i*19] = leafN_lay; 
+225             REAL(mat1)[13 + i*19] = vmax1;
+226             REAL(mat1)[14 + i*19] = rh; 
+227       REAL(mat1)[15 + i*19] = GAssIdir;
+228       REAL(mat1)[16 + i*19] = GAssIdiff;
+229       REAL(mat1)[17 + i*19] = alpha1;
+230       REAL(mat1)[18 + i*19] = leafN_lay;
+231 /*      REAL(mat1)[11 + i*12] = rh;  */
+232     /*Layer conductance needs to be transformed back to the correct units here*/
+233 
+234             CanopyA += Leafsun * AssIdir + Leafshade * AssIdiff;
+235             CanopyT += Leafsun * tmp5_ET\&.TransR + Leafshade * tmp6_ET\&.TransR; 
+236             CanopyPe += Leafsun * tmp5_ET\&.EPenman + Leafshade * tmp6_ET\&.EPenman;
+237             CanopyPr += Leafsun * tmp5_ET\&.EPriestly + Leafshade * tmp6_ET\&.EPriestly;
+238             CanopyC += Leafsun * tmp5_ET\&.LayerCond + Leafshade * tmp6_ET\&.LayerCond;
+239       GCanopyA += Leafsun * GAssIdir + Leafshade * GAssIdiff;
+240     }
+241  /*## These are micro mols of CO2 per m2 per sec
+242    ## Need to convert to 
+243    ## 3600 converts seconds to hours
+244    ## 10^-6 converts micro mols to mols
+245    ## 30 converts mols of CO2 to grams
+246    ## (1/10^6) converts grams to Mg
+247    ## 10000 scales up to ha */
+248     REAL(growth)[0] = cf * CanopyA ;
+249     REAL(trans)[0] = cf2 * CanopyT ;
+250     REAL(epen)[0] = cf2 * CanopyPe ;
+251     REAL(epries)[0] = cf2 * CanopyPr ;
+252     REAL(cond)[0] = CanopyC;
+253     REAL(Ggrowth)[0] = cf * GCanopyA ;
+254 
+255     SET_VECTOR_ELT(lists,0,growth);
+256     SET_VECTOR_ELT(lists,1,trans);
+257     SET_VECTOR_ELT(lists,2,cond);
+258     SET_VECTOR_ELT(lists,3,epen);
+259     SET_VECTOR_ELT(lists,4,epries);
+260     SET_VECTOR_ELT(lists,5,Ggrowth);
+261     SET_VECTOR_ELT(lists,6,mat1);
+262 
+263     SET_STRING_ELT(names,0,mkChar("CanopyAssim"));
+264     SET_STRING_ELT(names,1,mkChar("CanopyTrans"));
+265     SET_STRING_ELT(names,2,mkChar("CanopyCond"));
+266     SET_STRING_ELT(names,3,mkChar("TranEpen"));
+267     SET_STRING_ELT(names,4,mkChar("TranEpries"));
+268     SET_STRING_ELT(names,5,mkChar("GrossCanopyAssim"));
+269     SET_STRING_ELT(names,6,mkChar("LayMat"));
+270     setAttrib(lists,R_NamesSymbol,names);
+271 
+272     UNPROTECT(9);
+273     return(lists);
+274    }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

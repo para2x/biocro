@@ -1,0 +1,65 @@
+.TH "/home/dlebauer/dev/biocro/src/Copy_SoilWater_BioCro_To_CropCent.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/Copy_SoilWater_BioCro_To_CropCent.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+\fC#include 'crocent\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBCopy_SoilWater_BioCro_To_CropCent\fP (struct \fBsoilML_str\fP *soilMLS, struct \fBcropcentlayer\fP *CROPCENT)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void Copy_SoilWater_BioCro_To_CropCent (struct \fBsoilML_str\fP *soilMLS, struct \fBcropcentlayer\fP *CROPCENT)"
+
+.PP
+.nf
+4 {
+5   /***************************************************************************************
+6    * File Name:Copy_SoilWater_BioCro_To_CropCent\&.c
+7    * 
+8    * Function Name: Copy_SoilWater_BioCro_To_CropCent
+9    * 
+10    * Purpose: Soil Water Module of BioCro is used to update multilayer soil structure of cropcent layer,
+11    *          which will be eventually used for the calculation of soil biogeochemistry cycling
+12    * 
+13    * Input:
+14    * struct soilML_str *soilMLS:  pointer to structure soilMLS defined in AuxBioCro\&.h This structure 
+15    *                   contains calculations of soul hydrology 
+16    * int soillayers:  Number of soil layers being used in the calculations
+17    * struct cropcentlayer *CROPCENT: Pointer to structure cropcent defined in crocent\&.h
+18    * 
+19    * Output:
+20    * soilprofile of CROPCENT is updated
+21    * ************************************************************************************/
+22     int i;
+23      CROPCENT->soilprofile\&.number_layers = soilMLS->Num_BioCro_soil_layers;
+24       for (i = 0; i < CROPCENT->soilprofile\&.number_layers; i++)
+25         {
+26         CROPCENT->soilprofile\&.pools\&.rootbiomass[i]=soilMLS->rootDist[i];
+27         CROPCENT->soilprofile\&.pools\&.swc[i]=soilMLS->cws[i];
+28         CROPCENT->soilprofile\&.flux\&.waterflux[i]=soilMLS->dailyWflux[i]; 
+29         CROPCENT->soilprofile\&.properties\&.width[i]=soilMLS->width[i];
+30         CROPCENT->soilprofile\&.properties\&.dpthmx[i]=soilMLS->dpthmx[i];
+31         CROPCENT->soilprofile\&.properties\&.dpthmn[i]=soilMLS->dpthmn[i];
+32         CROPCENT->soilprofile\&.properties\&.pH[i]=soilMLS->pH[i];
+33         CROPCENT->soilprofile\&.properties\&.bulkd[i]=soilMLS->bulkd[i];
+34         CROPCENT->soilprofile\&.properties\&.swclimit[i]=soilMLS->swclimit[i];
+35         CROPCENT->soilprofile\&.properties\&.fieldc[i]=soilMLS->fieldc[i];
+36         }      
+37       return;
+38 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

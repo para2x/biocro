@@ -1,0 +1,87 @@
+.TH "/home/dlebauer/dev/biocro/src/assignManagement.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/assignManagement.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'crocent\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBassignManagement\fP (struct \fBmanagement\fP *\fBmanagement\fP)"
+.br
+.ti -1c
+.RI "void \fBupdateafterharvest\fP (struct \fBmiscanthus\fP *\fBmiscanthus\fP, struct \fBmanagement\fP *\fBmanagement\fP)"
+.br
+.ti -1c
+.RI "void \fBupdateafteremergence\fP (struct \fBmiscanthus\fP *\fBmiscanthus\fP, struct \fBmanagement\fP *\fBmanagement\fP)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void assignManagement (struct \fBmanagement\fP *management)"
+
+.PP
+.nf
+8 {
+9 management->harvestparms\&.harvestdoy=300;
+10 management->harvestparms\&.frleaf=1\&.0;
+11 management->harvestparms\&.frleaflitter=0\&.0;
+12 management->harvestparms\&.frstem=1\&.0;
+13 management->harvestparms\&.frstemlitter=0\&.0;
+14 management->harvestparms\&.frdeadroot=0\&.0;
+15 management->harvestparms\&.frdeadrhizome=0\&.0;
+16 
+17 management->emergenceparms\&.minimumdoy=90;
+18 management->emergenceparms\&.emergenceTemp=6\&.0;
+19 management->emergenceparms\&.StoragetoLeaffraction=0\&.02;
+20 management->emergenceparms\&.StemtoLeaffraction=0\&.02;
+21 management->emergenceparms\&.plantingrate=20;
+22 return;
+23 }
+.fi
+.SS "void updateafteremergence (struct \fBmiscanthus\fP *miscanthus, struct \fBmanagement\fP *management)"
+
+.PP
+.nf
+42 {
+43   miscanthus->leaf\&.biomass=(management->emergenceparms\&.StoragetoLeaffraction)* miscanthus->rhizome\&.biomass;
+44   miscanthus->rhizome\&.biomass= miscanthus->rhizome\&.biomass - miscanthus->leaf\&.biomass;
+45   return;
+46 }
+.fi
+.SS "void updateafterharvest (struct \fBmiscanthus\fP *miscanthus, struct \fBmanagement\fP *management)"
+
+.PP
+.nf
+26 {
+27   miscanthus->leaf\&.biomass=(1-management->harvestparms\&.frleaf)*miscanthus->leaf\&.biomass;
+28   miscanthus->leaf\&.litter=(1-management->harvestparms\&.frleaflitter)*miscanthus->leaf\&.litter;
+29   
+30   miscanthus->stem\&.biomass=(1-management->harvestparms\&.frstem)*miscanthus->stem\&.biomass;
+31   miscanthus->stem\&.litter=(1-management->harvestparms\&.frstemlitter)*miscanthus->stem\&.litter;
+32   
+33   miscanthus->root\&.biomass=(1-management->harvestparms\&.frdeadroot)*miscanthus->root\&.biomass;
+34   miscanthus->root\&.litter=management->harvestparms\&.frdeadroot*miscanthus->root\&.biomass;
+35   
+36   miscanthus->rhizome\&.biomass=(1-management->harvestparms\&.frdeadrhizome)*miscanthus->rhizome\&.biomass;
+37   miscanthus->rhizome\&.litter=management->harvestparms\&.frdeadrhizome*miscanthus->rhizome\&.biomass;
+38   return;
+39 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

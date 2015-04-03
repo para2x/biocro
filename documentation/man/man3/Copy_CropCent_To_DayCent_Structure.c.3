@@ -1,0 +1,54 @@
+.TH "/home/dlebauer/dev/biocro/src/Copy_CropCent_To_DayCent_Structure.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/Copy_CropCent_To_DayCent_Structure.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+\fC#include 'crocent\&.h'\fP
+.br
+\fC#include 'soilwater\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBCopy_CropCent_To_DayCent_Structures\fP (struct \fBcropcentlayer\fP *CROPCENT, \fBSITEPAR_SPT\fP sitepar, \fBLAYERPAR_SPT\fP layers, \fBSOIL_SPT\fP soil)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void Copy_CropCent_To_DayCent_Structures (struct \fBcropcentlayer\fP *CROPCENT, \fBSITEPAR_SPT\fPsitepar, \fBLAYERPAR_SPT\fPlayers, \fBSOIL_SPT\fPsoil)"
+
+.PP
+.nf
+6 {
+7   int i;
+8       
+9       layers->numlyrs=CROPCENT->soilprofile\&.number_layers;
+10       for (i=0; i<CROPCENT->soilprofile\&.number_layers; i++)
+11       {
+12         layers->width[i]= CROPCENT->soilprofile\&.properties\&.width[i];
+13         layers->swc[i]= CROPCENT->soilprofile\&.pools\&.swc[i];
+14         layers->swclimit[i]= CROPCENT->soilprofile\&.properties\&.swclimit[i];
+15         layers->pH[i]= CROPCENT->soilprofile\&.properties\&.pH[i];
+16         layers->bulkd[i]= CROPCENT->soilprofile\&.properties\&.bulkd[i];
+17         layers->fieldc[i]= CROPCENT->soilprofile\&.properties\&.fieldc[i];
+18         layers->dpthmx[i]= CROPCENT->soilprofile\&.properties\&.dpthmx[i];
+19         layers->dpthmn[i]= CROPCENT->soilprofile\&.properties\&.dpthmn[i];
+20         layers->tcoeff[i]=CROPCENT->soilprofile\&.pools\&.rootbiomass[i];
+21         soil->soiltavg[i]=CROPCENT->soilprofile\&.properties\&.soiltavg[i];
+22       }
+23       sitepar->Ncoeff=CROPCENT->sitepar\&.Ncoeff;
+24       sitepar->jdayStart=CROPCENT->sitepar\&.jdayStart;
+25       sitepar->jdayEnd=CROPCENT->sitepar\&.jdayEnd;
+26       sitepar->N2Oadjust=CROPCENT->sitepar\&.N2Oadjust;
+27 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

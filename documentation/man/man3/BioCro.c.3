@@ -1,0 +1,2242 @@
+.TH "/home/dlebauer/dev/biocro/src/BioCro.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/BioCro.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+\fC#include 'Century\&.h'\fP
+.br
+\fC#include 'BioCro\&.h'\fP
+.br
+\fC#include 'crocent\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "SEXP \fBMisGro\fP (SEXP LAT, SEXP DOY, SEXP HR, SEXP SOLAR, SEXP TEMP, SEXP RH, SEXP WINDSPEED, SEXP PRECIP, SEXP KD, SEXP CHILHF, SEXP NLAYERS, SEXP RHIZOME, SEXP IRTL, SEXP SENCOEFS, SEXP TIMESTEP, SEXP VECSIZE, SEXP SPLEAF, SEXP SPD, SEXP DBPCOEFS, SEXP THERMALP, SEXP VMAX, SEXP ALPHA, SEXP KPARM, SEXP THETA, SEXP BETA, SEXP RD, SEXP CATM, SEXP B0, SEXP B1, SEXP WS, SEXP SOILCOEFS, SEXP ILEAFN, SEXP KLN, SEXP VMAXB1, SEXP ALPHAB1, SEXP MRESP, SEXP SOILTYPE, SEXP WSFUN, SEXP CENTCOEFS, SEXP CENTTIMESTEP, SEXP CENTKS, SEXP SOILLAYERS, SEXP SOILDEPTHS, SEXP CWS, SEXP HYDRDIST, SEXP SECS, SEXP KPLN, SEXP LNB0, SEXP LNB1, SEXP LNFUN, SEXP UPPERTEMP, SEXP LOWERTEMP, SEXP NNITROP)"
+.br
+.ti -1c
+.RI "SEXP \fBSABioGro\fP (SEXP oTHERMAL, SEXP oSTEM, SEXP oLEAF, SEXP oROOT, SEXP oRHIZOME, SEXP oGRAIN, SEXP oLAI, SEXP DOY, SEXP HR, SEXP SOLAR, SEXP TEMP, SEXP RH, SEXP WINDSPEED, SEXP PRECIP, SEXP DBPCOEF, SEXP VECSIZE, SEXP LAT, SEXP NLAYERS, SEXP RHIZOMEIRTL, SEXP SENESCTIME, SEXP TIMESTEP, SEXP VMAX, SEXP ALPHA, SEXP KPARM, SEXP THETA, SEXP BETA, SEXP RD, SEXP CATM, SEXP B0, SEXP B1, SEXP SOILCOEFS, SEXP WSFUN, SEXP WS, SEXP ILEAFN, SEXP KLN, SEXP VMAXB1, SEXP ALPHAB1, SEXP MRESP, SEXP SOILTYPE, SEXP CENTCOEFS, SEXP CENTKS, SEXP CENTTIMESTEP, SEXP KD, SEXP CHILHF, SEXP SP, SEXP SPD, SEXP THERMALP, SEXP INDEX, SEXP NDATA, SEXP N1DAT, SEXP NITER, SEXP NITER2, SEXP SATEMP, SEXP COOLSAMP, SEXP SCALE, SEXP SD, SEXP PHEN, SEXP SOILLAYERS, SEXP SOILDEPTHS, SEXP CWS, SEXP HYDRDIST, SEXP SECS, SEXP NCOEFS, SEXP LNFUN, SEXP UPPERTEMP, SEXP LOWERTEMP, SEXP NNITROP)"
+.br
+.ti -1c
+.RI "double \fBRSS_BG\fP (double oStem[], double oLeaf[], double oRoot[], double oRhizome[], double oGrain[], double oLAI[], double sStem[], double sLeaf[], double sRoot[], double sRhizome[], double sGrain[], double sLAI[], int N1Dat)"
+.br
+.ti -1c
+.RI "void \fBBioGro\fP (double lat, int doy[], int hr[], double solar[], double temp[], double rh[], double windspeed[], double precip[], double kd, double chil, double heightf, int nlayers, double iRhizome, double irtl, double sencoefs[], int timestep, int vecsize, double Sp, double SpD, double dbpcoefs[25], double thermalp[], double vmax1, double alpha1, double kparm, double theta, double beta, double Rd, double Catm, double b0, double b1, double soilcoefs[], double ileafn, double kLN, double vmaxb1, double alphab1, double mresp[], int soilType, int wsFun, int ws, double centcoefs[], double centks[], int centTimestep, int soilLayers, double soilDepths[], double cws[], int hydrDist, double secs[], double kpLN, double lnb0, double lnb1, int lnfun, double upperT, double lowerT, struct \fBnitroParms\fP nitroP)"
+.br
+.ti -1c
+.RI "double \fBsel_phen\fP (int phen)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void BioGro (doublelat, intdoy[], inthr[], doublesolar[], doubletemp[], doublerh[], doublewindspeed[], doubleprecip[], doublekd, doublechil, doubleheightf, intnlayers, doubleiRhizome, doubleirtl, doublesencoefs[], inttimestep, intvecsize, doubleSp, doubleSpD, doubledbpcoefs[25], doublethermalp[], doublevmax1, doublealpha1, doublekparm, doubletheta, doublebeta, doubleRd, doubleCatm, doubleb0, doubleb1, doublesoilcoefs[], doubleileafn, doublekLN, doublevmaxb1, doublealphab1, doublemresp[], intsoilType, intwsFun, intws, doublecentcoefs[], doublecentks[], intcentTimestep, intsoilLayers, doublesoilDepths[], doublecws[], inthydrDist, doublesecs[], doublekpLN, doublelnb0, doublelnb1, intlnfun, doubleupperT, doublelowerT, struct \fBnitroParms\fPnitroP)"
+
+.PP
+.nf
+1880 {
+1881 
+1882         extern double CanopyAssim[8760] ;
+1883         extern double Leafy[8760] ;
+1884         extern double Stemy[8760] ;
+1885         extern double Rooty[8760] ;
+1886         extern double Rhizomey[8760] ;
+1887         extern double Grainy[8760] ;
+1888         extern double LAIc[8760] ;
+1889 
+1890         double newLeafcol[8760];
+1891         double newStemcol[8760];
+1892         double newRootcol[8760];
+1893         double newRhizomecol[8760];
+1894 
+1895         int i, i3;
+1896 
+1897         double Leaf, Stem, Root, Rhizome, LAI, Grain = 0\&.0;
+1898         double TTc = 0\&.0;
+1899         double kLeaf = 0\&.0, kStem = 0\&.0, kRoot = 0\&.0, kRhizome = 0\&.0, kGrain = 0\&.0;
+1900         double newLeaf, newStem = 0\&.0, newRoot, newRhizome = 0\&.0, newGrain = 0\&.0;
+1901 
+1902         double litter[4];
+1903         litter[0] = centcoefs[19];
+1904         litter[1] = centcoefs[20];
+1905         litter[2] = centcoefs[21];
+1906         litter[3] = centcoefs[22];
+1907 
+1908         /* Variables needed for collecting litter */
+1909         double LeafLitter = litter[0], StemLitter = litter[1];
+1910         double RootLitter = litter[2], RhizomeLitter = litter[3];
+1911         double LeafLitter_d = 0\&.0, StemLitter_d = 0\&.0;
+1912         double RootLitter_d = 0\&.0, RhizomeLitter_d = 0\&.0;
+1913         double ALitter = 0\&.0, BLitter = 0\&.0;
+1914 
+1915         double *sti , *sti2, *sti3, *sti4; 
+1916         double Remob;
+1917         int k = 0, q = 0, m = 0, n = 0;
+1918         int ri = 0;
+1919 
+1920         double StomWS = 1, LeafWS = 1;
+1921         double CanopyA, CanopyT;
+1922         double vmax, alpha;
+1923         double LeafN_0 = ileafn;
+1924         double LeafN = ileafn; /* Need to set it because it is used by CanA before it is computed */
+1925         double iSp = Sp;
+1926         vmax = vmax1;
+1927         alpha = alpha1;
+1928 
+1929         /* Century */
+1930         double MinNitro = centcoefs[18];
+1931         double SCCs[9];
+1932         double Resp;
+1933 
+1934         const double mrc1 = mresp[0];
+1935         const double mrc2 = mresp[1];
+1936 
+1937         struct Can_Str Canopy;
+1938         struct ws_str WaterS;
+1939         struct dbp_str dbpS;
+1940         struct cenT_str centS;
+1941         struct soilML_str soilMLS;
+1942         struct soilText_str soTexS; /* , *soTexSp = &soTexS; */
+1943         soTexS = soilTchoose(soilType);
+1944 
+1945         Rhizome = iRhizome;
+1946         Leaf = Rhizome * irtl;
+1947         Stem = Rhizome * 0\&.001;
+1948         Root = Rhizome * 0\&.001;
+1949         LAI = Leaf * Sp;
+1950 
+1951         const double FieldC = soilcoefs[0];
+1952         const double WiltP = soilcoefs[1];
+1953         const double phi1 = soilcoefs[2];
+1954         const double phi2 = soilcoefs[3];
+1955         const double soilDepth = soilcoefs[4];
+1956         double waterCont = soilcoefs[5];
+1957         double soilEvap, TotEvap;
+1958 
+1959         const double SeneLeaf = sencoefs[0];
+1960         const double SeneStem = sencoefs[1];
+1961         const double SeneRoot = sencoefs[2];
+1962         const double SeneRhizome = sencoefs[3];
+1963 
+1964         SCCs[0] = centcoefs[0];
+1965         SCCs[1] = centcoefs[1];
+1966         SCCs[2] = centcoefs[2];
+1967         SCCs[3] = centcoefs[3];
+1968         SCCs[4] = centcoefs[4];
+1969         SCCs[5] = centcoefs[5];
+1970         SCCs[6] = centcoefs[6];
+1971         SCCs[7] = centcoefs[7];
+1972         SCCs[8] = centcoefs[8];
+1973 
+1974 
+1975         /* Creation of pointers outside the loop */
+1976         sti = &newLeafcol[0]; /* This creates sti to be a pointer to the position 0
+1977                                  in the newLeafcol vector */
+1978         sti2 = &newStemcol[0];
+1979         sti3 = &newRootcol[0];
+1980         sti4 = &newRhizomecol[0];
+1981 
+1982         for(i=0;i<vecsize;i++)
+1983         {
+1984                 /* First calculate the elapsed Thermal Time*/
+1985                 TTc += (temp[i] / (24/timestep));
+1986 
+1987                 /* Do the magic! Calculate growth*/
+1988 
+1989                 Canopy = CanAC(LAI,doy[i],hr[i],
+1990                                solar[i],temp[i],rh[i],windspeed[i],
+1991                                lat,nlayers,vmax,alpha,kparm,theta,beta,
+1992                                Rd,Catm,b0,b1,StomWS,ws,kd, chil,
+1993                                heightf, LeafN, kpLN, lnb0, lnb1, lnfun,upperT,lowerT,nitroP);
+1994 
+1995 
+1996 
+1997                 CanopyA = Canopy\&.Assim * timestep;
+1998                 CanopyT = Canopy\&.Trans * timestep;
+1999 
+2000                 if(ISNAN(CanopyA)){
+2001                         Rprintf("LAI %\&.2f \n",LAI); 
+2002                         Rprintf("Leaf %\&.2f \n",Leaf);
+2003                         Rprintf("irtl %\&.2f \n",irtl);
+2004                         Rprintf("Rhizome %\&.2f \n",Rhizome);
+2005                         Rprintf("Sp %\&.2f \n",Sp);   
+2006                         Rprintf("doy[i] %\&.i %\&.i \n",i,doy[i]); 
+2007                         Rprintf("hr[i] %\&.i %\&.i \n",i,hr[i]); 
+2008                         Rprintf("solar[i] %\&.i %\&.2f \n",i,solar[i]); 
+2009                         Rprintf("temp[i] %\&.i %\&.2f \n",i,temp[i]); 
+2010                         Rprintf("rh[i] %\&.i %\&.2f \n",i,rh[i]); 
+2011                         Rprintf("windspeed[i] %\&.i %\&.2f \n",i,windspeed[i]);
+2012                         Rprintf("lat %\&.i %\&.2f \n",i,lat);
+2013                         Rprintf("nlayers %\&.i %\&.i \n",i,nlayers);   
+2014                 }
+2015 
+2016                 if(soilLayers > 1){
+2017                         soilMLS = soilML(precip[i], CanopyT, &cws[0], soilDepth, soilDepths, FieldC, WiltP,
+2018                                          phi1, phi2, soTexS, wsFun, soilLayers, Root,
+2019                                          LAI, 0\&.68, temp[i], solar[i], windspeed[i], rh[i], hydrDist,
+2020                                          secs[0], secs[1], secs[2]);
+2021 
+2022                         StomWS = soilMLS\&.rcoefPhoto;
+2023                         LeafWS = soilMLS\&.rcoefSpleaf;
+2024                         soilEvap = soilMLS\&.SoilEvapo;
+2025                         for(i3=0;i3<soilLayers;i3++){
+2026                                 cws[i3] = soilMLS\&.cws[i3];
+2027                         }
+2028 
+2029                 }else{
+2030 
+2031                         soilEvap = SoilEvapo(LAI, 0\&.68, temp[i], solar[i], waterCont, FieldC, WiltP, windspeed[i], rh[i], secs[1]);
+2032                         TotEvap = soilEvap + CanopyT;
+2033                         WaterS = watstr(precip[i],TotEvap,waterCont,soilDepth,FieldC,WiltP,phi1,phi2,soilType, wsFun);   
+2034                         waterCont = WaterS\&.awc;
+2035                         StomWS = WaterS\&.rcoefPhoto ;
+2036                         LeafWS = WaterS\&.rcoefSpleaf;
+2037                 }
+2038 
+2039                 /* Picking the dry biomass partitioning coefficients */
+2040                 dbpS = sel_dbp_coef(dbpcoefs, thermalp, TTc);
+2041 
+2042                 kLeaf = dbpS\&.kLeaf;
+2043                 kStem = dbpS\&.kStem;
+2044                 kRoot = dbpS\&.kRoot;
+2045                 kRhizome = dbpS\&.kRhiz;
+2046                 kGrain = dbpS\&.kGrain;
+2047 
+2048                 if(ISNAN(kRhizome) || ISNAN(kLeaf) || ISNAN(kRoot) || ISNAN(kStem) || ISNAN(kGrain)){
+2049                         Rprintf("kLeaf %\&.2f, kStem %\&.2f, kRoot %\&.2f, kRhizome %\&.2f, kGrain %\&.2f \n",kLeaf,kStem,kRoot,kRhizome,kGrain);
+2050                         Rprintf("iter %i \n",i);
+2051                 }
+2052 
+2053                 if(i % 24*centTimestep == 0){
+2054                         LeafLitter_d = LeafLitter * ((0\&.1/30)*centTimestep);
+2055                         StemLitter_d = StemLitter * ((0\&.1/30)*centTimestep);
+2056                         RootLitter_d = RootLitter * ((0\&.1/30)*centTimestep);
+2057                         RhizomeLitter_d = RhizomeLitter * ((0\&.1/30)*centTimestep);
+2058        
+2059                         LeafLitter -= LeafLitter_d;
+2060                         StemLitter -= StemLitter_d;
+2061                         RootLitter -= RootLitter_d;
+2062                         RhizomeLitter -= RhizomeLitter_d;
+2063        
+2064                         centS = Century(&LeafLitter_d,&StemLitter_d,&RootLitter_d,&RhizomeLitter_d,
+2065                                         waterCont,temp[i],centTimestep,SCCs,WaterS\&.runoff,
+2066                                         centcoefs[17], /* N fertilizer*/
+2067                                         MinNitro, /* initial Mineral nitrogen */
+2068                                         precip[i], /* precipitation */
+2069                                         centcoefs[9], /* Leaf litter lignin */
+2070                                         centcoefs[10], /* Stem litter lignin */
+2071                                         centcoefs[11], /* Root litter lignin */
+2072                                         centcoefs[12], /* Rhizome litter lignin */
+2073                                         centcoefs[13], /* Leaf litter N */
+2074                                         centcoefs[14], /* Stem litter N */
+2075                                         centcoefs[15],  /* Root litter N */
+2076                                         centcoefs[16],   /* Rhizome litter N */
+2077                                         soilType, centks);
+2078                 }
+2079 
+2080                 /* Here I can insert the code for Nitrogen limitations on photosynthesis
+2081                    parameters\&. This is taken From Harley et al\&. (1992) Modelling cotton under
+2082                    elevated CO2\&. PCE\&. This is modeled as a simple linear relationship between
+2083                    leaf nitrogen and vmax and alpha\&. Leaf Nitrogen should be modulated by N
+2084                    availability and possibly by the Thermal time accumulated\&.*/
+2085 
+2086                 MinNitro = centS\&.MinN;
+2087                 Resp = centS\&.Resp;
+2088      
+2089                 SCCs[0] = centS\&.SCs[0];
+2090                 SCCs[1] = centS\&.SCs[1];
+2091                 SCCs[2] = centS\&.SCs[2];
+2092                 SCCs[3] = centS\&.SCs[3];
+2093                 SCCs[4] = centS\&.SCs[4];
+2094                 SCCs[5] = centS\&.SCs[5];
+2095                 SCCs[6] = centS\&.SCs[6];
+2096                 SCCs[7] = centS\&.SCs[7];
+2097                 SCCs[8] = centS\&.SCs[8];
+2098 
+2099                 LeafN = LeafN_0 * exp(-kLN * TTc); 
+2100                 vmax = (LeafN_0 - LeafN) * vmaxb1 + vmax1;
+2101                 alpha = (LeafN_0 - LeafN) * alphab1 + alpha1;
+2102 
+2103                 if(kLeaf > 0)
+2104                 {
+2105                         newLeaf = CanopyA * kLeaf * LeafWS ; 
+2106                         /*  The major effect of water stress is on leaf expansion rate\&. See Boyer (1970)
+2107                             Plant\&. Phys\&. 46, 233-235\&. For this the water stress coefficient is different
+2108                             for leaf and vmax\&. */
+2109                         /* Tissue respiration\&. See Amthor (1984) PCE 7, 561-*/ 
+2110                         /* The 0\&.02 and 0\&.03 are constants here but vary depending on species
+2111                            as pointed out in that reference\&. */
+2112                         newLeaf = resp(newLeaf, mrc1, temp[i]);
+2113 
+2114                         *(sti+i) = newLeaf; /* This populates the vector newLeafcol\&. It makes sense
+2115                                                to use i because when kLeaf is negative no new leaf is
+2116                                                being accumulated and thus would not be subjected to senescence */
+2117                 }else{
+2118 
+2119                         newLeaf = Leaf * kLeaf ;
+2120                         Rhizome += kRhizome * -newLeaf * 0\&.9; /* 0\&.9 is the efficiency of retranslocation */
+2121                         Stem += kStem * -newLeaf   * 0\&.9;
+2122                         Root += kRoot * -newLeaf * 0\&.9;
+2123                         Grain += kGrain * -newLeaf * 0\&.9;
+2124                 }
+2125 
+2126                 if(TTc < SeneLeaf){
+2127 
+2128                         Leaf += newLeaf;
+2129 
+2130                 }else{
+2131     
+2132                         Leaf += newLeaf - *(sti+k); /* This means that the new value of leaf is
+2133                                                        the previous value plus the newLeaf
+2134                                                        (Senescence might start when there is
+2135                                                        still leaf being produced) minus the leaf
+2136                                                        produced at the corresponding k\&.*/
+2137                         Remob = *(sti+k) * 0\&.6 ;
+2138                         LeafLitter += *(sti+k) * 0\&.4; /* Collecting the leaf litter */ 
+2139                         Rhizome += kRhizome * Remob;
+2140                         Stem += kStem * Remob; 
+2141                         Root += kRoot * Remob;
+2142                         Grain += kGrain * Remob;
+2143                         k++;
+2144                 }
+2145 
+2146                 /* The specific leaf area declines with the growing season at least in
+2147                    Miscanthus\&.  See Danalatos, Nalianis and Kyritsis "Growth and Biomass
+2148                    Productivity of Miscanthus sinensis "Giganteus" under optimum cultural
+2149                    management in north-eastern greece*/
+2150 
+2151                 if(i%24 == 0){
+2152                         Sp = iSp - (doy[i] - doy[0]) * SpD;
+2153                 }
+2154 
+2155                 /* Rprintf("Sp %\&.2f \n", Sp); */
+2156 
+2157                 LAI = Leaf * Sp ;
+2158 
+2159                 /* New Stem*/
+2160                 if(kStem > 0)
+2161                 {
+2162                         newStem = CanopyA * kStem ;
+2163                         newStem = resp(newStem, mrc1, temp[i]);
+2164                         *(sti2+i) = newStem;
+2165                 }
+2166 
+2167                 if(TTc < SeneStem){
+2168 
+2169                         Stem += newStem;
+2170 
+2171                 }else{
+2172 
+2173                         Stem += newStem - *(sti2+q);
+2174                         StemLitter += *(sti2+q);
+2175                         q++;
+2176 
+2177                 }
+2178 
+2179                 if(kRoot > 0)
+2180                 {
+2181                         newRoot = CanopyA * kRoot ;
+2182                         newRoot = resp(newRoot, mrc2, temp[i]);
+2183                         *(sti3+i) = newRoot;
+2184                 }else{
+2185 
+2186                         newRoot = Root * kRoot ;
+2187                         Rhizome += kRhizome * -newRoot * 0\&.9;
+2188                         Stem += kStem * -newRoot       * 0\&.9;
+2189                         Leaf += kLeaf * -newRoot * 0\&.9;
+2190                         Grain += kGrain * -newRoot * 0\&.9;
+2191                 }
+2192 
+2193                 if(TTc < SeneRoot){
+2194 
+2195                         Root += newRoot;
+2196 
+2197                 }else{
+2198 
+2199                         Root += newRoot - *(sti3+m);
+2200                         RootLitter += *(sti3+m);
+2201                         m++;
+2202 
+2203                 }
+2204 
+2205                 if(kRhizome > 0)
+2206                 {
+2207                         newRhizome = CanopyA * kRhizome ;
+2208                         newRhizome = resp(newRhizome, mrc2, temp[i]);
+2209                         *(sti4+ri) = newRhizome;
+2210                         /* Here i will not work because the rhizome goes from being a source
+2211                            to a sink\&. I need its own index\&. Let's call it rhizome's i or ri\&.*/
+2212                         ri++;
+2213                 }else{
+2214 
+2215                         if(Rhizome < 0){
+2216                                 Rhizome = 1e-4;
+2217                                 warning("Rhizome became negative");
+2218                         }
+2219 
+2220                         newRhizome = Rhizome * kRhizome;
+2221                         Root += kRoot * -newRhizome ;
+2222                         Stem += kStem * -newRhizome ;
+2223                         Leaf += kLeaf * -newRhizome ;
+2224                         Grain += kGrain * -newRhizome;
+2225                 }
+2226 
+2227                 if(TTc < SeneRhizome){
+2228 
+2229                         Rhizome += newRhizome;
+2230 
+2231                 }else {
+2232 
+2233                         Rhizome += newRhizome - *(sti4+n);
+2234                         RhizomeLitter += *(sti4+n);
+2235                         n++;
+2236 
+2237                 }
+2238 
+2239                 if((kGrain < 1e-10) || (TTc < thermalp[4])){
+2240                         newGrain = 0\&.0;
+2241                         Grain += newGrain;
+2242                 }else{
+2243                         newGrain = CanopyA * kGrain;
+2244                         /* No respiration for grain at the moment */
+2245                         /* No senescence either */
+2246                         Grain += newGrain;  
+2247                 }
+2248 
+2249                 ALitter += LeafLitter + StemLitter;
+2250                 BLitter += RootLitter + RhizomeLitter;
+2251 
+2252                 CanopyAssim[i] =  CanopyA;
+2253                 Leafy[i] = Leaf;
+2254                 Stemy[i] = Stem;
+2255                 Rooty[i] =  Root;
+2256                 Rhizomey[i] = Rhizome;
+2257                 Grainy[i] = Grain;
+2258                 LAIc[i] = LAI;
+2259         }
+2260 }
+.fi
+.SS "SEXP MisGro (SEXPLAT, SEXPDOY, SEXPHR, SEXPSOLAR, SEXPTEMP, SEXPRH, SEXPWINDSPEED, SEXPPRECIP, SEXPKD, SEXPCHILHF, SEXPNLAYERS, SEXPRHIZOME, SEXPIRTL, SEXPSENCOEFS, SEXPTIMESTEP, SEXPVECSIZE, SEXPSPLEAF, SEXPSPD, SEXPDBPCOEFS, SEXPTHERMALP, SEXPVMAX, SEXPALPHA, SEXPKPARM, SEXPTHETA, SEXPBETA, SEXPRD, SEXPCATM, SEXPB0, SEXPB1, SEXPWS, SEXPSOILCOEFS, SEXPILEAFN, SEXPKLN, SEXPVMAXB1, SEXPALPHAB1, SEXPMRESP, SEXPSOILTYPE, SEXPWSFUN, SEXPCENTCOEFS, SEXPCENTTIMESTEP, SEXPCENTKS, SEXPSOILLAYERS, SEXPSOILDEPTHS, SEXPCWS, SEXPHYDRDIST, SEXPSECS, SEXPKPLN, SEXPLNB0, SEXPLNB1, SEXPLNFUN, SEXPUPPERTEMP, SEXPLOWERTEMP, SEXPNNITROP)"
+
+.PP
+.nf
+68 {
+69   
+70    /*********** CROCENT VARIABLES***********************/
+71    struct cropcentlayer CROPCENT;
+72    //assignParms(&CROPCENT);
+73    CROPCENTTimescaling(&CROPCENT);
+74 //   assignPools(&CROPCENT);
+75    struct InputToCropcent *leaflitter,*stemlitter,*rootlitter,*rhizomelitter;
+76    /****************************************************/
+77         double newLeafcol[8760];
+78         double newStemcol[8760];
+79         double newRootcol[8760];
+80         double newRhizomecol[8760];
+81 
+82         /* This creates vectors which will collect the senesced plant
+83            material\&. This is needed to calculate litter and therefore carbon
+84            in the soil and then N in the soil\&. */
+85 
+86          double upperT=REAL(UPPERTEMP)[0];
+87          double lowerT=REAL(LOWERTEMP)[0];
+88 /*Reading NitroP Variables */
+89         struct nitroParms nitroparms;
+90         double TEMPdoubletoint;
+91         nitroparms\&.ileafN=REAL(NNITROP)[0];
+92   nitroparms\&.kln=REAL(NNITROP)[1];
+93         nitroparms\&.Vmaxb1=REAL(NNITROP)[2];
+94         nitroparms\&.Vmaxb0=REAL(NNITROP)[3];
+95         nitroparms\&.alphab1=REAL(NNITROP)[4];
+96         nitroparms\&.alphab0=REAL(NNITROP)[5];
+97   nitroparms\&.Rdb1=REAL(NNITROP)[6];
+98         nitroparms\&.Rdb0=REAL(NNITROP)[7];
+99         nitroparms\&.kpLN=REAL(NNITROP)[8];
+100         nitroparms\&.lnb0=REAL(NNITROP)[9];
+101         nitroparms\&.lnb1=REAL(NNITROP)[10];
+102         TEMPdoubletoint=REAL(NNITROP)[11];
+103         nitroparms\&.lnFun=(int)TEMPdoubletoint;
+104         nitroparms\&.maxln=REAL(NNITROP)[12];
+105         nitroparms\&.minln=REAL(NNITROP)[13];
+106         nitroparms\&.daymaxln=REAL(NNITROP)[14];
+107 
+108 
+110   double iSp, Sp , propLeaf;
+111         int i, i2, i3;
+112         int vecsize ;
+113 
+114         double vmax1;
+115         double alpha1;
+116         double kparm1;
+117         double theta;
+118         double beta;
+119         double Rd1, Ca;
+120         double b01, b11;
+121 
+122         double Leaf, Stem, Root, LAI, Grain = 0\&.0;
+123         double TTc = 0\&.0;
+124         double kLeaf = 0\&.0, kStem = 0\&.0, kRoot = 0\&.0, kRhizome = 0\&.0, kGrain = 0\&.0;
+125         double newLeaf, newStem = 0\&.0, newRoot, newRhizome, newGrain = 0\&.0;
+126 
+127         /* Variables needed for collecting litter */
+128         double LeafLitter = REAL(CENTCOEFS)[20], StemLitter = REAL(CENTCOEFS)[21];
+129         double RootLitter = REAL(CENTCOEFS)[22], RhizomeLitter = REAL(CENTCOEFS)[23];
+130         double LeafLitter_d = 0\&.0, StemLitter_d = 0\&.0;
+131         double RootLitter_d = 0\&.0, RhizomeLitter_d = 0\&.0;
+132         double ALitter = 0\&.0, BLitter = 0\&.0;
+133         /* Maintenance respiration */
+134 
+135         double mrc1 = REAL(MRESP)[0];
+136         double mrc2 = REAL(MRESP)[1]; 
+137 
+138         double waterCont;
+139         double StomWS = 1, LeafWS = 1;
+140         int timestep;
+141         double CanopyA, CanopyT;
+142 
+143         double Rhizome;
+144 
+145         /* Soil Parameters*/
+146         double FieldC, WiltP, phi1, phi2, soilDepth;
+147         int soilType, wsFun;
+148         double LeafN, LeafN_0, kLN;
+149         double soilEvap, TotEvap;
+150         int soillayers = INTEGER(SOILLAYERS)[0];
+151         double cwsVec[soillayers];
+152         for(i2=0;i2<soillayers;i2++){
+153                 cwsVec[i2] = REAL(CWS)[i2];
+154         }
+155         double cwsVecSum = 0\&.0;
+156         /* Some soil related empirical coefficients */
+157         double rfl = REAL(SECS)[0];  /* root factor lambda */
+158         double rsec = REAL(SECS)[1]; /* radiation soil evaporation coefficient */
+159         double rsdf = REAL(SECS)[2]; /* root soil depth factor */
+160         double scsf = REAL(SOILCOEFS)[6]; /* stomatal conductance sensitivity factor */ /* Rprintf("scsf %\&.2f",scsf); */
+161         double transpRes = REAL(SOILCOEFS)[7]; /* Resistance to transpiration from soil to leaf */
+162         double leafPotTh = REAL(SOILCOEFS)[8]; /* Leaf water potential threshold */
+163 
+164         /* Parameters for calculating leaf water potential */
+165         double LeafPsim = 0\&.0;
+166 
+167         /* Effect of Nitrogen */
+168         double kpLN = REAL(KPLN)[0];
+169         double lnb0 = REAL(LNB0)[0]; 
+170         double lnb1 = REAL(LNB1)[0];
+171         int lnfun = INTEGER(LNFUN)[0];
+172 
+173         /* Century */
+174         double MinNitro = REAL(CENTCOEFS)[19];
+175         int doyNfert = REAL(CENTCOEFS)[18];
+176         double Nfert;
+177         double SCCs[9];
+178         double Resp = 0\&.0;
+179         int centTimestep = INTEGER(CENTTIMESTEP)[0];
+180 
+181         double SeneLeaf, SeneStem, SeneRoot = 0\&.0, SeneRhizome = 0\&.0 ;
+182         double *sti , *sti2, *sti3, *sti4; 
+183         double Remob;
+184         int k = 0, q = 0, m = 0, n = 0;
+185         int ri = 0;
+186 
+187         struct Can_Str Canopy;
+188         struct ws_str WaterS;
+189         struct dbp_str dbpS;
+190         struct cenT_str centS; 
+191         struct soilML_str soilMLS;
+192         struct soilText_str soTexS; /* , *soTexSp = &soTexS; */
+193         soTexS = soilTchoose(INTEGER(SOILTYPE)[0]);
+194 
+195         centS\&.SCs[0] = 0\&.0;
+196         centS\&.SCs[1] = 0\&.0;
+197         centS\&.SCs[2] = 0\&.0;
+198         centS\&.SCs[3] = 0\&.0;
+199         centS\&.SCs[4] = 0\&.0;
+200         centS\&.SCs[5] = 0\&.0;
+201         centS\&.SCs[6] = 0\&.0;
+202         centS\&.SCs[7] = 0\&.0;
+203         centS\&.SCs[8] = 0\&.0;
+204         centS\&.Resp = 0\&.0;
+205 
+206         SEXP lists, names;
+207 
+208         SEXP DayofYear;
+209         SEXP Hour;
+210         SEXP CanopyAssim;
+211         SEXP CanopyTrans;
+212         SEXP Leafy;
+213         SEXP Stemy;
+214         SEXP Rooty;
+215         SEXP Rhizomey;
+216         SEXP Grainy;
+217         SEXP LAIc;
+218         SEXP TTTc;
+219         SEXP SoilWatCont;
+220         SEXP StomatalCondCoefs;
+221         SEXP LeafReductionCoefs;
+222         SEXP LeafNitrogen;
+223         SEXP AboveLitter;
+224         SEXP BelowLitter;
+225         SEXP VmaxVec;
+226         SEXP AlphaVec;
+227         SEXP SpVec;
+228         SEXP MinNitroVec;
+229         SEXP RespVec;
+230         SEXP SoilEvaporation;
+231         SEXP cwsMat;
+232         SEXP psimMat; /* Holds the soil water potential */
+233         SEXP rdMat;
+234         SEXP SCpools;
+235         SEXP SNpools;
+236         SEXP LeafPsimVec;
+237 
+238         vecsize = length(DOY);
+239         PROTECT(lists = allocVector(VECSXP,29));
+240         PROTECT(names = allocVector(STRSXP,29));
+241 
+242         PROTECT(DayofYear = allocVector(REALSXP,vecsize));
+243         PROTECT(Hour = allocVector(REALSXP,vecsize));
+244         PROTECT(CanopyAssim = allocVector(REALSXP,vecsize));
+245         PROTECT(CanopyTrans = allocVector(REALSXP,vecsize));
+246         PROTECT(Leafy = allocVector(REALSXP,vecsize));
+247         PROTECT(Stemy = allocVector(REALSXP,vecsize));
+248         PROTECT(Rooty = allocVector(REALSXP,vecsize));
+249         PROTECT(Rhizomey = allocVector(REALSXP,vecsize));
+250         PROTECT(Grainy = allocVector(REALSXP,vecsize));
+251         PROTECT(LAIc = allocVector(REALSXP,vecsize));
+252         PROTECT(TTTc = allocVector(REALSXP,vecsize));
+253         PROTECT(SoilWatCont = allocVector(REALSXP,vecsize));
+254         PROTECT(StomatalCondCoefs = allocVector(REALSXP,vecsize));
+255         PROTECT(LeafReductionCoefs = allocVector(REALSXP,vecsize));
+256         PROTECT(LeafNitrogen = allocVector(REALSXP,vecsize));
+257         PROTECT(AboveLitter = allocVector(REALSXP,vecsize));
+258         PROTECT(BelowLitter = allocVector(REALSXP,vecsize));
+259         PROTECT(VmaxVec = allocVector(REALSXP,vecsize));
+260         PROTECT(AlphaVec = allocVector(REALSXP,vecsize));
+261         PROTECT(SpVec = allocVector(REALSXP,vecsize));
+262         PROTECT(MinNitroVec = allocVector(REALSXP,vecsize));
+263         PROTECT(RespVec = allocVector(REALSXP,vecsize));
+264         PROTECT(SoilEvaporation = allocVector(REALSXP,vecsize));
+265         PROTECT(cwsMat = allocMatrix(REALSXP,soillayers,vecsize));
+266         PROTECT(psimMat = allocMatrix(REALSXP,soillayers,vecsize));
+267         PROTECT(rdMat = allocMatrix(REALSXP,soillayers,vecsize));
+268         PROTECT(SCpools = allocVector(REALSXP,9));
+269         PROTECT(SNpools = allocVector(REALSXP,9));
+270         PROTECT(LeafPsimVec = allocVector(REALSXP,vecsize));
+271 
+272         /* Picking vmax, alpha and kparm */
+273         vmax1 = REAL(VMAX)[0];
+274         alpha1 = REAL(ALPHA)[0];
+275         kparm1 = REAL(KPARM)[0];
+276         theta = REAL(THETA)[0];
+277         beta = REAL(BETA)[0];
+278         Rd1 = REAL(RD)[0];
+279         Ca = REAL(CATM)[0];
+280         b01 = REAL(B0)[0];
+281         b11 = REAL(B1)[0];
+282 
+283         LeafN_0 = REAL(ILEAFN)[0];
+284         LeafN = LeafN_0; /* Initial value of N in the leaf */
+285         kLN = REAL(KLN)[0];
+286         timestep = INTEGER(TIMESTEP)[0];
+287 
+288         Rhizome = REAL(RHIZOME)[0];
+289         Sp = REAL(SPLEAF)[0]; 
+290         SeneLeaf = REAL(SENCOEFS)[0];
+291         SeneStem = REAL(SENCOEFS)[1];
+292         SeneRoot = REAL(SENCOEFS)[2];
+293         SeneRhizome = REAL(SENCOEFS)[3];
+294 
+295         /* Soil Parameters */
+296         FieldC = REAL(SOILCOEFS)[0];
+297         WiltP = REAL(SOILCOEFS)[1];
+298         phi1 = REAL(SOILCOEFS)[2];
+299         phi2 = REAL(SOILCOEFS)[3];
+300         soilDepth = REAL(SOILCOEFS)[4];
+301         waterCont = REAL(SOILCOEFS)[5];
+302         wsFun = INTEGER(WSFUN)[0];
+303         soilType = INTEGER(SOILTYPE)[0];
+304 
+305         SCCs[0] = REAL(CENTCOEFS)[0];
+306         SCCs[1] = REAL(CENTCOEFS)[1];
+307         SCCs[2] = REAL(CENTCOEFS)[2];
+308         SCCs[3] = REAL(CENTCOEFS)[3];
+309         SCCs[4] = REAL(CENTCOEFS)[4];
+310         SCCs[5] = REAL(CENTCOEFS)[5];
+311         SCCs[6] = REAL(CENTCOEFS)[6];
+312         SCCs[7] = REAL(CENTCOEFS)[7];
+313         SCCs[8] = REAL(CENTCOEFS)[8];
+314 
+315         propLeaf = REAL(IRTL)[0]; 
+316         /* It is useful to assume that there is a small amount of
+317            leaf area at the begining of the growing season\&. */
+318         Leaf = Rhizome * propLeaf; 
+319         /* Initial proportion of the rhizome that is turned
+320            into leaf the first hour */
+321         Stem = Rhizome * 0\&.001;
+322         Root = Rhizome * 0\&.001;
+323         LAI = Leaf * Sp;
+324         iSp = Sp;
+325 
+326 /* Creating pointers to avoid calling functions REAL and INTEGER so much */
+327         int *pt_doy = INTEGER(DOY);
+328         int *pt_hr = INTEGER(HR);
+329         double *pt_solar = REAL(SOLAR);
+330         double *pt_temp = REAL(TEMP);
+331         double *pt_rh = REAL(RH);
+332         double *pt_windspeed = REAL(WINDSPEED);
+333         double *pt_precip = REAL(PRECIP);
+334         double lat = REAL(LAT)[0];
+335         int nlayers = INTEGER(NLAYERS)[0];
+336         int ws = INTEGER(WS)[0];
+337         double kd = REAL(KD)[0];
+338         double chil = REAL(CHILHF)[0];
+339         double hf = REAL(CHILHF)[1];
+340 
+341         /* Creation of pointers outside the loop */
+342         sti = &newLeafcol[0]; /* This creates sti to be a pointer to the position 0
+343                                  in the newLeafcol vector */
+344         sti2 = &newStemcol[0];
+345         sti3 = &newRootcol[0];
+346         sti4 = &newRhizomecol[0];
+347  
+348         for(i=0;i<vecsize;i++)
+349         {
+350                 /* First calculate the elapsed Thermal Time*/
+351                 /* The idea is that here I need to divide by the time step
+352                    to calculate the thermal time\&. For example, a 3 hour time interval
+353                    would mean that the division would need to by 8 */
+354                 TTc += *(pt_temp+i) / (24/timestep); 
+355                 REAL(TTTc)[i] = TTc;
+356 
+357                 /*  Do the magic! Calculate growth*/
+358 
+359                 Canopy = CanAC(LAI, *(pt_doy+i), *(pt_hr+i),
+360                                *(pt_solar+i), *(pt_temp+i),
+361                                *(pt_rh+i), *(pt_windspeed+i),
+362                                lat, nlayers,
+363                                vmax1,alpha1,kparm1,
+364                                theta,beta,Rd1,Ca,b01,b11,StomWS,
+365                                ws, kd,
+366                                chil, hf,LeafN, kpLN, lnb0, lnb1, lnfun,upperT,lowerT,nitroparms);
+367 
+368                 /* Collecting the results */
+369                 CanopyA = Canopy\&.Assim * timestep;
+370                 CanopyT = Canopy\&.Trans * timestep;
+371 
+372                 /* Inserting the multilayer model */
+373                 if(soillayers > 1){
+374                         soilMLS = soilML(*(pt_precip+i), CanopyT, &cwsVec[0], soilDepth, REAL(SOILDEPTHS), FieldC, WiltP,
+375                                          phi1, phi2, soTexS, wsFun, INTEGER(SOILLAYERS)[0], Root, 
+376                                          LAI, 0\&.68, *(pt_temp+i), *(pt_solar), *(pt_windspeed+i), *(pt_rh+i), 
+377                                          INTEGER(HYDRDIST)[0], rfl, rsec, rsdf);
+378 
+379                         StomWS = soilMLS\&.rcoefPhoto;
+380                         LeafWS = soilMLS\&.rcoefSpleaf;
+381                         soilEvap = soilMLS\&.SoilEvapo;
+382                         for(i3=0;i3<soillayers;i3++){
+383                                 cwsVec[i3] = soilMLS\&.cws[i3];
+384                                 cwsVecSum += cwsVec[i3];
+385                                 REAL(cwsMat)[i3 + i*soillayers] = soilMLS\&.cws[i3];
+386                                 REAL(rdMat)[i3 + i*soillayers] = soilMLS\&.rootDist[i3];
+387                         }
+388 
+389                         waterCont = cwsVecSum / soillayers;
+390                         cwsVecSum = 0\&.0;
+391 
+392                 }else{
+393 
+394                         soilEvap = SoilEvapo(LAI, 0\&.68, *(pt_temp+i), *(pt_solar+i), waterCont, FieldC, WiltP, 
+395                                              *(pt_windspeed+i), *(pt_rh+i), rsec);
+396                         TotEvap = soilEvap + CanopyT;
+397                         WaterS = watstr(*(pt_precip+i),TotEvap,waterCont,soilDepth,FieldC,WiltP,phi1,phi2,soilType, wsFun);   
+398                         waterCont = WaterS\&.awc;
+399                         StomWS = WaterS\&.rcoefPhoto ; 
+400                         LeafWS = WaterS\&.rcoefSpleaf;
+401                         REAL(cwsMat)[i] = waterCont;
+402                         REAL(psimMat)[i] = WaterS\&.psim;
+403                 }
+404 
+405 /* An alternative way of computing water stress is by doing the leaf
+406  * water potential\&. This is done if the wsFun is equal to 4 */
+407 
+408                 if(wsFun == 4){
+409                         /* Calculating the leaf water potential */
+410                         /* From Campbell E = (Psim_s - Psim_l)/R or
+411                          * evaporation is equal to the soil water potential
+412                          * minus the leaf water potential divided by the resistance\&.
+413                          * This can be rearranged to Psim_l = Psim_s - E x R   */
+414                         /* It is assumed that total resistance is 5e6 m^4 s^-1
+415                          * kg^-1 
+416                          * Transpiration is in Mg ha-2 hr-1
+417                          * Multiply by 1e3 to go from Mg to kg
+418                          * Multiply by 1e-4 to go from ha to m^2 
+419                          * This needs to go from hours to seconds that's
+420                          * why the conversion factor is (1/3600)\&.*/
+421                         LeafPsim = WaterS\&.psim - (CanopyT * 1e3 * 1e-4 * 1\&.0/3600\&.0) * transpRes;
+422 
+423                         /* From WIMOVAVC the proposed equation to simulate the effect of water
+424                          * stress on stomatal conductance */
+425                         if(LeafPsim < leafPotTh){
+426                                 /* StomWS = 1 - ((LeafPsim - leafPotTh)/1000 *
+427                                  * scsf); In WIMOVAC this equation is used but
+428                                  * the absolute values are taken from the
+429                                  * potentials\&. Since they both should be
+430                                  * negative and leafPotTh is greater than
+431                                  * LeafPsim this can be rearranged to*/ 
+432                                 StomWS = 1 - ((leafPotTh - LeafPsim)/1000 * scsf);
+433                                 /* StomWS = 1; */
+434                                 if(StomWS < 0\&.1) StomWS = 0\&.1;
+435                         }else{
+436                                 StomWS = 1;
+437                         }
+438                 }else{
+439                         LeafPsim = 0;
+440                 }
+441 
+442                 /* Picking the dry biomass partitioning coefficients */
+443                 dbpS = sel_dbp_coef(REAL(DBPCOEFS), REAL(THERMALP), TTc);
+444 
+445                 kLeaf = dbpS\&.kLeaf;
+446                 kStem = dbpS\&.kStem;
+447                 kRoot = dbpS\&.kRoot;
+448                 kRhizome = dbpS\&.kRhiz;
+449                 kGrain = dbpS\&.kGrain;
+450 
+451                 /* Nitrogen fertilizer */
+452                 /* Only the day in which the fertilizer was applied this is available */
+453 /* When the day of the year is equal to the day the N fert was applied
+454  * then there is addition of fertilizer */
+455                 if(doyNfert == *(pt_doy+i)){
+456                         Nfert = REAL(CENTCOEFS)[17] / 24\&.0;
+457                 }else{
+458                         Nfert = 0;
+459                 }                
+460 
+461      
+462 
+463         /* Here I can insert the code for Nitrogen limitations on photosynthesis
+464                    parameters\&. This is taken From Harley et al\&. (1992) Modelling cotton under
+465                    elevated CO2\&. PCE\&. This is modeled as a simple linear relationship between
+466                    leaf nitrogen and vmax and alpha\&. Leaf Nitrogen should be modulated by N
+467                    availability and possibly by the Thermal time accumulated\&.*/
+468 /* The approach that seems to be used in general is N concentration as
+469  * a function of biomass */
+470         
+471 
+472                 LeafN = LeafN_0 * pow(Stem + Leaf,-kLN); 
+473                 if(LeafN > LeafN_0) LeafN = LeafN_0;
+474                 
+475                 vmax1 = (LeafN_0 - LeafN) * REAL(VMAXB1)[0] + REAL(VMAX)[0]; 
+476                 alpha1 = (LeafN_0 - LeafN) * REAL(ALPHAB1)[0] + REAL(ALPHA)[0]; 
+477 
+478                  /* The crop demand for nitrogen is the leaf concentration times the amount of biomass\&.
+479                    This modifies the amount of N available in the soil\&. 
+480                    MinNitro is the available amount of N (kg/m2)\&. 
+481                    The demand is in Mg/ha\&. I need a conversion factor of 
+482                    multiply by 1000, divide by 10000\&. */
+483  
+484                 MinNitro = MinNitro - LeafN * (Stem + Leaf) * 1e-1;
+485                 if(MinNitro < 0) MinNitro = 1e-3;
+486 
+487                 if(kLeaf > 0)
+488                 {
+489                         newLeaf = CanopyA * kLeaf * LeafWS ; 
+490                         /*  The major effect of water stress is on leaf expansion rate\&. See Boyer (1970)
+491                             Plant\&. Phys\&. 46, 233-235\&. For this the water stress coefficient is different
+492                             for leaf and vmax\&. */
+493                         /* Tissue respiration\&. See Amthor (1984) PCE 7, 561-*/ 
+494                         /* The 0\&.02 and 0\&.03 are constants here but vary depending on species
+495                            as pointed out in that reference\&. */
+496                         newLeaf = resp(newLeaf, mrc1, *(pt_temp+i));
+497 
+498                         *(sti+i) = newLeaf; /* This populates the vector newLeafcol\&. It makes sense
+499                                                to use i because when kLeaf is negative no new leaf is
+500                                                being accumulated and thus would not be subjected to senescence */
+501                 }else{
+502 
+503                         newLeaf = Leaf * kLeaf ;
+504                         Rhizome += kRhizome * -newLeaf * 0\&.9; /* 0\&.9 is the efficiency of retranslocation */
+505                         Stem += kStem * -newLeaf   * 0\&.9;
+506                         Root += kRoot * -newLeaf * 0\&.9;
+507                         Grain += kGrain * -newLeaf * 0\&.9;
+508                 }
+509 
+510                 if(TTc < SeneLeaf){
+511 
+512                         Leaf += newLeaf;
+513 
+514                 }else{
+515     
+516                         Leaf += newLeaf - *(sti+k); /* This means that the new value of leaf is
+517                                                        the previous value plus the newLeaf
+518                                                        (Senescence might start when there is
+519                                                        still leaf being produced) minus the leaf
+520                                                        produced at the corresponding k\&.*/
+521                         Remob = *(sti+k) * 0\&.6 ;
+522                         LeafLitter += *(sti+k) * 0\&.4; /* Collecting the leaf litter */ 
+523                         Rhizome += kRhizome * Remob;
+524                         Stem += kStem * Remob; 
+525                         Root += kRoot * Remob;
+526                         Grain += kGrain * Remob;
+527                         k++;
+528                 }
+529 
+530                 /* The specific leaf area declines with the growing season at least in
+531                    Miscanthus\&.  See Danalatos, Nalianis and Kyritsis "Growth and Biomass
+532                    Productivity of Miscanthus sinensis "Giganteus" under optimum cultural
+533                    management in north-eastern greece*/
+534 
+535                 if(i%24 == 0){
+536                         Sp = iSp - (INTEGER(DOY)[i] - INTEGER(DOY)[0]) * REAL(SPD)[0];
+537                 }
+538 
+539                 LAI = Leaf * Sp ;
+540 
+541                 if(LAI > 20\&.0) LAI = 20\&.0;
+542 
+543                 /* New Stem*/
+544                 if(kStem >= 0)
+545                 {
+546                         newStem = CanopyA * kStem ;
+547                         newStem = resp(newStem, mrc1, *(pt_temp+i));
+548                         *(sti2+i) = newStem;
+549                 }else{
+550                         error("kStem should be positive");
+551                 }
+552 
+553                 if(TTc < SeneStem){
+554 
+555                         Stem += newStem;
+556 
+557                 }else{
+558 
+559                         Stem += newStem - *(sti2+q);
+560                         StemLitter += *(sti2+q);
+561                         q++;
+562 
+563                 }
+564 
+565                 if(kRoot > 0)
+566                 {
+567                         newRoot = CanopyA * kRoot ;
+568                         newRoot = resp(newRoot, mrc2, *(pt_temp+i));
+569                         *(sti3+i) = newRoot;
+570                 }else{
+571 
+572                         newRoot = Root * kRoot ;
+573                         Rhizome += kRhizome * -newRoot * 0\&.9;
+574                         Stem += kStem * -newRoot       * 0\&.9;
+575                         Leaf += kLeaf * -newRoot * 0\&.9;
+576                         Grain += kGrain * -newRoot * 0\&.9;
+577                 }
+578 
+579                 if(TTc < SeneRoot){
+580 
+581                         Root += newRoot;
+582 
+583                 }else{
+584 
+585                         Root += newRoot - *(sti3+m);
+586                         RootLitter += *(sti3+m);
+587                         m++;
+588 
+589                 }
+590 
+591                 if(kRhizome > 0)
+592                 {
+593                         newRhizome = CanopyA * kRhizome ;
+594                         newRhizome = resp(newRhizome, mrc2, *(pt_temp+i));
+595                         *(sti4+ri) = newRhizome;
+596                         /* Here i will not work because the rhizome goes from being a source
+597                            to a sink\&. I need its own index\&. Let's call it rhizome's i or ri\&.*/
+598                         ri++;
+599                 }else{
+600 
+601                         if(Rhizome < 0){
+602                                 Rhizome = 1e-4;
+603                                 warning("Rhizome became negative");
+604                         }
+605 
+606                         newRhizome = Rhizome * kRhizome;
+607                         Root += kRoot * -newRhizome ;
+608                         Stem += kStem * -newRhizome ;
+609                         Leaf += kLeaf * -newRhizome ;
+610                         Grain += kGrain * -newRhizome;
+611                 }
+612 
+613                 if(TTc < SeneRhizome){
+614 
+615                         Rhizome += newRhizome;
+616 
+617                 }else {
+618 
+619                         Rhizome += newRhizome - *(sti4+n);
+620                         RhizomeLitter += *(sti4+n);
+621                         n++;
+622 
+623                 }
+624 
+625                 if((kGrain < 1e-10) || (TTc < REAL(THERMALP)[4])){
+626                         newGrain = 0\&.0;
+627                         Grain += newGrain;
+628                 }else{
+629                         newGrain = CanopyA * kGrain;
+630                         /* No respiration for grain at the moment */
+631                         /* No senescence either */
+632                         Grain += newGrain;  
+633                 }
+634 
+635 /****************************************************************************
+636 // CROPCENT SIMULATION BEGINS HHERE    
+637 BiocroToCrocent(&LeafLitter,leaf\&.fallrate,leaf\&.lignin, &leaf\&.E, isotoperatio, 1, 0,leaflitter);
+638 BiocroToCrocent(&StemLitter,stem\&.fallrate,stem\&.lignin, &stem\&.E, isotoperatio, 1, 0,stemlitter);
+639 BiocroToCrocent(&RootLitter,root\&.fallrate,root\&.lignin, &root\&.E, isotoperatio, 0, 0,rootlitter);
+640 BiocroToCrocent(&RhizomeLitter,rhiz\&.fallrate,rhiz\&.lignin, &rhiz\&.E, isotoperatio, 0, 0,rhizomelitter);
+641 ***************************************************************************/
+642    if(i % 24*centTimestep == 0){
+643 
+644                         LeafLitter_d = LeafLitter * ((0\&.1/30)*centTimestep);
+645                         StemLitter_d = StemLitter * ((0\&.1/30)*centTimestep);
+646                         RootLitter_d = RootLitter * ((0\&.1/30)*centTimestep);
+647                         RhizomeLitter_d = RhizomeLitter * ((0\&.1/30)*centTimestep);
+648 
+649                         LeafLitter -= LeafLitter_d;
+650                         StemLitter -= StemLitter_d;
+651                         RootLitter -= RootLitter_d;
+652                         RhizomeLitter -= RhizomeLitter_d;
+653 
+654                         centS = Century(&LeafLitter_d,&StemLitter_d,&RootLitter_d,&RhizomeLitter_d,
+655                                         waterCont,*(pt_temp+i),centTimestep,SCCs,WaterS\&.runoff,
+656                                         Nfert, /* N fertilizer*/
+657                                         MinNitro, /* initial Mineral nitrogen */
+658                                         *(pt_precip+i), /* precipitation */
+659                                         REAL(CENTCOEFS)[9], /* Leaf litter lignin */
+660                                         REAL(CENTCOEFS)[10], /* Stem litter lignin */
+661                                         REAL(CENTCOEFS)[11], /* Root litter lignin */
+662                                         REAL(CENTCOEFS)[12], /* Rhizome litter lignin */
+663                                         REAL(CENTCOEFS)[13], /* Leaf litter N */
+664                                         REAL(CENTCOEFS)[14], /* Stem litter N */
+665                                         REAL(CENTCOEFS)[15],  /* Root litter N */
+666                                         REAL(CENTCOEFS)[16],   /* Rhizome litter N */
+667                                         soilType, 
+668                                         REAL(CENTKS));
+669                 }
+670 
+671 
+672 
+673                 MinNitro = centS\&.MinN; /* These should be kg / m^2 per week? */
+674                 Resp = centS\&.Resp;
+675                 SCCs[0] = centS\&.SCs[0];
+676                 SCCs[1] = centS\&.SCs[1];
+677                 SCCs[2] = centS\&.SCs[2];
+678                 SCCs[3] = centS\&.SCs[3];
+679                 SCCs[4] = centS\&.SCs[4];
+680                 SCCs[5] = centS\&.SCs[5];
+681                 SCCs[6] = centS\&.SCs[6];
+682                 SCCs[7] = centS\&.SCs[7];
+683                 SCCs[8] = centS\&.SCs[8];
+684 
+685 
+686 
+687                 ALitter = LeafLitter + StemLitter;
+688                 BLitter = RootLitter + RhizomeLitter;
+689     
+690                 /* Here I could add a soil and nitrogen carbon component\&. I have soil
+691                    moisture, I have temperature and root and rhizome biomass */
+692 
+693                 REAL(DayofYear)[i] =  INTEGER(DOY)[i];
+694                 REAL(Hour)[i] =  INTEGER(HR)[i];
+695                 REAL(CanopyAssim)[i] =  CanopyA;
+696                 REAL(CanopyTrans)[i] =  CanopyT; 
+697                 REAL(Leafy)[i] = Leaf;
+698                 REAL(Stemy)[i] = Stem;
+699                 REAL(Rooty)[i] =  Root;
+700                 REAL(Rhizomey)[i] = Rhizome;
+701                 REAL(Grainy)[i] = Grain;
+702                 REAL(LAIc)[i] = LAI;
+703                 REAL(SoilWatCont)[i] = waterCont;
+704                 REAL(StomatalCondCoefs)[i] = StomWS;
+705                 REAL(LeafReductionCoefs)[i] = LeafWS;
+706                 REAL(LeafNitrogen)[i] = LeafN;
+707                 REAL(AboveLitter)[i] = ALitter;
+708                 REAL(BelowLitter)[i] = BLitter;
+709                 REAL(VmaxVec)[i] = vmax1;
+710                 REAL(AlphaVec)[i] = alpha1;
+711                 REAL(SpVec)[i] = Sp;
+712                 REAL(MinNitroVec)[i] = MinNitro/ (24*centTimestep);
+713                 REAL(RespVec)[i] = Resp / (24*centTimestep);
+714                 REAL(SoilEvaporation)[i] = soilEvap;
+715                 REAL(LeafPsimVec)[i] = LeafPsim;
+716 
+717         }
+718 
+719 /* Populating the results of the Century model */
+720 
+721                 REAL(SCpools)[0] = centS\&.SCs[0];
+722                 REAL(SCpools)[1] = centS\&.SCs[1];
+723                 REAL(SCpools)[2] = centS\&.SCs[2];
+724                 REAL(SCpools)[3] = centS\&.SCs[3];
+725                 REAL(SCpools)[4] = centS\&.SCs[4];
+726                 REAL(SCpools)[5] = centS\&.SCs[5];
+727                 REAL(SCpools)[6] = centS\&.SCs[6];
+728                 REAL(SCpools)[7] = centS\&.SCs[7];
+729                 REAL(SCpools)[8] = centS\&.SCs[8];
+730 
+731                 REAL(SNpools)[0] = centS\&.SNs[0];
+732                 REAL(SNpools)[1] = centS\&.SNs[1];
+733                 REAL(SNpools)[2] = centS\&.SNs[2];
+734                 REAL(SNpools)[3] = centS\&.SNs[3];
+735                 REAL(SNpools)[4] = centS\&.SNs[4];
+736                 REAL(SNpools)[5] = centS\&.SNs[5];
+737                 REAL(SNpools)[6] = centS\&.SNs[6];
+738                 REAL(SNpools)[7] = centS\&.SNs[7];
+739                 REAL(SNpools)[8] = centS\&.SNs[8];
+740 
+741         SET_VECTOR_ELT(lists,0,DayofYear);
+742         SET_VECTOR_ELT(lists,1,Hour);
+743         SET_VECTOR_ELT(lists,2,CanopyAssim);
+744         SET_VECTOR_ELT(lists,3,CanopyTrans);
+745         SET_VECTOR_ELT(lists,4,Leafy);
+746         SET_VECTOR_ELT(lists,5,Stemy);
+747         SET_VECTOR_ELT(lists,6,Rooty);
+748         SET_VECTOR_ELT(lists,7,Rhizomey);
+749         SET_VECTOR_ELT(lists,8,Grainy);
+750         SET_VECTOR_ELT(lists,9,LAIc);
+751         SET_VECTOR_ELT(lists,10,TTTc);
+752         SET_VECTOR_ELT(lists,11,SoilWatCont);
+753         SET_VECTOR_ELT(lists,12,StomatalCondCoefs);
+754         SET_VECTOR_ELT(lists,13,LeafReductionCoefs);
+755         SET_VECTOR_ELT(lists,14,LeafNitrogen);
+756         SET_VECTOR_ELT(lists,15,AboveLitter);
+757         SET_VECTOR_ELT(lists,16,BelowLitter);
+758         SET_VECTOR_ELT(lists,17,VmaxVec);
+759         SET_VECTOR_ELT(lists,18,AlphaVec);
+760         SET_VECTOR_ELT(lists,19,SpVec);
+761         SET_VECTOR_ELT(lists,20,MinNitroVec);
+762         SET_VECTOR_ELT(lists,21,RespVec);
+763         SET_VECTOR_ELT(lists,22,SoilEvaporation);
+764         SET_VECTOR_ELT(lists,23,cwsMat);
+765         SET_VECTOR_ELT(lists,24,psimMat);
+766         SET_VECTOR_ELT(lists,25,rdMat);
+767         SET_VECTOR_ELT(lists,26,SCpools);
+768         SET_VECTOR_ELT(lists,27,SNpools);
+769         SET_VECTOR_ELT(lists,28,LeafPsimVec);
+770 
+771         SET_STRING_ELT(names,0,mkChar("DayofYear"));
+772         SET_STRING_ELT(names,1,mkChar("Hour"));
+773         SET_STRING_ELT(names,2,mkChar("CanopyAssim"));
+774         SET_STRING_ELT(names,3,mkChar("CanopyTrans"));
+775         SET_STRING_ELT(names,4,mkChar("Leaf"));
+776         SET_STRING_ELT(names,5,mkChar("Stem"));
+777         SET_STRING_ELT(names,6,mkChar("Root"));
+778         SET_STRING_ELT(names,7,mkChar("Rhizome"));
+779         SET_STRING_ELT(names,8,mkChar("Grain"));
+780         SET_STRING_ELT(names,9,mkChar("LAI"));
+781         SET_STRING_ELT(names,10,mkChar("ThermalT"));
+782         SET_STRING_ELT(names,11,mkChar("SoilWatCont"));
+783         SET_STRING_ELT(names,12,mkChar("StomatalCondCoefs"));
+784         SET_STRING_ELT(names,13,mkChar("LeafReductionCoefs"));
+785         SET_STRING_ELT(names,14,mkChar("LeafNitrogen"));
+786         SET_STRING_ELT(names,15,mkChar("AboveLitter"));
+787         SET_STRING_ELT(names,16,mkChar("BelowLitter"));
+788         SET_STRING_ELT(names,17,mkChar("VmaxVec"));
+789         SET_STRING_ELT(names,18,mkChar("AlphaVec"));
+790         SET_STRING_ELT(names,19,mkChar("SpVec"));
+791         SET_STRING_ELT(names,20,mkChar("MinNitroVec"));
+792         SET_STRING_ELT(names,21,mkChar("RespVec"));
+793         SET_STRING_ELT(names,22,mkChar("SoilEvaporation"));
+794         SET_STRING_ELT(names,23,mkChar("cwsMat"));
+795         SET_STRING_ELT(names,24,mkChar("psimMat"));
+796         SET_STRING_ELT(names,25,mkChar("rdMat"));
+797         SET_STRING_ELT(names,26,mkChar("SCpools"));
+798         SET_STRING_ELT(names,27,mkChar("SNpools"));
+799         SET_STRING_ELT(names,28,mkChar("LeafPsimVec"));
+800         setAttrib(lists,R_NamesSymbol,names);
+801         UNPROTECT(31);
+802         return(lists);
+803 }
+.fi
+.SS "double RSS_BG (doubleoStem[], doubleoLeaf[], doubleoRoot[], doubleoRhizome[], doubleoGrain[], doubleoLAI[], doublesStem[], doublesLeaf[], doublesRoot[], doublesRhizome[], doublesGrain[], doublesLAI[], intN1Dat)"
+
+.PP
+.nf
+1815                         {
+1816 
+1817         int i;
+1818         double diff1=0\&.0, RSS1=0\&.0, SST1=0\&.0;
+1819         double diff2=0\&.0, RSS2=0\&.0, SST2=0\&.0;
+1820         double diff3=0\&.0, RSS3=0\&.0, SST3=0\&.0;
+1821         double diff4=0\&.0, RSS4=0\&.0, SST4=0\&.0; 
+1822         double diff5=0\&.0, RSS5=0\&.0, SST5=0\&.0;
+1823         double diff6=0\&.0, RSS6=0\&.0, SST6=0\&.0;
+1824         double RSS=0\&.0;
+1825 
+1826         for(i = 0 ; i < N1Dat; i++){
+1827                 /* Stem */
+1828                 if(oStem[i] >= 0){
+1829                         SST1 += pow(oStem[i],2);
+1830                         diff1 = oStem[i] - sStem[i];
+1831                         RSS1 += pow(diff1,2);
+1832                 }
+1833                 /* Leaf */
+1834                 if(oLeaf[i] >= 0){
+1835                         SST2 += pow(oLeaf[i],2);
+1836                         diff2 = oLeaf[i] - sLeaf[i];
+1837                         RSS2 += pow(diff2,2);
+1838                 }
+1839                 /* Rhizome */
+1840                 if(oRhizome[i] >= 0){
+1841                         SST3 += pow(oRhizome[i],2);
+1842                         diff3 = oRhizome[i] - sRhizome[i];
+1843                         RSS3 += pow(diff3,2);
+1844                 }
+1845                 /* Root */
+1846                 if(oRoot[i] >= 0){
+1847                         SST4 += pow(oRoot[i],2);
+1848                         diff4 = oRoot[i] - sRoot[i];
+1849                         RSS4 += pow(diff4,2);
+1850                 }
+1851                 /* LAI */
+1852                 if(oLAI[i] >= 0){
+1853                         SST5 += pow(oLAI[i],2);
+1854                         diff5 = oLAI[i] - sLAI[i];
+1855                         RSS5 += pow(diff5,2);
+1856                 }
+1857                 if(oGrain[i] >= 0){
+1858                         SST6 += pow(oGrain[i],2);
+1859                         diff6 = oGrain[i] - sGrain[i];
+1860                         RSS6 += pow(diff6,2);
+1861                 }
+1862         }
+1863 
+1864         RSS = RSS1 + RSS2 + RSS3 + RSS4 + RSS5 + RSS6;
+1865         return(RSS);
+1866 }
+.fi
+.SS "SEXP SABioGro (SEXPoTHERMAL, SEXPoSTEM, SEXPoLEAF, SEXPoROOT, SEXPoRHIZOME, SEXPoGRAIN, SEXPoLAI, SEXPDOY, SEXPHR, SEXPSOLAR, SEXPTEMP, SEXPRH, SEXPWINDSPEED, SEXPPRECIP, SEXPDBPCOEF, SEXPVECSIZE, SEXPLAT, SEXPNLAYERS, SEXPRHIZOMEIRTL, SEXPSENESCTIME, SEXPTIMESTEP, SEXPVMAX, SEXPALPHA, SEXPKPARM, SEXPTHETA, SEXPBETA, SEXPRD, SEXPCATM, SEXPB0, SEXPB1, SEXPSOILCOEFS, SEXPWSFUN, SEXPWS, SEXPILEAFN, SEXPKLN, SEXPVMAXB1, SEXPALPHAB1, SEXPMRESP, SEXPSOILTYPE, SEXPCENTCOEFS, SEXPCENTKS, SEXPCENTTIMESTEP, SEXPKD, SEXPCHILHF, SEXPSP, SEXPSPD, SEXPTHERMALP, SEXPINDEX, SEXPNDATA, SEXPN1DAT, SEXPNITER, SEXPNITER2, SEXPSATEMP, SEXPCOOLSAMP, SEXPSCALE, SEXPSD, SEXPPHEN, SEXPSOILLAYERS, SEXPSOILDEPTHS, SEXPCWS, SEXPHYDRDIST, SEXPSECS, SEXPNCOEFS, SEXPLNFUN, SEXPUPPERTEMP, SEXPLOWERTEMP, SEXPNNITROP)"
+
+.PP
+.nf
+832 {
+833        
+834         // compatibility with CanAC to pass alpha parameters
+835        struct nitroParms nitroparms;
+836         double TEMPdoubletoint;
+837         nitroparms\&.ileafN=REAL(NNITROP)[0];
+838         nitroparms\&.kln=REAL(NNITROP)[1];
+839         nitroparms\&.Vmaxb1=REAL(NNITROP)[2];
+840         nitroparms\&.Vmaxb0=REAL(NNITROP)[3];
+841         nitroparms\&.alphab1=REAL(NNITROP)[4];
+842         nitroparms\&.alphab0=REAL(NNITROP)[5];
+843         nitroparms\&.Rdb1=REAL(NNITROP)[6];
+844         nitroparms\&.Rdb0=REAL(NNITROP)[7];
+845         nitroparms\&.kpLN=REAL(NNITROP)[8];
+846         nitroparms\&.lnb0=REAL(NNITROP)[9];
+847         nitroparms\&.lnb1=REAL(NNITROP)[10];
+848         TEMPdoubletoint=REAL(NNITROP)[11];
+849         nitroparms\&.lnFun=(int)TEMPdoubletoint;
+850         nitroparms\&.maxln=REAL(NNITROP)[12];
+851         nitroparms\&.minln=REAL(NNITROP)[13];
+852         nitroparms\&.daymaxln=REAL(NNITROP)[14];
+853 
+854         /* External variables */
+855         extern double CanopyAssim[8760] ;
+856         extern double Leafy[8760] ;
+857         extern double Stemy[8760] ;
+858         extern double Rooty[8760] ;
+859         extern double Rhizomey[8760] ;
+860         extern double Grainy[8760] ;
+861         extern double LAIc[8760] ;
+862         /* Index variables */
+863         int j,k,m;
+864         int niter, niter2, iters = 0, iters2 = 0;
+865         int accept = 0;
+866         int n1 = 0, n2 = 0;
+867         double upperT=REAL(UPPERTEMP)[0];
+868         double lowerT=REAL(LOWERTEMP)[0];
+869         /* The all important vector size */
+870         int vecsize;
+871         vecsize = INTEGER(VECSIZE)[0];
+872         int Ndat;
+873         int n1dat = 0;
+874         Ndat = INTEGER(NDATA)[0];
+875         niter = INTEGER(NITER)[0];
+876         niter2 = INTEGER(NITER2)[0];
+877         double saTemp;
+878         int coolSamp;
+879         double scale;
+880         int phen;
+881 
+882 
+883         saTemp = REAL(SATEMP)[0];
+884         coolSamp = INTEGER(COOLSAMP)[0];
+885         scale = REAL(SCALE)[0];
+886         phen = INTEGER(PHEN)[0];
+887 
+888         int timestep;
+889         double b0, b1;
+890         double vmaxb1, alphab1;
+891         double LeafN, kLN, Ca;
+892 
+893         b0 = REAL(B0)[0];
+894         b1 = REAL(B1)[0];
+895         timestep = INTEGER(TIMESTEP)[0];
+896 
+897         alphab1 = REAL(ALPHAB1)[0];
+898         vmaxb1 = REAL(VMAXB1)[0];
+899 
+900         LeafN = REAL(ILEAFN)[0];
+901         kLN = REAL(KLN)[0];
+902 
+903         /* Needed variables */
+904         double lati, rhizome, irtl;
+905         int nlayers;
+906         /* Creating vectors */
+907         double dbpcoef[25];
+908         /* Picking the simulation */
+909         int ind;
+910         double sCanopyAssim[Ndat], sStemy[Ndat], sLeafy[Ndat];
+911         double sRhizomey[Ndat], sRooty[Ndat], sGrainy[Ndat],  sLAIy[Ndat];
+912         double oStemy[Ndat], oLeafy[Ndat];
+913         double oRhizomey[Ndat], oRooty[Ndat], oGrainy[Ndat], oLAIy[Ndat];
+914         /* more vairbles */
+915         double rss = 0\&.0, oldRss;
+916         double U , mr;
+917 
+918         /* Yet more */
+919         double index = 0;
+920         double sd1 = REAL(SD)[0];
+921         double sd2 = REAL(SD)[1];
+922         double sd3 = REAL(SD)[2];
+923         double sd4 = REAL(SD)[3];
+924 
+925         double kLeaf_1, kStem_1, kRoot_1, kRhizome_1;
+926         double kLeaf_2, kStem_2, kRoot_2, kRhizome_2;
+927         double kLeaf_3, kStem_3, kRoot_3, kRhizome_3;
+928         double kLeaf_4, kStem_4, kRoot_4, kRhizome_4;
+929         double kLeaf_5, kStem_5, kRoot_5, kRhizome_5;
+930         double kLeaf_6, kStem_6, kRoot_6, kRhizome_6, kGrain_6;
+931         double k1, k2, k3, k4, k5, k6;
+932         double vmax, alpha, kparm, theta, beta, Rd;
+933         double oldkLeaf_1, oldkStem_1, oldkRhizome_1, oldkRoot_1;
+934         double oldkLeaf_2, oldkStem_2, oldkRhizome_2, oldkRoot_2;
+935         double oldkLeaf_3, oldkStem_3, oldkRhizome_3, oldkRoot_3;
+936         double oldkLeaf_4, oldkStem_4, oldkRhizome_4, oldkRoot_4;
+937         double oldkLeaf_5, oldkStem_5, oldkRhizome_5, oldkRoot_5;
+938         double oldkLeaf_6, oldkStem_6, oldkRhizome_6, oldkRoot_6, oldkGrain_6;
+939         /* Handling answers to pass to R*/
+940 
+941         SEXP lists;
+942         SEXP names;
+943 
+944         SEXP ans1;
+945 
+946         SEXP RSS;
+947         SEXP ACCPT;
+948         SEXP RssVec;
+949         SEXP RssVec2;
+950 
+951         SEXP simStem;
+952         SEXP obsStem;
+953 
+954         SEXP simLeaf;
+955         SEXP obsLeaf;
+956 
+957         SEXP simRhiz;
+958         SEXP obsRhiz;
+959 
+960         SEXP simRoot;
+961         SEXP obsRoot;
+962 
+963         SEXP simGrain;
+964         SEXP obsGrain;
+965 
+966         SEXP simLAI;
+967         SEXP obsLAI;
+968 
+969         SEXP TTime;
+970         SEXP inde;
+971 
+972         SEXP mat1;
+973         SEXP accept2;
+974         SEXP accept3;
+975         SEXP SAtemp;
+976 
+977         PROTECT(lists = allocVector(VECSXP,23)); /* 1 */
+978         PROTECT(names = allocVector(STRSXP,23)); /* 2 */
+979 
+980         PROTECT(ans1 = allocVector(REALSXP,25)); /* 3 */
+981         PROTECT(RSS = allocVector(REALSXP,1)); /* 4 */
+982         PROTECT(ACCPT = allocVector(REALSXP,1)); /* 5 */
+983         PROTECT(RssVec = allocVector(REALSXP,niter)); /* 6 */
+984         PROTECT(RssVec2 = allocVector(REALSXP,niter2)); /* 7 */
+985 
+986         PROTECT(simStem = allocVector(REALSXP,Ndat)); /* 8 */
+987         PROTECT(obsStem = allocVector(REALSXP,Ndat)); /* 9 */
+988 
+989         PROTECT(simLeaf = allocVector(REALSXP,Ndat)); /* 10 */
+990         PROTECT(obsLeaf = allocVector(REALSXP,Ndat)); /* 11 */
+991 
+992         PROTECT(simRhiz = allocVector(REALSXP,Ndat)); /* 12 */
+993         PROTECT(obsRhiz = allocVector(REALSXP,Ndat)); /* 13 */
+994 
+995         PROTECT(simRoot = allocVector(REALSXP,Ndat)); /* 14 */
+996         PROTECT(obsRoot = allocVector(REALSXP,Ndat)); /* 15 */
+997 
+998         PROTECT(simGrain = allocVector(REALSXP,Ndat)); /* 16 */
+999         PROTECT(obsGrain = allocVector(REALSXP,Ndat)); /* 17 */
+1000 
+1001         PROTECT(simLAI = allocVector(REALSXP,Ndat)); /* 18 */
+1002         PROTECT(obsLAI = allocVector(REALSXP,Ndat)); /* 19 */
+1003 
+1004         PROTECT(TTime = allocVector(REALSXP,Ndat)); /* 20 */
+1005         PROTECT(inde = allocVector(REALSXP,Ndat)); /* 21 */
+1006 
+1007         PROTECT(mat1 = allocMatrix(REALSXP,25,niter2)); /* 22 */
+1008         PROTECT(accept2 = allocVector(REALSXP,1)); /* 23 */
+1009         PROTECT(accept3 = allocVector(REALSXP,1)); /* 24 */
+1010         PROTECT(SAtemp = allocVector(REALSXP,1)); /* 25 */
+1011 
+1012         /* Applying the scale to the sd */
+1013         sd1 *= scale;
+1014         sd2 *= scale;
+1015         sd3 *= scale;
+1016         sd4 *= scale;
+1017 
+1018         /* Picking them */
+1019         lati = REAL(LAT)[0];
+1020         rhizome = REAL(RHIZOMEIRTL)[0];
+1021         irtl = REAL(RHIZOMEIRTL)[1];
+1022         nlayers = INTEGER(NLAYERS)[0];
+1023         Rd = REAL(RD)[0];
+1024         Ca = REAL(CATM)[0];
+1025         vmax = REAL(VMAX)[0];
+1026         alpha = REAL(ALPHA)[0];
+1027         kparm = REAL(KPARM)[0];
+1028         theta = REAL(THETA)[0];
+1029         beta = REAL(BETA)[0];
+1030 
+1031         /* Pick the observed */
+1032         for(m=0;m<Ndat;m++){
+1033                 oStemy[m] = REAL(oSTEM)[m];
+1034                 REAL(obsStem)[m] = REAL(oSTEM)[m];
+1035                 oLeafy[m] = REAL(oLEAF)[m];
+1036                 REAL(obsLeaf)[m] = REAL(oLEAF)[m];
+1037                 oRhizomey[m] = REAL(oRHIZOME)[m];
+1038                 REAL(obsRhiz)[m] = REAL(oRHIZOME)[m];
+1039                 oRooty[m] = REAL(oROOT)[m];
+1040                 REAL(obsRoot)[m] = REAL(oROOT)[m];
+1041                 oGrainy[m] = REAL(oGRAIN)[m];
+1042                 REAL(obsGrain)[m] = REAL(oGRAIN)[m];
+1043                 oLAIy[m] = REAL(oLAI)[m];
+1044                 REAL(obsLAI)[m] = REAL(oLAI)[m];
+1045         }
+1046 
+1047         oldkLeaf_1 = REAL(DBPCOEF)[0];
+1048         oldkStem_1 = REAL(DBPCOEF)[1];
+1049         oldkRoot_1 = REAL(DBPCOEF)[2];
+1050         oldkRhizome_1 = REAL(DBPCOEF)[3];
+1051 
+1052         oldkLeaf_2 = REAL(DBPCOEF)[4];
+1053         oldkStem_2 = REAL(DBPCOEF)[5];
+1054         oldkRoot_2 = REAL(DBPCOEF)[6];
+1055         oldkRhizome_2 = REAL(DBPCOEF)[7];
+1056 
+1057         oldkLeaf_3 = REAL(DBPCOEF)[8];
+1058         oldkStem_3 = REAL(DBPCOEF)[9];
+1059         oldkRoot_3 = REAL(DBPCOEF)[10];
+1060         oldkRhizome_3 = REAL(DBPCOEF)[11];
+1061 
+1062         oldkLeaf_4 = REAL(DBPCOEF)[12];
+1063         oldkStem_4 = REAL(DBPCOEF)[13];
+1064         oldkRoot_4 = REAL(DBPCOEF)[14];
+1065         oldkRhizome_4 = REAL(DBPCOEF)[15];
+1066 
+1067         oldkLeaf_5 = REAL(DBPCOEF)[16];
+1068         oldkStem_5 = REAL(DBPCOEF)[17];
+1069         oldkRoot_5 = REAL(DBPCOEF)[18];
+1070         oldkRhizome_5 = REAL(DBPCOEF)[19];
+1071 
+1072         oldkLeaf_6 = REAL(DBPCOEF)[20];
+1073         oldkStem_6 = REAL(DBPCOEF)[21];
+1074         oldkRoot_6 = REAL(DBPCOEF)[22];
+1075         oldkRhizome_6 = REAL(DBPCOEF)[23];
+1076         oldkGrain_6 = REAL(DBPCOEF)[24];
+1077 
+1078         GetRNGstate();
+1079 
+1080         oldRss = 1e6;
+1081         /* This is a good part to start the optimization */
+1082 
+1083         /* determining the n1dat */
+1084         n1dat = INTEGER(N1DAT)[phen-1];
+1085 
+1086         for(iters=0;iters<niter;iters++){
+1087 
+1088         /* Selecting the index to sample */
+1089 
+1090                 index = sel_phen(phen);
+1091         
+1092         /* First phenological stage */
+1093         
+1094                 kLeaf_1 = fabs(oldkLeaf_1);
+1095                 kStem_1 = fabs(oldkStem_1);
+1096                 kRoot_1 = fabs(oldkRoot_1);
+1097 
+1098 
+1099                 if(index < 1){
+1100                         kLeaf_1 = fabs(rnorm(kLeaf_1,sd1));
+1101                 }else
+1102                         
+1103                         if(index < 2){
+1104                                 kStem_1 = fabs(rnorm(kStem_1,sd1));
+1105                         }else
+1106 
+1107                                 if(index < 3){
+1108                                         kRoot_1 = fabs(rnorm(kRoot_1,sd1));
+1109                                 }
+1110     
+1111                 k1 = kLeaf_1 + kStem_1 + kRoot_1;
+1112                 kLeaf_1 = kLeaf_1/k1;
+1113                 kStem_1 = kStem_1/k1;
+1114                 kRoot_1 = kRoot_1/k1;
+1115     
+1116                 if(index > 3 && index < 4){
+1117                         kRhizome_1 = -rnorm(fabs(oldkRhizome_1),sd2);
+1118                 }else{
+1119                         kRhizome_1 = -fabs(oldkRhizome_1);
+1120                 }
+1121 
+1122                 /* Second phenological stage */
+1123 
+1124                 kLeaf_2 = fabs(oldkLeaf_2);
+1125                 kStem_2 = fabs(oldkStem_2);
+1126                 kRoot_2 = fabs(oldkRoot_2);
+1127 
+1128                 if(index > 4 && index < 5){
+1129                         kLeaf_2 = fabs(rnorm(kLeaf_2,sd1));
+1130                 }
+1131 
+1132                 if(index > 5 && index < 6){
+1133                         kStem_2 = fabs(rnorm(kStem_2,sd1));
+1134                 }
+1135 
+1136                 if(index > 6 && index < 7){
+1137                         kRoot_2 = fabs(rnorm(kRoot_2,sd1));
+1138                 }
+1139 
+1140                 k2 = kLeaf_2 + kStem_2 + kRoot_2 ;
+1141                 kLeaf_2 =  kLeaf_2/k2 ;
+1142                 kStem_2 = kStem_2/k2 ;
+1143                 kRoot_2 = kRoot_2/k2 ;
+1144     
+1145                 if(index > 7 && index < 8){
+1146                         kRhizome_2 =-rnorm(fabs(oldkRhizome_2),sd2);
+1147                 }else{
+1148                         kRhizome_2 =-fabs(oldkRhizome_2);
+1149                 }
+1150 
+1151                 /* Third phenological stage */
+1152 
+1153                 kLeaf_3 = fabs(oldkLeaf_3);
+1154                 kStem_3 = fabs(oldkStem_3);
+1155                 kRoot_3 = fabs(oldkRoot_3);
+1156                 kRhizome_3 = fabs(oldkRhizome_3);
+1157 
+1158                 if(index > 8 && index < 9){
+1159                         kLeaf_3 = fabs(rnorm(kLeaf_3,sd1));
+1160                 }
+1161 
+1162                 if(index > 9 && index < 10){
+1163                         kStem_3 = fabs(rnorm(kStem_3,sd1));
+1164                 }
+1165 
+1166                 if(index > 10 && index < 11){
+1167                         kRoot_3 = fabs(rnorm(kRoot_3,sd1));
+1168                 }
+1169 
+1170                 if(index > 11 && index < 12){
+1171                         kRhizome_3 = fabs(rnorm(kRhizome_3,sd1));
+1172                 }
+1173 
+1174                 k3 = kLeaf_3 + kStem_3 + kRoot_3 + kRhizome_3;
+1175                 kLeaf_3 =  kLeaf_3/k3 ;
+1176                 kStem_3 = kStem_3/k3 ;
+1177                 kRoot_3 = kRoot_3/k3 ;
+1178                 kRhizome_3 = kRhizome_3/k3 ;
+1179     
+1180                 /* Fourth phenological stage */
+1181 
+1182                 kLeaf_4 = fabs(oldkLeaf_4);
+1183                 kStem_4 = fabs(oldkStem_4);
+1184                 kRoot_4 = fabs(oldkRoot_4);
+1185                 kRhizome_4 = fabs(oldkRhizome_4);
+1186 
+1187                 if(index > 12 && index < 13){
+1188                         kLeaf_4 = fabs(rnorm(kLeaf_4,sd1));
+1189                 }
+1190 
+1191                 if(index > 13 && index < 14){
+1192                         kStem_4 = fabs(rnorm(kStem_4,sd1));
+1193                 }
+1194 
+1195                 if(index > 14 && index < 15){
+1196                         kRoot_4 = fabs(rnorm(kRoot_4,sd1));
+1197                 }
+1198 
+1199                 if(index > 15 && index < 16){
+1200                         kRhizome_4 = fabs(rnorm(kRhizome_4,sd1));
+1201                 }
+1202 
+1203                 k4 = kLeaf_4 + kStem_4 + kRoot_4 + kRhizome_4;
+1204                 kLeaf_4 =  kLeaf_4/k4 ;
+1205                 kStem_4 = kStem_4/k4 ;
+1206                 kRoot_4 = kRoot_4/k4 ;
+1207                 kRhizome_4 = kRhizome_4/k4 ;
+1208  
+1209                 /* Fifth phenological stage */
+1210 
+1211                 kLeaf_5 = fabs(oldkLeaf_5);
+1212                 kStem_5 = fabs(oldkStem_5);
+1213                 kRoot_5 = fabs(oldkRoot_5);
+1214                 kRhizome_5 = fabs(oldkRhizome_5);
+1215 
+1216                 if(index > 16 && index < 17){
+1217                         kLeaf_5 = fabs(rnorm(kLeaf_5,sd1));
+1218                 }
+1219 
+1220                 if(index > 17 && index < 18){
+1221                         kStem_5 = fabs(rnorm(kStem_5,sd1));
+1222                 }
+1223 
+1224                 if(index > 18 && index < 19){
+1225                         kRoot_5 = fabs(rnorm(kRoot_5,sd1));
+1226                 }
+1227 
+1228                 if(index > 19 && index < 20){
+1229                         kRhizome_5 = fabs(rnorm(kRhizome_5,sd1));
+1230                 }
+1231 
+1232                 k5 = kLeaf_5 + kStem_5 + kRoot_5 + kRhizome_5;
+1233                 kLeaf_5 =  kLeaf_5/k5;
+1234                 kStem_5 = kStem_5/k5;
+1235                 kRoot_5 = kRoot_5/k5;
+1236                 kRhizome_5 = kRhizome_5/k5;
+1237 
+1238                 /* Sixth phenological stage */
+1239 
+1240                 kLeaf_6 = fabs(oldkLeaf_6);
+1241                 kStem_6 = fabs(oldkStem_6);
+1242                 kRoot_6 = fabs(oldkRoot_6);
+1243                 kRhizome_6 = fabs(oldkRhizome_6);
+1244                 kGrain_6 = fabs(oldkGrain_6);
+1245 
+1246                 if(index > 20 && index < 21){
+1247                         kLeaf_6 = fabs(rnorm(kLeaf_6,sd1));
+1248                 }
+1249 
+1250                 if(index > 21 && index < 22){
+1251                         kStem_6 = fabs(rnorm(kStem_6,sd1));
+1252                 }
+1253 
+1254                 if(index > 22 && index < 23){
+1255                         kRoot_6 = fabs(rnorm(kRoot_6,sd1));
+1256                 }
+1257 
+1258                 if(index > 23 && index < 24){
+1259                         kRhizome_6 = fabs(rnorm(kRhizome_6,sd1));
+1260                 }
+1261 
+1262                 if(index > 24 && index < 25){
+1263                         kGrain_6 = fabs(rnorm(kGrain_6,sd1));
+1264                 }
+1265 
+1266                 k6 = kLeaf_6 + kStem_6 + kRoot_6 + kRhizome_6 + kGrain_6;
+1267                 kLeaf_6 =  kLeaf_6 / k6;
+1268                 kStem_6 = kStem_6 / k6;
+1269                 kRoot_6 = kRoot_6 / k6;
+1270                 kRhizome_6 = kRhizome_6 / k6;
+1271                 kGrain_6 = kGrain_6 / k6;
+1272 
+1273 /* Populating the dbp coefficients */
+1274                 dbpcoef[0] = kLeaf_1;
+1275                 dbpcoef[1] = kStem_1;
+1276                 dbpcoef[2] = kRoot_1;
+1277                 dbpcoef[3] = kRhizome_1;
+1278                 dbpcoef[4] = kLeaf_2;
+1279                 dbpcoef[5] = kStem_2;
+1280                 dbpcoef[6] = kRoot_2;
+1281                 dbpcoef[7] = kRhizome_2;
+1282                 dbpcoef[8] = kLeaf_3;
+1283                 dbpcoef[9] = kStem_3;
+1284                 dbpcoef[10] = kRoot_3;
+1285                 dbpcoef[11] = kRhizome_3;
+1286                 dbpcoef[12] = kLeaf_4;
+1287                 dbpcoef[13] = kStem_4;
+1288                 dbpcoef[14] = kRoot_4;
+1289                 dbpcoef[15] = kRhizome_4;
+1290                 dbpcoef[16] = kLeaf_5;
+1291                 dbpcoef[17] = kStem_5;
+1292                 dbpcoef[18] = kRoot_5;
+1293                 dbpcoef[19] = kRhizome_5;
+1294                 dbpcoef[20] = kLeaf_6;
+1295                 dbpcoef[21] = kStem_6;
+1296                 dbpcoef[22] = kRoot_6;
+1297                 dbpcoef[23] = kRhizome_6;
+1298                 dbpcoef[24] = kGrain_6;
+1299 
+1300                 /* int p; */
+1301                 /* for(p = 0;p<25;p++){ */
+1302                 /*      Rprintf("dbpcoef %\&.i %\&.3f \n",p,dbpcoef[p]); */
+1303                 /* } */
+1304 
+1305                 BioGro(lati,INTEGER(DOY),INTEGER(HR),REAL(SOLAR),REAL(TEMP),REAL(RH),
+1306                        REAL(WINDSPEED),REAL(PRECIP), REAL(KD)[0], REAL(CHILHF)[0], 
+1307                        REAL(CHILHF)[1],nlayers,rhizome,
+1308                        irtl,REAL(SENESCTIME),INTEGER(TIMESTEP)[0],vecsize,
+1309                        REAL(SP)[0], REAL(SPD)[0], dbpcoef, REAL(THERMALP),
+1310                        vmax,alpha,kparm,theta,beta,Rd,Ca,b0,b1, REAL(SOILCOEFS), LeafN, kLN,
+1311                        vmaxb1, alphab1, REAL(MRESP), INTEGER(SOILTYPE)[0], INTEGER(WSFUN)[0],
+1312                        INTEGER(WS)[0], REAL(CENTCOEFS),REAL(CENTKS), INTEGER(CENTTIMESTEP)[0],
+1313                        INTEGER(SOILLAYERS)[0], REAL(SOILDEPTHS), REAL(CWS), INTEGER(HYDRDIST)[0], 
+1314                        REAL(SECS), REAL(NCOEFS)[0], REAL(NCOEFS)[1], REAL(NCOEFS)[2], INTEGER(LNFUN)[0],upperT,lowerT,nitroparms);
+1315 
+1316                 /* pick the needed elements for the SSE */
+1317                 for(k=0;k<Ndat;k++){
+1318                         ind = INTEGER(INDEX)[k];
+1319                         sCanopyAssim[k] = CanopyAssim[ind]; /* Rprintf("CanopyAssim %\&.i %\&.1f \n",ind,CanopyAssim[ind]); */
+1320                         sLeafy[k] = Leafy[ind]; /* Rprintf("Leafy %\&.i %\&.1f \n",ind,Leafy[ind]); */
+1321                         sStemy[k] = Stemy[ind]; /* Rprintf("Stemy %\&.i %\&.1f \n",ind,Stemy[ind]); */
+1322                         sRooty[k] = Rooty[ind]; /* Rprintf("Rooty %\&.i %\&.1f \n",ind,Rooty[ind]); */
+1323                         sRhizomey[k] = Rhizomey[ind]; /* Rprintf("Rhizomey %\&.i %\&.1f \n",ind,Rhizomey[ind]); */
+1324                         sGrainy[k] = Grainy[ind]; /* Rprintf("Grainy %\&.i %\&.1f \n",ind,Grainy[ind]); */
+1325                         sLAIy[k] = LAIc[ind]; /* Rprintf("LAIc %\&.i %\&.1f \n",ind,LAIc[ind]); */
+1326                 }
+1327 
+1328 
+1329                 rss = RSS_BG(oStemy,oLeafy,oRooty,oRhizomey,oGrainy,oLAIy,
+1330                              sStemy,sLeafy,sRooty,sRhizomey,sGrainy,sLAIy,
+1331                              n1dat);
+1332 
+1333 
+1334                 REAL(RssVec)[iters] = rss;
+1335                 U = runif(0,1);
+1336                 if(rss < (oldRss - saTemp *log(U))){
+1337                         accept++;
+1338                         oldRss = rss;
+1339                         if((accept%coolSamp)==0){
+1340                                 saTemp *= 0\&.9 ;
+1341                         }
+1342                         /* accept the coefficients */
+1343                         oldkLeaf_1 = dbpcoef[0];
+1344                         oldkStem_1 = dbpcoef[1];
+1345                         oldkRoot_1 = dbpcoef[2];
+1346                         oldkRhizome_1 = dbpcoef[3];
+1347 
+1348                         oldkLeaf_2 = dbpcoef[4];
+1349                         oldkStem_2 = dbpcoef[5];
+1350                         oldkRoot_2 = dbpcoef[6];
+1351                         oldkRhizome_2 = dbpcoef[7];
+1352 
+1353                         oldkLeaf_3 = dbpcoef[8];
+1354                         oldkStem_3 = dbpcoef[9];
+1355                         oldkRoot_3 = dbpcoef[10];
+1356                         oldkRhizome_3 = dbpcoef[11];
+1357 
+1358                         oldkLeaf_4 = dbpcoef[12];
+1359                         oldkStem_4 = dbpcoef[13];
+1360                         oldkRoot_4 = dbpcoef[14];
+1361                         oldkRhizome_4 = dbpcoef[15];
+1362 
+1363                         oldkLeaf_5 = dbpcoef[16];
+1364                         oldkStem_5 = dbpcoef[17];
+1365                         oldkRoot_5 = dbpcoef[18];
+1366                         oldkRhizome_5 = dbpcoef[19];
+1367 
+1368                         oldkLeaf_6 = dbpcoef[20];
+1369                         oldkStem_6 = dbpcoef[21];
+1370                         oldkRoot_6 = dbpcoef[22];
+1371                         oldkRhizome_6 = dbpcoef[23];
+1372                         oldkGrain_6 = dbpcoef[24];
+1373 
+1374                 }
+1375                 /* It would be nice to put them in a matrix */
+1376 
+1377         }
+1378 
+1379         for(iters2=0;iters2<niter2;iters2++){
+1380 
+1381                 index = sel_phen(phen);
+1382 
+1383                 /* First phenological stage */
+1384 
+1385                 kLeaf_1 = fabs(oldkLeaf_1);
+1386                 kStem_1 = fabs(oldkStem_1);
+1387                 kRoot_1 = fabs(oldkRoot_1);
+1388         
+1389                 if(index < 1){
+1390                         kLeaf_1 = fabs(rnorm(kLeaf_1,sd1));
+1391                 }else
+1392     
+1393                         if(index < 2){
+1394                                 kStem_1 = fabs(rnorm(kStem_1,sd1));
+1395                         }else
+1396 
+1397                                 if(index < 3){
+1398                                         kRoot_1 = fabs(rnorm(kRoot_1,sd1));
+1399                                 }
+1400     
+1401                 k1 = kLeaf_1 + kStem_1 + kRoot_1;
+1402                 kLeaf_1 = kLeaf_1/k1;
+1403                 kStem_1 = kStem_1/k1;
+1404                 kRoot_1 = kRoot_1/k1;
+1405     
+1406                 if(index > 3 && index < 4){
+1407                         kRhizome_1 = -rnorm(fabs(oldkRhizome_1),sd2);
+1408                 }else{
+1409                         kRhizome_1 = -fabs(oldkRhizome_1);
+1410                 }
+1411 
+1412                 /* Second phenological stage */
+1413 
+1414                 kLeaf_2 = fabs(oldkLeaf_2);
+1415                 kStem_2 = fabs(oldkStem_2);
+1416                 kRoot_2 = fabs(oldkRoot_2);
+1417 
+1418                 if(index > 4 && index < 5){
+1419                         kLeaf_2 = fabs(rnorm(kLeaf_2,sd1));
+1420                 }
+1421 
+1422                 if(index > 5 && index < 6){
+1423                         kStem_2 = fabs(rnorm(kStem_2,sd1));
+1424                 }
+1425 
+1426                 if(index > 6 && index < 7){
+1427                         kRoot_2 = fabs(rnorm(kRoot_2,sd1));
+1428                 }
+1429 
+1430                 k2 = kLeaf_2 + kStem_2 + kRoot_2 ;
+1431                 kLeaf_2 =  kLeaf_2/k2 ;
+1432                 kStem_2 = kStem_2/k2 ;
+1433                 kRoot_2 = kRoot_2/k2 ;
+1434     
+1435                 if(index > 7 && index < 8){
+1436                         kRhizome_2 =-rnorm(fabs(oldkRhizome_2),sd2);
+1437                 }else{
+1438                         kRhizome_2 =-fabs(oldkRhizome_2);
+1439                 }
+1440 
+1441                 /* Third phenological stage */
+1442 
+1443                 kLeaf_3 = fabs(oldkLeaf_3);
+1444                 kStem_3 = fabs(oldkStem_3);
+1445                 kRoot_3 = fabs(oldkRoot_3);
+1446                 kRhizome_3 = fabs(oldkRhizome_3);
+1447 
+1448                 if(index > 8 && index < 9){
+1449                         kLeaf_3 = fabs(rnorm(kLeaf_3,sd1));
+1450                 }
+1451 
+1452                 if(index > 9 && index < 10){
+1453                         kStem_3 = fabs(rnorm(kStem_3,sd1));
+1454                 }
+1455 
+1456                 if(index > 10 && index < 11){
+1457                         kRoot_3 = fabs(rnorm(kRoot_3,sd1));
+1458                 }
+1459 
+1460                 if(index > 11 && index < 12){
+1461                         kRhizome_3 = fabs(rnorm(kRhizome_3,sd1));
+1462                 }
+1463 
+1464                 k3 = kLeaf_3 + kStem_3 + kRoot_3 + kRhizome_3;
+1465                 kLeaf_3 =  kLeaf_3/k3 ;
+1466                 kStem_3 = kStem_3/k3 ;
+1467                 kRoot_3 = kRoot_3/k3 ;
+1468                 kRhizome_3 = kRhizome_3/k3 ;
+1469     
+1470                 /* Fourth phenological stage */
+1471 
+1472                 kLeaf_4 = fabs(oldkLeaf_4);
+1473                 kStem_4 = fabs(oldkStem_4);
+1474                 kRoot_4 = fabs(oldkRoot_4);
+1475                 kRhizome_4 = fabs(oldkRhizome_4);
+1476 
+1477                 if(index > 12 && index < 13){
+1478                         kLeaf_4 = fabs(rnorm(kLeaf_4,sd1));
+1479                 }
+1480 
+1481                 if(index > 13 && index < 14){
+1482                         kStem_4 = fabs(rnorm(kStem_4,sd1));
+1483                 }
+1484 
+1485                 if(index > 14 && index < 15){
+1486                         kRoot_4 = fabs(rnorm(kRoot_4,sd1));
+1487                 }
+1488 
+1489                 if(index > 15 && index < 16){
+1490                         kRhizome_4 = fabs(rnorm(kRhizome_4,sd1));
+1491                 }
+1492 
+1493                 k4 = kLeaf_4 + kStem_4 + kRoot_4 + kRhizome_4;
+1494                 kLeaf_4 =  kLeaf_4/k4 ;
+1495                 kStem_4 = kStem_4/k4 ;
+1496                 kRoot_4 = kRoot_4/k4 ;
+1497                 kRhizome_4 = kRhizome_4/k4 ;
+1498  
+1499                 /* Fifth phenological stage */
+1500 
+1501                 kLeaf_5 = fabs(oldkLeaf_5);
+1502                 kStem_5 = fabs(oldkStem_5);
+1503                 kRoot_5 = fabs(oldkRoot_5);
+1504                 kRhizome_5 = fabs(oldkRhizome_5);
+1505 
+1506                 if(index > 16 && index < 17){
+1507                         kLeaf_5 = fabs(rnorm(kLeaf_5,sd1));
+1508                 }
+1509 
+1510                 if(index > 17 && index < 18){
+1511                         kStem_5 = fabs(rnorm(kStem_5,sd1));
+1512                 }
+1513 
+1514                 if(index > 18 && index < 19){
+1515                         kRoot_5 = fabs(rnorm(kRoot_5,sd1));
+1516                 }
+1517 
+1518                 if(index > 19 && index < 20){
+1519                         kRhizome_5 = fabs(rnorm(kRhizome_5,sd1));
+1520                 }
+1521 
+1522                 k5 = kLeaf_5 + kStem_5 + kRoot_5 + kRhizome_5;
+1523                 kLeaf_5 =  kLeaf_5/k5 ;
+1524                 kStem_5 = kStem_5/k5 ;
+1525                 kRoot_5 = kRoot_5/k5 ;
+1526                 kRhizome_5 = kRhizome_5/k5 ;
+1527 
+1528                 /* Sixth phenological stage */
+1529 
+1530                 kLeaf_6 = fabs(oldkLeaf_6);
+1531                 kStem_6 = fabs(oldkStem_6);
+1532                 kRoot_6 = fabs(oldkRoot_6);
+1533                 kRhizome_6 = fabs(oldkRhizome_6);
+1534                 kGrain_6 = fabs(oldkGrain_6);
+1535 
+1536                 if(index > 20 && index < 21){
+1537                         kLeaf_6 = fabs(rnorm(kLeaf_6,sd1));
+1538                 }
+1539 
+1540                 if(index > 21 && index < 22){
+1541                         kStem_6 = fabs(rnorm(kStem_6,sd1));
+1542                 }
+1543 
+1544                 if(index > 22 && index < 23){
+1545                         kRoot_6 = fabs(rnorm(kRoot_6,sd1));
+1546                 }
+1547 
+1548                 if(index > 23 && index < 24){
+1549                         kRhizome_6 = fabs(rnorm(kRhizome_6,sd1));
+1550                 }
+1551 
+1552                 if(index > 24 && index < 25){
+1553                         kGrain_6 = fabs(rnorm(kGrain_6,sd1));
+1554                 }
+1555 
+1556                 k6 = kLeaf_6 + kStem_6 + kRoot_6 + kRhizome_6 + kGrain_6;
+1557                 kLeaf_6 =  kLeaf_6/k6 ;
+1558                 kStem_6 = kStem_6/k6 ;
+1559                 kRoot_6 = kRoot_6/k6 ;
+1560                 kRhizome_6 = kRhizome_6/k6 ;
+1561                 kGrain_6 = kGrain_6/k6 ;
+1562 
+1563 /* Populating the dbp coefficients */
+1564 
+1565                 dbpcoef[0] = kLeaf_1;
+1566                 dbpcoef[1] = kStem_1;
+1567                 dbpcoef[2] = kRoot_1;
+1568                 dbpcoef[3] = kRhizome_1;
+1569                 dbpcoef[4] = kLeaf_2;
+1570                 dbpcoef[5] = kStem_2;
+1571                 dbpcoef[6] = kRoot_2;
+1572                 dbpcoef[7] = kRhizome_2;
+1573                 dbpcoef[8] = kLeaf_3;
+1574                 dbpcoef[9] = kStem_3;
+1575                 dbpcoef[10] = kRoot_3;
+1576                 dbpcoef[11] = kRhizome_3;
+1577                 dbpcoef[12] = kLeaf_4;
+1578                 dbpcoef[13] = kStem_4;
+1579                 dbpcoef[14] = kRoot_4;
+1580                 dbpcoef[15] = kRhizome_4;
+1581                 dbpcoef[16] = kLeaf_5;
+1582                 dbpcoef[17] = kStem_5;
+1583                 dbpcoef[18] = kRoot_5;
+1584                 dbpcoef[19] = kRhizome_5;
+1585                 dbpcoef[20] = kLeaf_6;
+1586                 dbpcoef[21] = kStem_6;
+1587                 dbpcoef[22] = kRoot_6;
+1588                 dbpcoef[23] = kRhizome_6;
+1589                 dbpcoef[24] = kGrain_6;
+1590  
+1591                 BioGro(lati,INTEGER(DOY),INTEGER(HR),REAL(SOLAR),REAL(TEMP),REAL(RH),
+1592                        REAL(WINDSPEED),REAL(PRECIP), REAL(KD)[0], REAL(CHILHF)[0], 
+1593                        REAL(CHILHF)[1],nlayers,rhizome,
+1594                        irtl,REAL(SENESCTIME),INTEGER(TIMESTEP)[0],vecsize,
+1595                        REAL(SP)[0], REAL(SPD)[0], dbpcoef, REAL(THERMALP),
+1596                        vmax,alpha,kparm,theta,beta,Rd,Ca,b0,b1, REAL(SOILCOEFS), LeafN, kLN,
+1597                        vmaxb1, alphab1, REAL(MRESP), INTEGER(SOILTYPE)[0], INTEGER(WSFUN)[0],
+1598                        INTEGER(WS)[0], REAL(CENTCOEFS),REAL(CENTKS), INTEGER(CENTTIMESTEP)[0],
+1599                        INTEGER(SOILLAYERS)[0], REAL(SOILDEPTHS), REAL(CWS), INTEGER(HYDRDIST)[0],
+1600                        REAL(SECS), REAL(NCOEFS)[0], REAL(NCOEFS)[1], REAL(NCOEFS)[2], INTEGER(LNFUN)[0],upperT,lowerT,nitroparms);
+1601 
+1602                 /* pick the needed elements for the SSE */
+1603                 for(k=0;k<Ndat;k++){
+1604                         ind = INTEGER(INDEX)[k];
+1605                         sCanopyAssim[k] = CanopyAssim[ind];
+1606                         sLeafy[k] = Leafy[ind];
+1607                         sStemy[k] = Stemy[ind];
+1608                         sRooty[k] = Rooty[ind];
+1609                         sRhizomey[k] = Rhizomey[ind];
+1610                         sLAIy[k] = LAIc[ind];
+1611                 }
+1612 
+1613                 rss = RSS_BG(oStemy,oLeafy,oRooty,oRhizomey,oGrainy,oLAIy,
+1614                              sStemy,sLeafy,sRooty,sRhizomey,sGrainy,sLAIy,
+1615                              n1dat);
+1616 
+1617                 REAL(RssVec2)[iters2] = rss;
+1618 
+1619                 mr = exp(-rss) / exp(-oldRss);
+1620 
+1621                 U = runif(0,1); 
+1622                 if(mr > U){ 
+1623                         n2++;
+1624                         /* accept the coefficients */
+1625                         oldkLeaf_1 = dbpcoef[0];
+1626                         oldkStem_1 = dbpcoef[1];
+1627                         oldkRoot_1 = dbpcoef[2];
+1628                         oldkRhizome_1 = dbpcoef[3];
+1629             
+1630                         oldkLeaf_2 = dbpcoef[4];
+1631                         oldkStem_2 = dbpcoef[5];
+1632                         oldkRoot_2 = dbpcoef[6];
+1633                         oldkRhizome_2 = dbpcoef[7];
+1634             
+1635                         oldkLeaf_3 = dbpcoef[8];
+1636                         oldkStem_3 = dbpcoef[9];
+1637                         oldkRoot_3 = dbpcoef[10];
+1638                         oldkRhizome_3 = dbpcoef[11];
+1639             
+1640                         oldkLeaf_4 = dbpcoef[12];
+1641                         oldkStem_4 = dbpcoef[13];
+1642                         oldkRoot_4 = dbpcoef[14];
+1643                         oldkRhizome_4 = dbpcoef[15];
+1644 
+1645                         oldkLeaf_5 = dbpcoef[16];
+1646                         oldkStem_5 = dbpcoef[17];
+1647                         oldkRoot_5 = dbpcoef[18];
+1648                         oldkRhizome_5 = dbpcoef[19];
+1649 
+1650                         oldkLeaf_6 = dbpcoef[20];
+1651                         oldkStem_6 = dbpcoef[21];
+1652                         oldkRoot_6 = dbpcoef[22];
+1653                         oldkRhizome_6 = dbpcoef[23];
+1654                         oldkGrain_6 = dbpcoef[24];
+1655 
+1656                         oldRss = rss;
+1657                 }         
+1658                 /* put them in a matrix */
+1659                 REAL(mat1)[n1*25] = dbpcoef[0];
+1660                 REAL(mat1)[1 + n1*25] = dbpcoef[1];
+1661                 REAL(mat1)[2 + n1*25] = dbpcoef[2];
+1662                 REAL(mat1)[3 + n1*25] = dbpcoef[3];
+1663 
+1664                 REAL(mat1)[4 + n1*25] = dbpcoef[4];
+1665                 REAL(mat1)[5 + n1*25] = dbpcoef[5];
+1666                 REAL(mat1)[6 + n1*25] = dbpcoef[6];
+1667                 REAL(mat1)[7 + n1*25] = dbpcoef[7];
+1668             
+1669                 REAL(mat1)[8 + n1*25] = dbpcoef[8];
+1670                 REAL(mat1)[9 + n1*25] = dbpcoef[9];
+1671                 REAL(mat1)[10 + n1*25] = dbpcoef[10];
+1672                 REAL(mat1)[11 + n1*25] = dbpcoef[11];
+1673 
+1674                 REAL(mat1)[12 + n1*25] = dbpcoef[12];
+1675                 REAL(mat1)[13 + n1*25] = dbpcoef[13];
+1676                 REAL(mat1)[14 + n1*25] = dbpcoef[14];
+1677                 REAL(mat1)[15 + n1*25] = dbpcoef[15];
+1678 
+1679                 REAL(mat1)[16 + n1*25] = dbpcoef[16];
+1680                 REAL(mat1)[17 + n1*25] = dbpcoef[17];
+1681                 REAL(mat1)[18 + n1*25] = dbpcoef[18];
+1682                 REAL(mat1)[19 + n1*25] = dbpcoef[19];
+1683 
+1684                 REAL(mat1)[20 + n1*25] = dbpcoef[20];
+1685                 REAL(mat1)[21 + n1*25] = dbpcoef[21];
+1686                 REAL(mat1)[22 + n1*25] = dbpcoef[22];
+1687                 REAL(mat1)[23 + n1*25] = dbpcoef[23];
+1688                 REAL(mat1)[24 + n1*25] = dbpcoef[24];
+1689 
+1690                 n1++;
+1691         }
+1692         PutRNGstate();
+1693 
+1694         REAL(ans1)[0] = oldkLeaf_1;
+1695         REAL(ans1)[1] = oldkStem_1;
+1696         REAL(ans1)[2] = oldkRoot_1;
+1697         REAL(ans1)[3] = oldkRhizome_1;
+1698 
+1699         REAL(ans1)[4] = oldkLeaf_2;
+1700         REAL(ans1)[5] = oldkStem_2;
+1701         REAL(ans1)[6] = oldkRoot_2;
+1702         REAL(ans1)[7] = oldkRhizome_2;
+1703 
+1704         REAL(ans1)[8] = oldkLeaf_3;
+1705         REAL(ans1)[9] = oldkStem_3;
+1706         REAL(ans1)[10] = oldkRoot_3;
+1707         REAL(ans1)[11] = oldkRhizome_3;
+1708 
+1709         REAL(ans1)[12] = oldkLeaf_4;
+1710         REAL(ans1)[13] = oldkStem_4;
+1711         REAL(ans1)[14] = oldkRoot_4;
+1712         REAL(ans1)[15] = oldkRhizome_4;
+1713 
+1714         REAL(ans1)[16] = oldkLeaf_5;
+1715         REAL(ans1)[17] = oldkStem_5;
+1716         REAL(ans1)[18] = oldkRoot_5;
+1717         REAL(ans1)[19] = oldkRhizome_5;
+1718 
+1719         REAL(ans1)[20] = oldkLeaf_6;
+1720         REAL(ans1)[21] = oldkStem_6;
+1721         REAL(ans1)[22] = oldkRoot_6;
+1722         REAL(ans1)[23] = oldkRhizome_6;
+1723         REAL(ans1)[24] = oldkGrain_6;
+1724 
+1725         REAL(RSS)[0] = oldRss;
+1726 
+1727         REAL(ACCPT)[0] = accept;
+1728         REAL(accept2)[0] = n1;
+1729         REAL(accept3)[0] = n2;
+1730         REAL(SAtemp)[0] = saTemp;
+1731 
+1732         for(j=0;j<Ndat;j++){
+1733                 ind = INTEGER(INDEX)[j];
+1734                 REAL(simStem)[j] = Stemy[ind];
+1735                 REAL(simLeaf)[j] = Leafy[ind];
+1736                 REAL(simRhiz)[j] = Rhizomey[ind];
+1737                 REAL(simRoot)[j] = Rooty[ind];
+1738                 REAL(simGrain)[j] = Grainy[ind];
+1739                 REAL(simLAI)[j] = LAIc[ind];
+1740                 REAL(TTime)[j] = REAL(oTHERMAL)[j];
+1741                 REAL(inde)[j] = INTEGER(INDEX)[j];
+1742         }
+1743 
+1744         SET_VECTOR_ELT(lists,0,ans1);
+1745         SET_VECTOR_ELT(lists,1,RSS);
+1746         SET_VECTOR_ELT(lists,2,ACCPT);
+1747         SET_VECTOR_ELT(lists,3,RssVec);
+1748         SET_VECTOR_ELT(lists,4,simStem);
+1749         SET_VECTOR_ELT(lists,5,TTime);
+1750         SET_VECTOR_ELT(lists,6,inde);
+1751         SET_VECTOR_ELT(lists,7,obsStem);
+1752 
+1753         SET_VECTOR_ELT(lists,8,simLeaf);
+1754         SET_VECTOR_ELT(lists,9,obsLeaf);
+1755 
+1756         SET_VECTOR_ELT(lists,10,simRhiz);
+1757         SET_VECTOR_ELT(lists,11,obsRhiz);
+1758 
+1759         SET_VECTOR_ELT(lists,12,simLAI);
+1760         SET_VECTOR_ELT(lists,13,obsLAI);
+1761 
+1762         SET_VECTOR_ELT(lists,14,simRoot);
+1763         SET_VECTOR_ELT(lists,15,obsRoot);
+1764 
+1765         SET_VECTOR_ELT(lists,16,simGrain);
+1766         SET_VECTOR_ELT(lists,17,obsGrain);
+1767 
+1768         SET_VECTOR_ELT(lists,18,RssVec2);
+1769 
+1770         SET_VECTOR_ELT(lists,19,mat1);
+1771         SET_VECTOR_ELT(lists,20,accept2);
+1772         SET_VECTOR_ELT(lists,21,accept3);
+1773         SET_VECTOR_ELT(lists,22,SAtemp);
+1774 
+1775         SET_STRING_ELT(names,0,mkChar("coefs"));
+1776         SET_STRING_ELT(names,1,mkChar("rss"));
+1777         SET_STRING_ELT(names,2,mkChar("accept"));
+1778         SET_STRING_ELT(names,3,mkChar("RssVec"));
+1779         SET_STRING_ELT(names,4,mkChar("simStem"));
+1780         SET_STRING_ELT(names,5,mkChar("TTime"));
+1781         SET_STRING_ELT(names,6,mkChar("index"));
+1782         SET_STRING_ELT(names,7,mkChar("obsStem"));
+1783 
+1784         SET_STRING_ELT(names,8,mkChar("simLeaf"));
+1785         SET_STRING_ELT(names,9,mkChar("obsLeaf"));
+1786         SET_STRING_ELT(names,10,mkChar("simRhiz"));
+1787         SET_STRING_ELT(names,11,mkChar("obsRhiz"));
+1788         SET_STRING_ELT(names,12,mkChar("simLAI"));
+1789         SET_STRING_ELT(names,13,mkChar("obsLAI"));
+1790         SET_STRING_ELT(names,14,mkChar("simRoot"));
+1791         SET_STRING_ELT(names,15,mkChar("obsRoot"));
+1792         SET_STRING_ELT(names,16,mkChar("simGrain"));
+1793         SET_STRING_ELT(names,17,mkChar("obsGrain"));
+1794 
+1795         SET_STRING_ELT(names,18,mkChar("RssVec2"));
+1796         SET_STRING_ELT(names,19,mkChar("resMC"));
+1797         SET_STRING_ELT(names,20,mkChar("accept2"));
+1798         SET_STRING_ELT(names,21,mkChar("accept3"));
+1799         SET_STRING_ELT(names,22,mkChar("saTemp"));
+1800 
+1801         setAttrib(lists,R_NamesSymbol,names);
+1802 
+1803         UNPROTECT(25);
+1804         return(lists);
+1805 }
+.fi
+.SS "double sel_phen (intphen)"
+
+.PP
+.nf
+2262                          {
+2263 
+2264         double index = 0;
+2265 
+2266         if(phen == 6){
+2267                 index = runif(20,25);
+2268         }else 
+2269          if(phen == 5){
+2270                  index = runif(16,20);
+2271          }else
+2272           if(phen == 4){
+2273                   index = runif(12,16);
+2274           }else
+2275            if(phen == 3){
+2276                    index = runif(8,12);
+2277            }else
+2278             if(phen == 2){
+2279                     index = runif(4,8);
+2280             }else
+2281              if(phen == 1){
+2282                      index = runif(0,4);
+2283              }
+2284 
+2285         return(index);
+2286 
+2287 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

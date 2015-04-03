@@ -1,0 +1,88 @@
+.TH "/home/dlebauer/dev/biocro/src/Filling_BioCro_SoilStructure.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/Filling_BioCro_SoilStructure.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBFilling_BioCro_SoilStructure\fP (struct \fBsoilML_str\fP *soilMLS, struct \fBsoilText_str\fP *soTexS, int soillayers, double *depths)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void Filling_BioCro_SoilStructure (struct \fBsoilML_str\fP *soilMLS, struct \fBsoilText_str\fP *soTexS, intsoillayers, double *depths)"
+
+.PP
+.nf
+3  {
+4     /*************************************************************************************
+5     *Purpose
+6     * 
+7     * Surrently Soil water module of BioCro is very simple, using a multi-layer concept but
+8     * average soil properties and all layers must be of same size\&.
+9     * 
+10     * We have added additional elements in soil multilayer structure used in BioCro where
+11     * each layer is explicitly defined and also additional properties which are required for
+12     * biogeochemical calculations are also defined for each layer
+13     * 
+14     * We are simply filling these additional elements in a way that it is consistent with the 
+15     * current BioCro-soil water module [average soil properties for all the layers, each layer is
+16     * about 5 cm depth] so that older function of soilML can be used\&.I have to ensure from R that each layer is 5 cm 
+17     * by defining  Nlayers such that Nlayers= round(Rooting depth/5 , 0)\&.
+18     * 
+19     * Once Explicit definition of soil layers are used, Error associated with Rooting depth will disappear
+20     * 
+21     * IN future, I can use additional information to write more sophisticated soil water function
+22     * which cansiders effect of varying soil properties within a single soil profile and also
+23     * effect of using non-uniform discretization of the soil profile
+24     * 
+25     * Variables Initialized
+26     * soilMLS->
+27     * width
+28     * dpthmn
+29     * dpthmx
+30     * bulkd
+31     * fieldc
+32     * pH
+33     * swclimit
+34     * ***********************************************************************************/
+35     int i;
+36     soilMLS->Num_BioCro_soil_layers= soillayers;
+37     
+38     for (i=0; i <soillayers;i++)
+39       {
+40                 if(i == 0)
+41                 {
+42                  soilMLS->width[i] = depths[1];
+43                  soilMLS->dpthmn[i]=0\&.0;
+44                  soilMLS->dpthmx[i]=depths[1];
+45                  
+46                 } 
+47                 else
+48                 {
+49                  soilMLS->width[i] = depths[i] - depths[i-1];
+50                  soilMLS->dpthmn[i]=depths[i-1];
+51                  soilMLS->dpthmx[i]=depths[i];
+52                 }
+53           soilMLS->pH[i]=7\&.0;
+54           soilMLS->swclimit[i]=soTexS->wiltp-0\&.0008; // soil/in file says swc limit = wiltpoint - deltamin, which is 0\&.0008 in example file
+55           soilMLS->bulkd[i]=soTexS->bulkd;
+56           soilMLS->fieldc[i]=soTexS->fieldc;
+57           soilMLS->sand[i]=soTexS->sand;
+58           soilMLS->silt[i]=soTexS->silt;
+59           soilMLS->clay[i]=soTexS->clay;
+60       }
+61    return;
+62  }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

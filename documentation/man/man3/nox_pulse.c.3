@@ -1,0 +1,150 @@
+.TH "/home/dlebauer/dev/biocro/src/nox_pulse.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/nox_pulse.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include <stdlib\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBPPTDAYS\fP   15"
+.br
+.ti -1c
+.RI "#define \fBPLDAYS\fP   2"
+.br
+.ti -1c
+.RI "#define \fBPMDAYS\fP   6"
+.br
+.ti -1c
+.RI "#define \fBPHDAYS\fP   13"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "double \fBmax3\fP (double a, double b, double c)"
+.br
+.ti -1c
+.RI "double \fBnox_pulse\fP (double *ppt, double *snow)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define PHDAYS   13"
+
+.SS "#define PLDAYS   2"
+
+.SS "#define PMDAYS   6"
+
+.SS "#define PPTDAYS   15"
+
+.SH "Function Documentation"
+.PP 
+.SS "double max3 (doublea, doubleb, doublec)"
+
+.PP
+.nf
+166     {
+167       double m;
+168    
+169       if (a > b) 
+170         m = a;
+171       else
+172         m = b;
+173 
+174       if (c > m)
+175         m = c;
+176 
+177       return(m);
+178     }
+.fi
+.SS "double nox_pulse (double *ppt, double *snow)"
+
+.PP
+.nf
+64     {
+65       static double cumppt[PPTDAYS] = {0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,
+66                                       0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,0\&.0};
+67       static double pl[PLDAYS] = {1\&.0,1\&.0};
+68       static double pm[PMDAYS] = {1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0};
+69       static double ph[PHDAYS] = {1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,
+70                                  1\&.0,1\&.0,1\&.0,1\&.0};
+71       static double mtplr[PHDAYS] = {1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,
+72                                     1\&.0,1\&.0,1\&.0,1\&.0,1\&.0};
+73       static int npl=0, npm=0, nph=0, nppt=0, mptr=0;
+74       static int pflag=0;
+75       double sumppt;
+76       double retval;
+77       int ii, indx;
+78 
+79       sumppt = 0\&.0;
+80       cumppt[nppt] = *ppt;
+81       for (ii=1; ii<PPTDAYS; ii++) {
+82         indx = (nppt+ii) % PPTDAYS;
+83         sumppt += cumppt[indx];
+84       } 
+85 
+86       /* Comparisons with data showed NO emissions to be about twice of */
+87       /* what they should be, reduce the pulse multipliers, cak - 09/24/03 */
+88       if (*snow) { 
+89         mtplr[mptr] = 0\&.0;
+90       } else if ((sumppt <= 1\&.0) && (*ppt > 0\&.1)) {
+91         /* initiate new pulse */
+92         if (*ppt < 0\&.5) {
+93           for (ii=0; ii<PLDAYS; ii++) {
+94             indx = (npl+ii) % PLDAYS;
+95             pl[indx] = 2\&.8 * exp(-0\&.805 * (ii+1));
+96           }
+97           pflag = 2;
+98         } else if ((*ppt >= 0\&.5) && (*ppt <= 1\&.5)) {
+99           for (ii=0; ii<PMDAYS; ii++) {
+100             indx = (npm+ii) % PMDAYS;
+101             pm[indx] = 3\&.67 * exp(-0\&.384 * (ii+1));
+102           }
+103           pflag = 6;
+104         } else {
+105           for (ii=0; ii<PHDAYS; ii++) {
+106             indx = (nph+ii) % PHDAYS;
+107             ph[indx] = 4\&.615 * exp(-0\&.208 * (ii+1));
+108           }
+109           pflag = 13;
+110         }
+111 
+112         mtplr[mptr] = max3(pl[npl],pm[npm],ph[nph]);
+113         pflag--;
+114       } else if (pflag > 0) {
+115         mtplr[mptr] = max3(pl[npl],pm[npm],ph[nph]);
+116         pflag--;
+117       } else {
+118         mtplr[mptr] = 1\&.0;
+119       }
+120 
+121       retval = mtplr[mptr];
+122       pl[npl] = 1\&.0;
+123       pm[npm] = 1\&.0;
+124       ph[nph] = 1\&.0;
+125 
+126       /* increment pointers in circular arrays */
+127       npl = (npl+1) % PLDAYS;
+128       npm = (npm+1) % PMDAYS;
+129       nph = (nph+1) % PHDAYS;
+130       nppt = (nppt+1) % PPTDAYS;
+131       mptr = (mptr+1) % PHDAYS;
+132 
+133       return(retval);
+134     }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

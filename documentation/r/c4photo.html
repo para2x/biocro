@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>c4photo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Coupled photosynthesis-stomatal conductance simulation</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>c4photo(Qp, Tl, RH, vmax&nbsp;=&nbsp;39, alpha&nbsp;=&nbsp;0.04, kparm&nbsp;=&nbsp;0.7, theta&nbsp;=&nbsp;0.83, beta&nbsp;=&nbsp;0.93, Rd&nbsp;=&nbsp;0.8, UPPERTEMP&nbsp;=&nbsp;37.5, LOWERTEMP&nbsp;=&nbsp;3, Catm&nbsp;=&nbsp;380, b0&nbsp;=&nbsp;0.08, b1&nbsp;=&nbsp;3, StomWS&nbsp;=&nbsp;1, ws&nbsp;=&nbsp;c("gs", "vmax"))</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>Qp</dt>
+      <dd>quantum flux (direct light), (<code class = 'eq'>micro</code>
+  mol <code class = 'eq'>m-2</code> <code class = 'eq'>s-1</code>).</dd>
+      <dt>Tl</dt>
+      <dd>temperature of the leaf (Celsius).</dd>
+      <dt>RH</dt>
+      <dd>relative humidity (as a fraction, i.e. 0-1).</dd>
+      <dt>vmax</dt>
+      <dd>maximum carboxylation of Rubisco according to
+  the Collatz model.</dd>
+      <dt>alpha</dt>
+      <dd>alpha parameter according to the Collatz
+  model. Initial slope of the response to Irradiance.</dd>
+      <dt>kparm</dt>
+      <dd>k parameter according to the Collatz model.
+  Initial slope of the response to CO2.</dd>
+      <dt>theta</dt>
+      <dd>theta parameter according to the Collatz
+  model. Curvature for light response.</dd>
+      <dt>beta</dt>
+      <dd>beta parameter according to the Collatz
+  model. Curvature for response to CO2.</dd>
+      <dt>Rd</dt>
+      <dd>Rd parameter according to the Collatz model.
+  Dark respiration.</dd>
+      <dt>UPPERTEMP</dt>
+      <dd></dd>
+      <dt>LOWERTEMP</dt>
+      <dd></dd>
+      <dt>Catm</dt>
+      <dd>Atmospheric CO2 in ppm (or
+  <code class = 'eq'>micro</code>mol/mol).</dd>
+      <dt>b0</dt>
+      <dd>intercept for the Ball-Berry stomatal
+  conductance model.</dd>
+      <dt>b1</dt>
+      <dd>slope for the Ball-Berry stomatal conductance
+  model.</dd>
+      <dt>StomWS</dt>
+      <dd>coefficient which controls the effect of
+  water stress on stomatal conductance and assimilation.</dd>
+      <dt>ws</dt>
+      <dd>option to control whether the water stress
+  factor is applied to stomatal conductance ('gs') or to
+  Vmax ('vmax').</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+a <code><a href='http://www.inside-r.org/r-doc/base/list'>list</a></code> structure with components
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>The mathematical model is based on Collatz et al (1992)
+(see References). Stomatal conductance is based on code
+provided by Joe Berry.</p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p>G. Collatz, M. Ribas-Carbo, J. Berry. (1992).  Coupled
+photosynthesis-stomatal conductance model for leaves of C4
+plants. <em>Australian Journal of Plant Physiology</em>
+519--538.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## &lt;strong&gt;Not run&lt;/strong&gt;: 
+#      ## First example: looking at the effect of changing alpha
+#       Qps &lt;- seq(0,2000,10)
+#       Tls &lt;- seq(0,55,5)
+#       rhs &lt;- c(0.7)
+#       dat1 &lt;- data.frame(expand.grid(Qp=Qps,Tl=Tls,RH=rhs))
+#       res1 &lt;- c4photo(dat1$Qp,dat1$Tl,dat1$RH) ## default alpha = 0.04
+#       res2 &lt;- c4photo(dat1$Qp,dat1$Tl,dat1$RH,alpha=0.06)
+# 
+#      ## Plot comparing alpha 0.04 vs. 0.06 for a range of conditions
+#      xyplot(res1$Assim + res2$Assim ~ Qp | factor(Tl) , data = dat1,
+#             type=&#39;l&#39;,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2,
+#             ylab=expression(paste(&#39;Assimilation (&#39;,
+#                  mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#              xlab=expression(paste(&#39;Quantum flux (&#39;,
+#                  mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#             key=list(text=list(c(&#39;alpha 0.04&#39;,&#39;alpha 0.06&#39;)),
+#               lines=TRUE,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2))
+# 
+#      ## Second example: looking at the effect of changing vmax
+#      ## Plot comparing Vmax 39 vs. 50 for a range of conditions
+# 
+#       res1 &lt;- c4photo(dat1$Qp,dat1$Tl,dat1$RH) ## default Vmax = 39
+#       res2 &lt;- c4photo(dat1$Qp,dat1$Tl,dat1$RH,vmax=50)
+# 
+#      xyplot(res1$Assim + res2$Assim ~ Qp | factor(Tl) , data = dat1,
+#             type=&#39;l&#39;,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2,
+#             ylab=expression(paste(&#39;Assimilation (&#39;,
+#                  mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#              xlab=expression(paste(&#39;Quantum flux (&#39;,
+#                  mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#             key=list(text=list(c(&#39;Vmax 39&#39;,&#39;Vmax 50&#39;)),
+#               lines=TRUE,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2))
+# 
+#      ## Small effect of low RH on  Assim
+#       Qps &lt;- seq(0,2000,10)
+#       Tls &lt;- seq(0,55,5)
+#       rhs &lt;- c(0.2,0.9)
+#       dat1 &lt;- data.frame(expand.grid(Qp=Qps,Tl=Tls,RH=rhs))
+#       res1 &lt;- c4photo(dat1$Qp,dat1$Tl,dat1$RH)
+#      # plot for Assimilation and two RH
+#       xyplot(res1$Assim ~ Qp | factor(Tl) , data = dat1,
+#              groups=RH, type=&#39;l&#39;,
+#              col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2,
+#              ylab=expression(paste(&#39;Assimilation (&#39;,
+#                  mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#              xlab=expression(paste(&#39;Quantum flux (&#39;,
+#                  mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#              key=list(text=list(c(&#39;RH 20%&#39;,&#39;RH 90%&#39;)),
+#                         lines=TRUE,col=c(&#39;blue&#39;,&#39;green&#39;),
+#                         lwd=2))
+# 
+#     ## Effect of the previous runs on Stomatal conductance
+# 
+#     xyplot(res1$Gs ~ Qp | factor(Tl) , data = dat1,
+#            type=&#39;l&#39;, groups=RH,
+#            col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2,
+#            ylab=expression(paste(&#39;Stomatal Conductance (&#39;,
+#                            mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#            xlab=expression(paste(&#39;Quantum flux (&#39;,
+#                            mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#            key=list(text=list(c(&#39;RH 20%&#39;,&#39;RH 90%&#39;)),
+#                      lines=TRUE,col=c(&#39;blue&#39;,&#39;green&#39;),
+#                      lwd=2))
+# 
+# 
+# ## A Ci curve for the Collatz model
+# ## Assuming constant values of Qp, Temp, and RH
+# ## Notice the effect of the different kparm
+# ## The loop is needed because the length of Ca
+# ## should be the same as Qp
+# 
+# Ca &lt;- seq(15,400,5)
+# 
+# res1 &lt;- numeric(length(Ca))
+# res2 &lt;- numeric(length(Ca))
+# for(i in 1:length(Ca)){
+#   res1[i] &lt;- c4photo(1500,25,0.7,Catm=Ca[i])$Assim
+#   res2[i] &lt;- c4photo(1500,25,0.7,Catm=Ca[i],kparm=0.8)$Assim
+# }
+# 
+# xyplot(res1 + res2 ~ Ca ,type=&#39;l&#39;,lwd=2,
+#        col=c(&#39;blue&#39;,&#39;green&#39;),
+#      xlab=expression(paste(CO[2],&#39; (ppm)&#39;)),
+#      ylab=expression(paste(&#39;Assimilation (&#39;,
+#          mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#      key=list(text=list(c(&#39;kparm 0.7&#39;,&#39;kparm 0.8&#39;)),
+#                         lines=TRUE,col=c(&#39;blue&#39;,&#39;green&#39;),
+#                         lwd=2))
+# 
+# ## Effect of Reduction in Assimilation due to
+# ## water stress
+# 
+# Qps &lt;- seq(0,2000,10)
+# Tls &lt;- seq(0,55,5)
+# rhs &lt;- c(0.7)
+# dat1 &lt;- data.frame(expand.grid(Qp=Qps,Tl=Tls,RH=rhs))
+# res1 &lt;- c4photo(dat1$Qp,dat1$Tl,dat1$RH) ## default StomWS = 1 No stress
+# res2 &lt;- c4photo(dat1$Qp,dat1$Tl,dat1$RH,StomWS=0.5)
+# 
+# ## Plot comparing StomWS = 1 vs. 0.5 for a range of conditions
+# xyplot(res1$Assim + res2$Assim ~ Qp | factor(Tl) , data = dat1,
+#        type=&#39;l&#39;,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2,
+#        ylab=expression(paste(&#39;Assimilation (&#39;,
+#            mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#        xlab=expression(paste(&#39;Quantum flux (&#39;,
+#             mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#        key=list(text=list(c(&#39;StomWS 1&#39;,&#39;StomWS 0.5&#39;)),
+#            lines=TRUE,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2))
+# 
+# 
+# ## Effect on Stomatal Conductance
+# ## Plot comparing StomWS = 1 vs. 0.5 for a range of conditions
+# xyplot(res1$Gs + res2$Gs ~ Qp | factor(Tl) , data = dat1,
+#         type=&#39;l&#39;,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2,
+#         ylab=expression(paste(&#39;Stomatal Conductance (mmol &#39;,
+#           m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#         xlab=expression(paste(&#39;Quantum flux (&#39;,
+#           mu,mol,&#39; &#39;,m^-2,&#39; &#39;,s^-1,&#39;)&#39;)),
+#         key=list(text=list(c(&#39;StomWS 1&#39;,&#39;StomWS 0.5&#39;)),
+#            lines=TRUE,col=c(&#39;blue&#39;,&#39;green&#39;),lwd=2))
+# ## &lt;strong&gt;End(Not run)&lt;/strong&gt;
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>c4photo</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+<code><a href='eC4photo.html'>eC4photo</a></code>
+
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

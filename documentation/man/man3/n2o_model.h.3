@@ -1,0 +1,472 @@
+.TH "/home/dlebauer/dev/biocro/src/n2o_model.h" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/n2o_model.h \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBCOARSE\fP   1           /* texture type for sandy soil */"
+.br
+.ti -1c
+.RI "#define \fBMEDIUM\fP   2           /* texture type for medium (loamy) soil */"
+.br
+.ti -1c
+.RI "#define \fBFINE\fP   3             /* texture type for fine soil */"
+.br
+.ti -1c
+.RI "#define \fBVERYFINE\fP   4         /* texture type for volcanic soil */"
+.br
+.ti -1c
+.RI "#define \fBMIN_NH4_CONC\fP   0\&.05  /* minimum NH4 concentration (ppm) */"
+.br
+.ti -1c
+.RI "#define \fBMIN_NO3_CONC\fP   0\&.05  /* minimum NO3 concentration (ppm) */"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "double \fBnox_pulse\fP (double *ppt, double *snow)"
+.br
+.ti -1c
+.RI "void \fBgetsoilprop\fP (double *asand, double *asilt, double *aclay, double *bulkden, double *fieldcap, int *texture, int *soilclassification)"
+.br
+.ti -1c
+.RI "double \fBdiffusiv\fP (double *A, double *bulkden, double *\fBwfps\fP)"
+.br
+.ti -1c
+.RI "void \fBleachdly\fP (double tfluxout[], int numlyrs, double nitrate[], double critflow, double frlechd[], double stream[], double basef, double stormf, double *inorglch)"
+.br
+.ti -1c
+.RI "double \fBf_allometric\fP (double x, double A[])"
+.br
+.ti -1c
+.RI "double \fBf_arctangent\fP (double x, double A[])"
+.br
+.ti -1c
+.RI "double \fBf_exponential\fP (double x, double A[])"
+.br
+.ti -1c
+.RI "double \fBf_gen_gompertz\fP (double x, double A[])"
+.br
+.ti -1c
+.RI "double \fBf_logistic\fP (double x, double A[])"
+.br
+.ti -1c
+.RI "double \fBf_gen_poisson_density\fP (double x, double A[])"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define COARSE   1           /* texture type for sandy soil */"
+
+.SS "#define FINE   3             /* texture type for fine soil */"
+
+.SS "#define MEDIUM   2           /* texture type for medium (loamy) soil */"
+
+.SS "#define MIN_NH4_CONC   0\&.05  /* minimum NH4 concentration (ppm) */"
+
+.SS "#define MIN_NO3_CONC   0\&.05  /* minimum NO3 concentration (ppm) */"
+
+.SS "#define VERYFINE   4         /* texture type for volcanic soil */"
+
+.SH "Function Documentation"
+.PP 
+.SS "double diffusiv (double *A, double *bulkden, double *wfps)"
+
+.PP
+.nf
+70     {
+71       double porosity;
+72       double theta_A, theta_P, theta_V, my_theta_V;
+73       double tp1, tp2, tp3, tp4, tp5, tp6, tp7, tp8;
+74       double vfrac;
+75       double s_wat, sw_p;
+76       double pfc;
+77       double dDO;
+78       int   debug;
+79 
+80       /* Initialization */
+81       debug = 0;
+82 
+83       porosity = 1\&.0 - (*bulkden)/PARTDENS;
+84       if ((porosity - (*A)) < 0\&.0) {
+85         printf("ERROR:  Mis-match between bulk density and field capacity\n");
+86         printf("value in soils\&.in file\&.  Ending simulation!\n");
+87         exit(1);
+88       }
+89 
+90       pfc = (*wfps)*100 /((*A)/porosity);
+91  
+92       if (pfc >= 100\&.0) {
+93         vfrac = ((*wfps)*porosity - *A) / (porosity - (*A));
+94       } else {
+95         vfrac = 0\&.0;
+96       }
+97   
+98       if (pfc < 100\&.0) {
+99         theta_V = (pfc/100\&.0)*(*A);
+100       } else {
+101         theta_V = (*A) + (min(vfrac,1\&.0) * (porosity - (*A)));
+102       }
+103 
+104       my_theta_V = *wfps * (1\&.0 - *bulkden/PARTDENS);
+105 
+106       theta_P = (theta_V < (*A)) ? 0\&.0 : theta_V - (*A);
+107       theta_A = (theta_V > (*A)) ? (*A) : theta_V;
+108 
+109       if (debug) {
+110         printf("In SUB, vfrac = %f\n", vfrac);
+111         printf("In SUB, porosity - A = %f\n", (porosity - (*A)));
+112         printf("In SUB, (*A) = %f\n", (*A));
+113         printf("In SUB, (*wfps) = %f\n", (*wfps));
+114         printf("In SUB, pfc = %f\n", pfc);
+115         printf("In SUB, porosity = %f\n", porosity);
+116         printf("In SUB, theta_V = %f\n", theta_V);
+117         printf("In SUB, my_theta_V = %f\n", my_theta_V);
+118         printf("In SUB, theta_P = %f\n", theta_P);
+119         printf("In SUB, theta_A = %f\n", theta_A);
+120       }
+121 
+122       s_wat = min(1\&.0, theta_V/(*A));
+123       sw_p = min(1\&.0, theta_P/(porosity-(*A)));
+124 
+125       tp1 = pow((1\&.0 - s_wat), 2\&.0);
+126       tp2 = ((*A) - theta_A) / ((*A) + (1\&.0 - porosity));
+127       tp3 = pow(tp2,(0\&.5*tp2 + 1\&.16));
+128       tp4 = (1\&.0 - pow(((porosity-(*A))),
+129                               (0\&.5*((porosity-(*A))) + 1\&.16)));
+130       tp5 = (porosity-(*A))-theta_P;
+131       if (tp5 > 0\&.0) {
+132         tp6 = pow(tp5, (0\&.5*tp5 + 1\&.16));
+133       } else {
+134         tp6 = 0\&.0;
+135       }
+136       tp7 = pow((1\&.0-sw_p), 2\&.0);
+137       tp8 = max(0\&.0, (tp1*tp3*tp4*(tp5-tp6)) /
+138                       (1\&.0E-6 + (tp1*tp3*tp4) + tp5 - tp6) * 1\&.0E7);
+139 
+140       if (debug) printf("From SUB: %f %f %f %f %f %f %f %f\n",
+141                         tp1, tp2, tp3, tp4, tp5, tp6, tp7, tp8);
+142       dDO = max(0\&.0, (tp8/1\&.0E7 + tp7*tp6));
+143       if (debug) {
+144             printf("In SUB, dDO = %f\n", dDO);
+145       }
+146 
+147 /*      dDO /= 0\&.20;
+148       dDO = min(dDO, 1\&.0); */
+149 
+150       return(dDO);
+151     }
+.fi
+.SS "double f_allometric (doublex, doubleA[])"
+
+.PP
+.nf
+56     {
+57       return x <= 0\&.0 ? 0\&.0 : A[0] * pow(x, A[1]);
+58     }
+.fi
+.SS "double f_arctangent (doublex, doubleA[])"
+
+.PP
+.nf
+72     {
+73       return(A[1] + (A[2] / PI) *
+74              atan(PI * A[3] * (x - A[0])));
+75     }
+.fi
+.SS "double f_exponential (doublex, doubleA[])"
+
+.PP
+.nf
+89     {
+90       return(A[0] * exp((A[1] * x)));
+91     }
+.fi
+.SS "double f_gen_gompertz (doublex, doubleA[])"
+
+.PP
+.nf
+109     {
+110       double tmp1, tmp2;      /* temp values */
+111 
+112       if (A[1] <= 0\&.0) {
+113         return 0\&.0;
+114       }
+115 
+116       tmp1 = pow(A[1], (A[3] * x));
+117       tmp2 = pow(A[1], A[2] / tmp1);
+118 
+119       return(A[0] / tmp2);
+120     }
+.fi
+.SS "double f_gen_poisson_density (doublex, doubleA[])"
+
+.PP
+.nf
+152     {
+153       double tmp1, tmp2, tmp3;
+154 
+155       if (A[1] == A[0]) {
+156         return(0\&.0);
+157       }
+158 
+159       tmp1 = ((A[1] - x) / (A[1] - A[0]));
+160       if (tmp1 <= 0\&.0) {
+161         return 0\&.0;
+162       }
+163 
+164       tmp2 = 1\&.0 - pow(tmp1, A[3]);
+165       tmp3 = pow(tmp1, A[2]);
+166       return (exp(A[2] * tmp2 / A[3]) * tmp3);
+167     }
+.fi
+.SS "double f_logistic (doublex, doubleA[])"
+
+.PP
+.nf
+136     {
+137       return(A[0] / (1\&.0 + A[1] / exp((A[2] * x))));
+138     }
+.fi
+.SS "void getsoilprop (double *asand, double *asilt, double *aclay, double *bulkden, double *fieldcap, int *texture, int *soilclassification)"
+
+.PP
+.nf
+75     {
+76       static double satcond[NCLASS] = {0\&.0, 0\&.000176, 0\&.0001563,
+77                                       0\&.00003467, 0\&.0000072, 0\&.00000695,
+78                                       0\&.0000063, 0\&.0000017, 0\&.00000245,
+79                                       0\&.000002167, 0\&.000001033,
+80                                       0\&.000001283, 0\&.0000080, 0\&.0000080};
+81       static double bulk_density[NCLASS] = {0\&.0, 1\&.55, 1\&.50, 1\&.43, 1\&.36,
+82                                            1\&.39, 1\&.35, 1\&.24, 1\&.30, 1\&.28,
+83                                            1\&.19, 1\&.15, 1\&.40, 0\&.75};
+84       static double field_capacity[NCLASS] = {0\&.0, 0\&.14, 0\&.18, 0\&.22, 0\&.32,
+85                                              0\&.29, 0\&.28, 0\&.40, 0\&.36,
+86                                              0\&.36, 0\&.46, 0\&.45, 0\&.33,
+87                                              0\&.70};
+88       int   soil_indx;
+89       double ksat;
+90       double sand, silt, clay;
+91 
+92       sand = *asand * 100;
+93       silt = *asilt * 100;
+94       clay = *aclay * 100;
+95 
+96       if ((sand > 100 || sand < 0) || (silt > 100 || silt < 0) ||
+97           (clay > 100 || clay < 0)) {
+98         fprintf(stderr, "Invalid texture in getsoilprop: sand = %f,", sand);
+99         fprintf(stderr, " silt = %f, clay = %f\n", silt, clay);
+100         exit(1);
+101       }
+102 
+103       if (*texture == VERYFINE) {
+104         /* volcanic */
+105         soil_indx = 13;
+106       } else if ((sand >= 85) && ((-2\&.0/3\&.0)*silt - clay + 10 >= 0)) {
+107         /* sand */
+108         soil_indx = 1;
+109       } else if (((-2\&.0/3\&.0)*silt - clay + 10 <= 0) &&
+110                  (-0\&.5*silt - clay + 15 >= 0)) {
+111         /* loamy sand */
+112         soil_indx = 2;
+113       } else if (((-0\&.5*silt-clay+15 <= 0) && (clay <= 20) && (sand >= 52)) ||
+114                  ((sand <= 52) && (silt <= 50) && (clay <= 7))) {
+115         /* sandy loam */
+116         soil_indx = 3;
+117       } else if ((sand <= 50) && (silt >= 50) && (clay <= 27)) {
+118         if ((sand <= 20) && (clay <= 10)) {
+119           /* silt */
+120           soil_indx = 12;
+121         } else {
+122           /* silt loam */
+123           soil_indx = 4;
+124         }
+125       } else if ((sand >= 23 && sand <= 52) && (silt >= 28 && silt <= 50) &&
+126                  (clay >= 7 && clay <= 27)) {
+127         /* loam */
+128         soil_indx = 5;
+129       } else if ((sand >= 45 && sand <= 80) && (silt <= 28) &&
+130                  (clay >= 20 && clay <= 35)) {
+131         /* sandy clay loam */
+132         soil_indx = 6;
+133       } else if ((sand <= 20) && (clay >= 27 && clay <= 40)) {
+134         /* silty clay loam */
+135         soil_indx = 7;
+136       } else if ((sand >= 20 && sand <= 45) && (clay >= 27 && clay <= 40)) {
+137         /* clay loam */
+138         soil_indx = 8;
+139       } else if ((sand >= 45 && sand <= 65) && (silt <= 20) &&
+140                  (clay >= 35 && clay <= 55)) {
+141         /* sandy clay */
+142         soil_indx = 9;
+143       } else if ((sand <= 20) && (silt >= 40 && silt <= 60) &&
+144                  (clay >= 40 && clay <= 60)) {
+145         /* silty clay */
+146         soil_indx = 10;
+147       } else if ((sand <= 45) && (silt <= 40) && (clay >= 40)) {
+148         /* clay */
+149         soil_indx = 11;
+150       } else {
+151         fprintf(stderr, "Unknown texture type: sand = %f, silt = %f,", sand,
+152                 silt);
+153         fprintf(stderr, " clay = %f\n", clay);
+154         exit(1);
+155       }
+156 
+157       *bulkden = bulk_density[soil_indx];
+158       *fieldcap = field_capacity[soil_indx];
+159       ksat = satcond[soil_indx]*100\&.0;    /* Convert m/sec to cm/sec */
+160       *soilclassification=soil_indx-1;
+161 
+162 /*      printf("Soil classification = %1d\n", soil_indx);
+163       printf("standard_bulkden = %10\&.6lf\n", *bulkden);
+164       printf("standard_fieldcap = %10\&.6lf\n", *fieldcap);
+165       printf("standard_ksat = %10\&.6lf\n", ksat); */
+166 
+167       return;
+168     }
+.fi
+.SS "void leachdly (doubletfluxout[], intnumlyrs, doublenitrate[], doublecritflow, doublefrlechd[], doublestream[], doublebasef, doublestormf, double *inorglch)"
+
+.PP
+.nf
+61     {
+62 
+63       int lyr, nxt;
+64       int iel = 0;  /* nitrogen */
+65       double amtlea[MAXLYR];
+66       double strm_N;
+67       double base_N;
+68       double linten;
+69 
+70       strm_N = 0\&.0;
+71       base_N = 0\&.0;
+72       *inorglch = 0\&.0;
+73 
+74       for(lyr=0; lyr < numlyrs; lyr++) {
+75         amtlea[lyr] = 0\&.0;
+76         nxt = lyr + 1;
+77 
+78         /* wfluxout > 0\&. indicates a saturated water flow out of layer lyr */
+79 
+80         if ((wfluxout[lyr] >  0\&.0) && (nitrate[lyr] > 1\&.0E-10)) {
+81           linten = min(1\&.0 - (critflow - wfluxout[lyr]) / critflow, 1\&.0);
+82           linten = max(linten, 0\&.0);
+83           amtlea[lyr] = (frlechd[iel]) * nitrate[lyr] * linten;
+84 
+85           /* If you are at the bottom layer, compute storm flow\&. */
+86           if (lyr == numlyrs-1) {
+87             strm_N = amtlea[lyr] * stormf;
+88           }
+89           if (amtlea[lyr] < nitrate[lyr]) {
+90             nitrate[lyr] = nitrate[lyr] - amtlea[lyr];
+91             nitrate[nxt] = nitrate[nxt] + (amtlea[lyr] - strm_N);
+92           }
+93         }
+94       }
+95 
+96       /* Compute base flow and mineral stream flows\&. */
+97       /* Check for underflow\&. -mdh */
+98 
+99       if (nitrate[nxt] >= 1\&.0E-10) {
+100         base_N = nitrate[nxt] * basef;
+101         nitrate[nxt] = nitrate[nxt] - base_N;
+102       }
+103 
+104       /* Note: stream flow indices differ from mineral element */ 
+105       /*       indices by 1 (eg  stream(2) is stream flow for nitrogen)\&. */
+106 
+107       stream[iel+1] = stream[iel+1] + (strm_N + base_N);
+108       *inorglch = strm_N + base_N;
+109 
+110       return;
+111     }
+.fi
+.SS "double nox_pulse (double *ppt, double *snow)"
+
+.PP
+.nf
+64     {
+65       static double cumppt[PPTDAYS] = {0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,
+66                                       0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,0\&.0,0\&.0};
+67       static double pl[PLDAYS] = {1\&.0,1\&.0};
+68       static double pm[PMDAYS] = {1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0};
+69       static double ph[PHDAYS] = {1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,
+70                                  1\&.0,1\&.0,1\&.0,1\&.0};
+71       static double mtplr[PHDAYS] = {1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,1\&.0,
+72                                     1\&.0,1\&.0,1\&.0,1\&.0,1\&.0};
+73       static int npl=0, npm=0, nph=0, nppt=0, mptr=0;
+74       static int pflag=0;
+75       double sumppt;
+76       double retval;
+77       int ii, indx;
+78 
+79       sumppt = 0\&.0;
+80       cumppt[nppt] = *ppt;
+81       for (ii=1; ii<PPTDAYS; ii++) {
+82         indx = (nppt+ii) % PPTDAYS;
+83         sumppt += cumppt[indx];
+84       } 
+85 
+86       /* Comparisons with data showed NO emissions to be about twice of */
+87       /* what they should be, reduce the pulse multipliers, cak - 09/24/03 */
+88       if (*snow) { 
+89         mtplr[mptr] = 0\&.0;
+90       } else if ((sumppt <= 1\&.0) && (*ppt > 0\&.1)) {
+91         /* initiate new pulse */
+92         if (*ppt < 0\&.5) {
+93           for (ii=0; ii<PLDAYS; ii++) {
+94             indx = (npl+ii) % PLDAYS;
+95             pl[indx] = 2\&.8 * exp(-0\&.805 * (ii+1));
+96           }
+97           pflag = 2;
+98         } else if ((*ppt >= 0\&.5) && (*ppt <= 1\&.5)) {
+99           for (ii=0; ii<PMDAYS; ii++) {
+100             indx = (npm+ii) % PMDAYS;
+101             pm[indx] = 3\&.67 * exp(-0\&.384 * (ii+1));
+102           }
+103           pflag = 6;
+104         } else {
+105           for (ii=0; ii<PHDAYS; ii++) {
+106             indx = (nph+ii) % PHDAYS;
+107             ph[indx] = 4\&.615 * exp(-0\&.208 * (ii+1));
+108           }
+109           pflag = 13;
+110         }
+111 
+112         mtplr[mptr] = max3(pl[npl],pm[npm],ph[nph]);
+113         pflag--;
+114       } else if (pflag > 0) {
+115         mtplr[mptr] = max3(pl[npl],pm[npm],ph[nph]);
+116         pflag--;
+117       } else {
+118         mtplr[mptr] = 1\&.0;
+119       }
+120 
+121       retval = mtplr[mptr];
+122       pl[npl] = 1\&.0;
+123       pm[npm] = 1\&.0;
+124       ph[nph] = 1\&.0;
+125 
+126       /* increment pointers in circular arrays */
+127       npl = (npl+1) % PLDAYS;
+128       npm = (npm+1) % PMDAYS;
+129       nph = (nph+1) % PHDAYS;
+130       nppt = (nppt+1) % PPTDAYS;
+131       mptr = (mptr+1) % PHDAYS;
+132 
+133       return(retval);
+134     }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

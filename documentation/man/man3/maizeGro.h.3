@@ -1,0 +1,346 @@
+.TH "/home/dlebauer/dev/biocro/src/maizeGro.h" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/maizeGro.h \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fBCan_Str\fP \fBCanAC\fP (double LAI, int DOY, int hr, double solarR, double Temp, double RH, double WindSpeed, double lat, int nlayers, double Vmax, double Alpha, double Kparm, double theta, double beta, double Rd, double Catm, double b0, double b1, double StomataWS, int ws, double kd, double chil, double heightf, double leafN, double kpLN, double lnb0, double lnb1, int lnfun, double upperT, double lowerT, struct \fBnitroParms\fP nitroP)"
+.br
+.ti -1c
+.RI "struct \fBlai_str\fP \fBlaiLizasoFun\fP (double thermalt, double phenostage, double phyllochron1, double phyllochron2, double Ax, double LT, double k0, double a1, double a2, double L0, double LLx, double Lx, double LNl)"
+.br
+.ti -1c
+.RI "struct \fBlai_str\fP \fBlaiBirchdiscontinuousFun\fP (double phenostage, double Lt, double Amax, double c1, double c2, double c3, double c4)"
+.br
+.ti -1c
+.RI "struct \fBlai_str\fP \fBlaiBirchcontinuousFun\fP (double phenostage, double a, double b, double Amax, double x0, double f, double g, double TT, double LT)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "struct \fBCan_Str\fP CanAC (doubleLAI, intDOY, inthr, doublesolarR, doubleTemp, doubleRH, doubleWindSpeed, doublelat, intnlayers, doubleVmax, doubleAlpha, doubleKparm, doubletheta, doublebeta, doubleRd, doubleCatm, doubleb0, doubleb1, doubleStomataWS, intws, doublekd, doublechil, doubleheightf, doubleleafN, doublekpLN, doublelnb0, doublelnb1, intlnfun, doubleupperT, doublelowerT, struct \fBnitroParms\fPnitroP)"
+
+.PP
+.nf
+545 {
+546 
+547         struct ET_Str tmp5_ET, tmp6_ET;
+548         struct Can_Str ans;
+549         struct c4_str tmpc4;
+550         struct c4_str tmpc42;
+551 
+552         int i;
+553         double Idir, Idiff, cosTh;
+554         double LAIc;
+555         double IDir, IDiff, Itot, rh, WS;
+556         double pLeafsun, pLeafshade;
+557         double Leafsun, Leafshade;
+558         double CanHeight;
+559 
+560         double vmax1, leafN_lay;
+561         double TempIdir,TempIdiff,AssIdir,AssIdiff,GAssIdir,GAssIdiff;
+562 
+563         double CanopyA, CanopyT,GCanopyA;
+564 
+565         const double cf = 3600 * 1e-6 * 30 * 1e-6 * 10000;
+566         const double cf2 = 3600 * 1e-3 * 18 * 1e-6 * 10000; 
+567 
+568         /* For Assimilation */
+569         /* 3600 converts seconds to hours */
+570         /* 1e-6 converts micro mols to mols */
+571         /* 30 is the grams in one mol of CO2 */
+572         /* 1e-6 converts g to Mg */
+573         /* 10000 scales from meter squared to hectare */
+574 
+575         /* For Transpiration */
+576         /* 3600 converts seconds to hours */
+577         /* 1e-3 converts mili mols to mols */
+578         /* 18 is the grams in one mol of H20 */
+579         /* 1e-6 converts g to Mg */
+580         /* 10000 scales from meter squared to hectare */
+581 
+582         lightME(lat,DOY,hr);
+583 
+584         Idir = tmp1[0] * solarR;
+585         Idiff = tmp1[1] * solarR;
+586         cosTh = tmp1[2];
+587     
+588         sunML(Idir,Idiff,LAI,nlayers,cosTh, kd, chil, heightf);
+589 
+590         /* results from multilayer model */
+591         LAIc = LAI / nlayers;
+592         /* Next I need the RH and wind profile */
+593         RHprof(RH,nlayers);
+594         WINDprof(WindSpeed,LAI,nlayers);
+595 
+596         LNprof(leafN, LAI, nlayers, kpLN);
+597         /* It populates tmp5 */
+598 
+599         /* Next use the EvapoTrans function */
+600         CanopyA=0\&.0;
+601         GCanopyA=0\&.0;
+602         CanopyT=0\&.0;
+603         for(i=0;i<nlayers;i++)
+604         {
+605                 leafN_lay = tmp5[--tp5];
+606                 if(lnfun == 0){
+607                         vmax1 = Vmax;
+608                 }else{
+609                         vmax1=nitroP\&.Vmaxb1*leafN_lay+nitroP\&.Vmaxb0;
+610                                               if(vmax1<0) vmax1=0\&.0;
+611                                                       Alpha=nitroP\&.alphab1*leafN_lay+nitroP\&.alphab0;
+612                                                        Rd=nitroP\&.Rdb1*leafN_lay+nitroP\&.Rdb0;
+613                /* For now alpha is not affected by leaf nitrogen */
+614                 }
+615 
+616                 IDir = layIdir[--sp1];
+617                 Itot = layItotal[--sp3];
+618 
+619                 rh = tmp4[--tp4];
+620                 WS = tmp3[--tp3];
+621                 pLeafsun = layFsun[--sp4];
+622                 CanHeight = layHeight[--sp6];
+623                 Leafsun = LAIc * pLeafsun;
+624                 tmp5_ET = EvapoTrans(IDir,Itot,Temp,rh,WS,LAIc,CanHeight,StomataWS,ws,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,upperT,lowerT,Catm);
+625                 TempIdir = Temp + tmp5_ET\&.Deltat;
+626                 tmpc4 = c4photoC(IDir,TempIdir,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws,upperT,lowerT);
+627                 AssIdir = tmpc4\&.Assim;
+628                 GAssIdir =tmpc4\&.GrossAssim;
+629 
+630                 IDiff = layIdiff[--sp2];
+631                 pLeafshade = layFshade[--sp5];
+632                 Leafshade = LAIc * pLeafshade;
+633                 tmp6_ET = EvapoTrans(IDiff,Itot,Temp,rh,WS,LAIc,CanHeight,StomataWS,ws,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,upperT,lowerT,Catm);
+634                 TempIdiff = Temp + tmp6_ET\&.Deltat;
+635                 tmpc42 = c4photoC(IDiff,TempIdiff,rh,vmax1,Alpha,Kparm,theta,beta,Rd,b0,b1,StomataWS, Catm, ws,upperT,lowerT);
+636                 AssIdiff = tmpc42\&.Assim;
+637                 GAssIdiff = tmpc42\&.GrossAssim;
+638                 CanopyA += Leafsun * AssIdir + Leafshade * AssIdiff;
+639                 GCanopyA += Leafsun * GAssIdir + Leafshade * GAssIdiff;
+640 // I am evaluating CanopyT using Penman Method because it gives realistic results
+641 // IN future canopyT needs to be fixed
+642 //                CanopyT += Leafsun * tmp5_ET\&.TransR + Leafshade * tmp6_ET\&.TransR;
+643                 CanopyT += Leafsun * tmp5_ET\&.EPenman + Leafshade * tmp6_ET\&.EPenman;
+644         }
+645         /*## These are micro mols of CO2 per m2 per sec for Assimilation
+646           ## and mili mols of H2O per m2 per sec for Transpiration
+647           ## Need to convert to 
+648           ## 3600 converts seconds to hours
+649           ## 10^-6 converts micro mols to mols
+650           ## 30 converts mols of CO2 to grams
+651           ## (1/10^6) converts grams to Mg
+652           ## 10000 scales up to ha */
+653 /* A similar conversion is made for water but
+654    replacing 30 by 18 and mili mols are converted to
+655    mols (instead of micro) */
+656         ans\&.Assim = cf * CanopyA ;
+657         ans\&.Trans = cf2 * CanopyT; 
+658         ans\&.GrossAssim=cf*GCanopyA;
+659         return(ans);
+660 }
+.fi
+.SS "struct \fBlai_str\fP laiBirchcontinuousFun (doublephenostage, doublea, doubleb, doubleAmax, doublex0, doublef, doubleg, doubleTT, doubleLT)"
+
+.PP
+.nf
+143                                                {
+144         struct lai_str tmp;
+145         double leafnumber = 0\&.0, totalLAI = 0\&.0, SLA = 0\&.0, TPLAmax = 0\&.0;
+146 
+147         int i, i2, i3, ln, ln2;
+148 
+149         for(i2 = 0; i2 < MAXLEAFNUMBER; i2++){
+150                 tmp\&.leafarea[i2] = 0\&.0;
+151         }
+152 
+153         if (phenostage <= 0) {
+154           leafnumber = 0;
+155         }else{
+156           if (phenostage < 1){
+157             leafnumber = phenostage* 100;
+158           }else{
+159             leafnumber = LT;
+160           }
+161         }         
+162         if (Amax == -1){
+163                 /* Eq 13 in Birch*/
+164                 Amax = 1000 * exp(-1\&.17 + 0\&.047 * LT);
+165         }
+166         if (a == -1){
+167                 /* Eq 18 in Birch */
+168                 a = -0\&.009 - exp(-0\&.2 * LT);
+169         }
+170         if (b == -1){
+171                 /* Eq 19 in Birch */
+172                 b = 0\&.0006 - exp(-0\&.43 * LT);
+173         }
+174         if (x0 == -1){
+175                 /* Eq 14 in Birch */
+176                 x0 = 0\&.67 * LT;
+177         }
+178         if (g == -1){
+179                 /* Eq 20 in Birch */
+180                 g = 107\&.9 * LT - 327;
+181         }
+182 
+183         for(i3 = 0; i3 < LT; i3++){
+184                 ln2 = i3 + 1;
+185                 TPLAmax += Amax * exp(a * (ln2 - x0) * (ln2 - x0) + b *
+186                              (ln2 - x0) * (ln2 - x0) * (ln2 - x0));
+187         }
+188 
+189         /* Birch Eq 11*/
+190         SLA = TPLAmax / (1 + exp(-f * (TT - g)));
+191 
+192         for (i = 0; i < leafnumber; i++){
+193           ln = i + 1;
+194           tmp\&.leafarea[i] = Amax * exp(a * (ln - x0) * (ln - x0) + b *
+195                              (ln - x0) * (ln - x0) * (ln - x0));
+196 
+197            totalLAI += tmp\&.leafarea[i];
+198          }
+199          tmp\&.totalLeafArea = totalLAI - SLA;
+200          return (tmp);
+201 }
+.fi
+.SS "struct \fBlai_str\fP laiBirchdiscontinuousFun (doublephenostage, doubleLt, doubleAmax, doublec1, doublec2, doublec3, doublec4)"
+
+.PP
+.nf
+99                                                              {
+100         struct lai_str tmp;
+101         double leafnumber, totalLAI = 0\&.0;
+102         if (phenostage <= 0) {
+103           leafnumber = 0;
+104         }else{
+105           if (phenostage < 1){
+106             leafnumber = phenostage* 100;
+107           }else{
+108             leafnumber = LT;
+109           }
+110         }         
+111         if (Amax == -1){
+112           /* Eq 13 in Birch*/
+113           Amax = 1000 * exp(-1\&.17 + 0\&.047 * LT);
+114         }
+115         int i, i2, ln;
+116         for(i2=0;i2<MAXLEAFNUMBER;i2++){
+117           tmp\&.leafarea[i2] = 0\&.0;
+118         }
+119         for (i = 0; i<leafnumber; i++){
+120           ln = i + 1;
+121           if (ln <= 3){
+122             /* Eq 14 in Birch */
+123             tmp\&.leafarea[i] = c1 * ln;
+124           }else{
+125             if (ln <= 11){
+126               /* Eq 15 in Birch */
+127               tmp\&.leafarea[i] = c2* ln * ln;
+128             }else{
+129               /* Eq 16 in Birch */
+130               tmp\&.leafarea[i] = c3 * Amax + c4 * ln * ln;
+131             }
+132           }
+133           totalLAI += tmp\&.leafarea[i];
+134         }
+135         tmp\&.totalLeafArea = totalLAI;
+136         return (tmp);
+137 }
+.fi
+.SS "struct \fBlai_str\fP laiLizasoFun (doublethermalt, doublephenostage, doublephyllochron1, doublephyllochron2, doubleAx, doubleLT, doublek0, doublea1, doublea2, doubleL0, doubleLLx, doubleLx, doubleLNl)"
+
+.PP
+.nf
+13                                                                                     {
+14 
+15         struct lai_str tmp;
+16         double A, kei, tei;
+17         double LNx = 0\&.67 * LT;
+18         double te1 = 25;
+19         double te2 = 50;
+20         double tti;
+21         double tsi;
+22         double leafnumber ;
+23         double totalLAI = 0\&.0;
+24 
+25         if (phenostage <= 0) {
+26           leafnumber = 0;
+27         }else{
+28           if (phenostage < 1){
+29             leafnumber = phenostage* 100;
+30           }else{
+31             leafnumber = LT;
+32           }
+33         }
+34 
+35 /* Longevity */
+36 
+37         /* Eq 11 in Lisazo 2003 */
+38         if (LNl == -1){ 
+39             LNl = 3\&.59 + 0\&.498 * LT;
+40         }
+41         /* Eq 12 in Lisazo 2003 */
+42         /* double Wl = 0\&.333333 * LT; not used ? */
+43         double LLi;
+44 
+45         double Wk = LT / 8\&.18;
+46 
+47         int i, i2, ln = 0;
+48 
+49         for(i2=0;i2<MAXLEAFNUMBER;i2++){
+50                 tmp\&.leafarea[i2] = 0\&.0;
+51         }
+52 
+53         for(i=0;i<leafnumber;i++){
+54 
+55                 /* Eq 7 in Lizaso 2003 */
+56                 ln = i + 1;
+57                 tti = (ln - 2) * phyllochron1 + te2;
+58 
+59                 /* Eq 8 in Lizaso 2003 */
+60                 kei = k0 + 0\&.174 * exp( - ((ln - 1)*(ln - 1))/(2 * Wk * Wk));
+61 
+62                 /* Eq 10 in Lizaso 2003 */
+63                 LLi = L0 + Lx * exp( - (ln - LNl)*(ln - LNl)/ (2*Wk*Wk));
+64                 
+65 
+66                 /* Eq 6 in Lizaso 2003 */
+67                 if(ln == 1) tei = te1;
+68                 if(ln == 2){
+69                         tei = te2;
+70                 }else{
+71                         tei = tti + (2\&.197 /kei);
+72                 }
+73                 
+74                 /* calculating time of 50% senescence from time of 50%
+75                  * expansion and leaf longevity */
+76                 tsi = LLi + tei;
+77 
+78                 /* Applying Eq 4 in Lizaso 2003 */
+79                 A = Aei(ln, Ax, LNx, a1, a2);
+80 
+81                 /* Applying Eq 2 in Lizaso 2003 */
+82                 tmp\&.leafarea[i] = Alogistic(thermalt, A, kei, tei);
+83 
+84                 /* calculating senesced area for this leaf */
+85                 tmp\&.leafarea[i] -= Alogistic(thermalt, A, kei, tsi);
+86 
+87                 /* Rprintf("leaf area %\&.1f \n", tmp\&.leafarea[i]);  */
+88                 totalLAI += tmp\&.leafarea[i];
+89         }
+90 
+91         tmp\&.totalLeafArea = totalLAI;
+92         return(tmp);
+93 
+94 
+95 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

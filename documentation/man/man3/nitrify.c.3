@@ -1,0 +1,187 @@
+.TH "/home/dlebauer/dev/biocro/src/nitrify.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/nitrify.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'soilwater\&.h'\fP
+.br
+\fC#include 'n2o_model\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBnitrify\fP (double *ammonium, double *nh4_2_no3, double *maxt, double *nreduce, \fBSITEPAR_SPT\fP sitepar, \fBLAYERPAR_SPT\fP layers, \fBSOIL_SPT\fP soil)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void nitrify (double *ammonium, double *nh4_2_no3, double *maxt, double *nreduce, \fBSITEPAR_SPT\fPsitepar, \fBLAYERPAR_SPT\fPlayers, \fBSOIL_SPT\fPsoil)"
+
+.PP
+.nf
+86     {
+87       int debug = 0;
+88       int ilyr;
+89       double MaxRate = 0\&.15;
+90       double base_flux;
+91       double fNsoilt; 
+92       double fNwfps;
+93       double fNnh4;
+94       double fNph;
+95       double A[4];    /* parameters to parton-innis functions */
+96       double grams_soil;
+97       double nh4_conc;
+98       double avgwfps;
+99       double min_ammonium = 0\&.03;
+100       double abiotic;
+101       double  rel_wc[4], avg_rel_wc, avgfc, avgstemp;
+102       double absoluteMaxRate;
+103 
+104 /*
+105       extern LAYERPAR_SPT layers;
+106       extern SITEPAR_SPT sitepar;
+107       extern SOIL_SPT soil;
+108 */
+109 
+110       *nh4_2_no3 = 0\&.0;
+111 
+112       if (*ammonium < min_ammonium) {
+113         if (debug) {
+114           fprintf(stdout, "CANNOT NITRIFY, ammonium too small\n");
+115         }
+116         goto RET;
+117       }
+118 
+119       /* Convert ammonium (g/m2) to nh4_conc (ppm) */
+120       /* Assume all ammonium occurs in the top 15 cm */
+121 /* NOTE:  This should be changed so that nitrification occurs as a continuous
+122           function by depth rather than assuming that the top 3 soil layers
+123           will sum to 15 cm */
+124 
+125       grams_soil = (layers->bulkd[0]*layers->width[0] +
+126                     layers->bulkd[1]*layers->width[1] +
+127                     layers->bulkd[2]*layers->width[2])*100*100;
+128 
+129       nh4_conc = *ammonium/grams_soil*1\&.0E6;
+130 
+131       if (debug > 1) {
+132         fprintf(stdout, "ammonium = %10\&.4lf\n", *ammonium);
+133         fprintf(stdout, "nh4_conc = %10\&.4lf\n", nh4_conc);
+134       }
+135 
+136       /* Compute the effect of soil water on Nitrification (0-1)\&. */
+137       /* Use relative water content for this calculation when the */
+138       /* soil is drier than field capacity\&.  When the soil is wetter */
+139       /* field capacity use water filled pore space\&.  cak - 06/16/04 */
+140 
+141       /* Compute relative water content in the 2nd and 3rd soil layers, */
+142       /* cak - 08/19/04 */
+143       for (ilyr = 1; ilyr < 3; ilyr ++) {
+144         rel_wc[ilyr] = (layers->swc[ilyr]/(layers->width[ilyr]) -
+145                         layers->swclimit[ilyr]) /
+146                         (layers->fieldc[ilyr] - layers->swclimit[ilyr]);
+147         if (rel_wc[ilyr] < 0\&.0) {
+148           rel_wc[ilyr] = 0\&.0;
+149         } else if (rel_wc[ilyr] > 1\&.0) {
+150           rel_wc[ilyr] = 1\&.0;
+151         }
+152         rel_wc[ilyr] *= layers->width[ilyr];
+153       }
+154       avg_rel_wc = (rel_wc[1] + rel_wc[2]) /
+155                    (layers->width[1] + layers->width[2]);
+156 
+157       if (avg_rel_wc < 1\&.0) {
+158         fNwfps = 1\&.0/(1\&.0 + 30\&.0 * exp(-9\&.0 * avg_rel_wc));
+159       } else {
+160         /* Compute average water filled pore space in 2nd and 3rd soil */
+161         /* layers, cak - 08/19/04 */
+162         wfps(layers);
+163         avgwfps = (layers->wfps[1]*layers->width[1] +
+164                    layers->wfps[2]*layers->width[2]) /
+165                   (layers->width[1] + layers->width[2]);
+166         if (debug > 1) {
+167           fprintf(stdout, "avgwfps = %6\&.2lf\n", avgwfps);
+168         }
+169         avgfc = (layers->fieldc[1]*layers->width[1] +
+170                  layers->fieldc[2]*layers->width[2]) /
+171                 (layers->width[1] + layers->width[2]);
+172         /* Line function with two known points and a new X, calculate Y */
+173         /* slope = (y2 - y1) / (x2 - x1) */
+174         /* y = slope * (x - x2) + y2 */
+175         fNwfps = (0\&.0 - 1\&.0) / (1\&.0 - avgfc) * (avgwfps - 1\&.0) + 0\&.0;
+176       }
+177 
+178       /* Compute the soil temperature effect on Nitrification */
+179       A[0] = 35\&.0;
+180       A[1] = -5\&.0;
+181       A[2] = 4\&.5;
+182       A[3] = 7\&.0;
+183       /* Rates of nitrification were too low at low soil temperatures, */
+184       /* shift the curve so that the nitrification rates are effectively */
+185       /* higher for cooler sites, this change does not affect sites with */
+186       /* hot temperatures, cak - 11/25/03 */
+187       avgstemp = (soil->soiltavg[1] * layers->width[1] + 
+188                   soil->soiltavg[2] * layers->width[2]) /
+189                  (layers->width[1] + layers->width[2]);
+190       if (*maxt >= 35\&.0) {
+191         A[0] = *maxt;
+192         fNsoilt = f_gen_poisson_density(avgstemp,A);
+193       } else {
+194         fNsoilt = f_gen_poisson_density(avgstemp+(A[0]-*maxt),A);
+195       }
+196 
+197       /* Compute pH effect on nitrification */
+198       A[0] = 5\&.0;
+199       A[1] = 0\&.56;
+200       A[2] = 1\&.0;
+201       A[3] = 0\&.45;
+202       fNph = f_arctangent(layers->pH[1], A);
+203 
+204       /* Compute the Ammonium effect on Nitrification */
+205       A[0] = 1\&.0;
+206       A[1] = -0\&.0105;
+207       A[2] = 0\&.0;
+208       A[3] = 0\&.0;
+209       fNnh4 = 1\&.0 - f_exponential(nh4_conc, A);
+210 
+211       /* Compute amount of ammonium that goes to nitrate during */
+212       /* nitrification */
+213       if (debug > 1) {
+214         fprintf(stdout, "%6s  %6s  %6s  %6s\n","fNwfps","fNsoilt", "fNph",
+215                 "fNnh4");
+216         fprintf(stdout, "%6\&.4lf  %6\&.4lf  %6\&.4lf  %6\&.4lf\n", fNwfps, fNsoilt, fNph,
+217                 fNnh4);
+218       }
+219       /* The base_flux is equivalent to 0\&.1 gN/ha/day */
+220       base_flux = 0\&.1/10000\&.0;
+221       abiotic = max(fNwfps * fNsoilt, sitepar->Ncoeff);
+222       absoluteMaxRate = min(0\&.4, *ammonium * MaxRate);
+223       *nh4_2_no3 = absoluteMaxRate * fNph * abiotic * *nreduce +
+224                    base_flux;
+225 
+226       if ((*ammonium - *nh4_2_no3) > min_ammonium) {
+227         *ammonium -= *nh4_2_no3;
+228       } else {
+229         *nh4_2_no3 = min(*nh4_2_no3, *ammonium - min_ammonium);
+230         *ammonium = min_ammonium;
+231       }
+232 
+233 RET:  return;
+234     }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

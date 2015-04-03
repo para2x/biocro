@@ -1,0 +1,67 @@
+.TH "/home/dlebauer/dev/biocro/src/cropcent.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/cropcent.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'soilwater\&.h'\fP
+.br
+\fC#include 'n2o_model\&.h'\fP
+.br
+\fC#include 'swconst\&.h'\fP
+.br
+\fC#include 'crocent\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "SEXP \fBcropcent\fP (SEXP FAKE)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "SEXP cropcent (SEXPFAKE)"
+
+.PP
+.nf
+11 {
+12   struct cropcentlayer CROPCENT;
+13 //  SOIL_SPT soil;
+14   double hetResp;
+15   int woody, Eflag;
+16   double *fake;
+17   woody = 0; // not testing for woody for now
+18   Eflag=1; //N simulation for now
+19 //  assignPools(&CROPCENT);
+20 //  assignParms(&CROPCENT);
+21   CROPCENTTimescaling(&CROPCENT);
+22 //  assignENV(&CROPCENT);
+23   assignFluxRatios(&CROPCENT);
+24   Rprintf("Before Decomposition\n");
+25   printcropcentout(CROPCENT,fake,fake,fake,fake,fake,fake,fake,fake,fake,fake,fake);
+26   decomposeCROPCENT(&CROPCENT, woody,Eflag);
+27   Rprintf("After Decomposition \n");
+28   printcropcentout(CROPCENT,fake,fake,fake,fake,fake,fake,fake,fake,fake,fake,fake);
+29   Rprintf("After updating\n");
+30   updatecropcentpools(&CROPCENT);
+31   printcropcentout(CROPCENT,fake,fake,fake,fake,fake,fake,fake,fake,fake,fake,fake);
+32   SEXP res;
+33   PROTECT(res=allocVector(REALSXP,1));
+34   REAL(res)[0]=1\&.0;
+35   UNPROTECT(1);
+36   return(res);
+37 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

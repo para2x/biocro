@@ -1,0 +1,664 @@
+.TH "/home/dlebauer/dev/biocro/src/Century.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/Century.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'Century\&.h'\fP
+.br
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fBcenT_str\fP \fBCentury\fP (double *LeafL, double *StemL, double *RootL, double *RhizL, double smoist, double stemp, int timestep, double SCs[9], double leachWater, double Nfert, double iMinN, double precip, double LeafL_Ln, double StemL_Ln, double RootL_Ln, double RhizL_Ln, double LeafL_N, double StemL_N, double RootL_N, double RhizL_N, int soilType, double Ks_cf[8])"
+.br
+.ti -1c
+.RI "struct \fBFL_str\fP \fBFmLcFun\fP (double Lig, double Nit)"
+.br
+.ti -1c
+.RI "struct \fBflow_str\fP \fBflow\fP (double *SC, double CNratio, double A, double Lc, double Tm, double \fBresp\fP, int kno, double Ks[8])"
+.br
+.ti -1c
+.RI "double \fBAbiotEff\fP (double smoist, double stemp)"
+.br
+.ti -1c
+.RI "SEXP \fBcntry\fP (SEXP LEAFL, SEXP STEML, SEXP ROOTL, SEXP RHIZL, SEXP SMOIST, SEXP STEMP, SEXP TIMESTEP, SEXP SCS, SEXP LEACHWATER, SEXP NFERT, SEXP IMINN, SEXP PRECIP, SEXP LEAFLLN, SEXP STEMLLN, SEXP ROOTLLN, SEXP RHIZLLN, SEXP LEAFLN, SEXP STEMLN, SEXP ROOTLN, SEXP RHIZLN, SEXP SOILTYPE, SEXP KS)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "double AbiotEff (doublesmoist, doublestemp)"
+
+.PP
+.nf
+570                                             {
+571 
+572   double ans;
+573   double TempEff = 0\&.0, MoisEff;
+574 
+575   if(stemp < 35){
+576     TempEff = 1\&.0087 / (1 + (46\&.2 * exp(-0\&.1899 * stemp)));
+577   }else{
+578     TempEff = -0\&.0826 * stemp + 3\&.84;
+579   }
+580   
+581   MoisEff = 1\&.0267 / (1 + 14\&.7 * exp(-6\&.5 * smoist));
+582 
+583   ans = TempEff * MoisEff;
+584 
+585   return(ans);
+586 
+587 }
+.fi
+.SS "struct \fBcenT_str\fP Century (double *LeafL, double *StemL, double *RootL, double *RhizL, doublesmoist, doublestemp, inttimestep, doubleSCs[9], doubleleachWater, doubleNfert, doubleiMinN, doubleprecip, doubleLeafL_Ln, doubleStemL_Ln, doubleRootL_Ln, doubleRhizL_Ln, doubleLeafL_N, doubleStemL_N, doubleRootL_N, doubleRhizL_N, intsoilType, doubleKs_cf[8])"
+
+.PP
+.nf
+42                                         {
+43 
+44   /* Converting Mg ha^-1 to g m^-2 */
+45   /* 1 Mg = 1e6 grams*/
+46   /* 1 ha = 1e4 m^2 */  
+47   const double cf = 100;
+48   *LeafL *= cf; 
+49   *StemL *= cf;
+50   *RootL *= cf;
+51   *RhizL *= cf;
+52 
+53   struct cenT_str tmp;
+54   struct soilText_str soilTemp;
+55 
+56   struct FL_str FmLc_Leaf, FmLc_Stem, FmLc_Root, FmLc_Rhiz;
+57   struct flow_str C1_5_Leaf, C2_5_Leaf, C1_5_Stem, C2_5_Stem;
+58   struct flow_str C1_7_Leaf_Ln, C1_7_Stem_Ln;
+59   struct flow_str C3_6_Root, C4_6_Root, C3_6_Rhiz, C4_6_Rhiz;
+60   struct flow_str C3_7_Root_Ln, C3_7_Rhiz_Ln;
+61   struct flow_str C5_7, C6, C7, C8_6;
+62 
+63   double C6_7, C6_8, C6_9, C7_6, C7_8;
+64   double C_ap, C_al, C_sp; 
+65 
+66   double SC1_Leaf, SC2_Leaf, SC1_Stem, SC2_Stem;
+67   double SC3_Root, SC4_Root, SC3_Rhiz, SC4_Rhiz;
+68 
+69 /*  
+70     I need the separate fractions of Leaf Litter and Stem Litter 
+71   Because they have different lignin to N ratios 
+72   Presumably, the rhizome and root are similar 
+73 
+74   There is an issue here that I should be careful about I'm importing 
+75   biomass, but need only carbon in some of these calculations 
+76 
+77   I also need to determine the initial values of carbon for each 
+78   component 
+79 */
+80 
+81   soilTemp = soilTchoose(soilType);  
+82   double T = soilTemp\&.clay + soilTemp\&.silt; /*  silt plus clay content of the soil */
+83   double Ts = soilTemp\&.sand; /*  Sand content of the soil */
+84   double Tc = soilTemp\&.clay; /*  Clay content of the soil */
+85 
+86   double CN_structural = 150;
+87   double CN_surface;
+88   double CN_active ;
+89   double CN_slow ;
+90   double CN_passive ;
+91   
+92   double SN1, SN2, SN3, SN4, SN5, SN6, SN7, SN8, SN9;
+93   double SC1, SC2, SC3, SC4, SC5, SC6, SC7, SC8, SC9;
+94   double Abiot;
+95   double Na = 0\&.0, Nf = 0\&.0;
+96   double PlantN;
+97 
+98   double SC1_Leaf_Ln, SC1_Stem_Ln;
+99   double SC3_Root_Ln, SC3_Rhiz_Ln;
+100 
+101   /* Converting from Mg ha^-1 to g m^-2 */
+102   SC1 = SCs[0] * cf;
+103   SC2 = SCs[1] * cf;
+104   SC3 = SCs[2] * cf;
+105   SC4 = SCs[3] * cf;
+106   SC5 = SCs[4] * cf;
+107   SC6 = SCs[5] * cf;
+108   SC7 = SCs[6] * cf;
+109   SC8 = SCs[7] * cf;
+110   SC9 = SCs[8] * cf;
+111 
+112   double MinN = 0\&.0, Resp = 0\&.0;
+113   
+114   const double respC1_5 = 0\&.6;
+115   const double respC1_7 = 0\&.3;
+116   const double respC3_7 = 0\&.3;
+117   const double respC2_5 = 0\&.6;
+118   const double respC3_6 = 0\&.55;
+119   const double respC4_6 = 0\&.55;
+120   const double respC5_7 = 0\&.6;
+121   const double respC6 = 0\&.85 - 0\&.68 * T;
+122   const double respC7 = 0\&.55;
+123   const double respC8 = 0\&.55;
+124 
+125   double Ks[8];
+126   
+127   /*  Tm is the effect of soil texture on active SOM turnover */
+128   double Tm = 1 - 0\&.75 * T;
+129 
+130 /*    The flow constants are taken from the paper 
+131       and Parton et al\&. 1993 Global Biogeochemistry pg 785 
+132       but 
+133       Parton et al\&. 1987 SSSJ 51:1173 
+134       is also relevant
+135     
+136       double Ksy[ ] = { 3\&.9, 4\&.9, 7\&.3, 6\&.0, 14\&.8, 18\&.5, 0\&.2, 0\&.0045 };     The units are year^-1  
+137 
+138       To get the rates per week we can divide by 52
+139       To get the rates poer day we can divide by 365
+140 */
+141 /* It seems that the rates are the ones reported in Parton et al\&. 1993 Global Biogeochemical Cycles */
+142 /* These are annual rates and to convert to other time steps the model should be run accordingly */
+143 
+144     /* Rprintf("Ks[3] : %f Ks[4] : %f \n",Ks[3],Ks[4]); */
+145     /* Rprintf("Ks[5] : %f Ks[6] : %f \n",Ks[5],Ks[6]); */
+146 
+147      if(timestep == 7){
+148        Ks[0] = Ks_cf[0] / 52 ;
+149        Ks[1] = Ks_cf[1] / 52 ;
+150        Ks[2] = Ks_cf[2] / 52 ;
+151        Ks[3] = Ks_cf[3] / 52 ;
+152        Ks[4] = Ks_cf[4] / 52 ;
+153        Ks[5] = Ks_cf[5] / 52 ;
+154        Ks[6] = Ks_cf[6] / 52 ;
+155        Ks[7] = Ks_cf[7] / 52 ;
+156      }else
+157      if(timestep == 1){   
+158        Ks[0] = Ks_cf[0] / 365 ; 
+159        Ks[1] = Ks_cf[1] / 365 ; 
+160        Ks[2] = Ks_cf[2] / 365 ; 
+161        Ks[3] = Ks_cf[3] / 365 ; 
+162        Ks[4] = Ks_cf[4] / 365 ; 
+163        Ks[5] = Ks_cf[5] / 365 ; 
+164        Ks[6] = Ks_cf[6] / 365 ; 
+165        Ks[7] = Ks_cf[7] / 365 ;  
+166      } 
+167 
+168 /* Nitrogen processes 
+169     N deposition */
+170 
+171   Na = 0\&.21 + 0\&.0028 * precip * 0\&.10 ;  /*precipitation is entered in mm
+172                                           but it is needed in cm for this
+173                                            equation\&. Idem below */
+174 
+175   /*  N fixation */
+176   Nf = -0\&.18 + 0\&.014 * precip * 0\&.10 ; 
+177 
+178   /* The resulting N is in g N m^-2 yr^-1 
+179    Conversions
+180    g => Mg : multiply by 1e-6
+181    m^2 => ha : multiply by 1e4
+182    year to week : divide by 52 */
+183   if(timestep == 7){
+184      Na /=  52;
+185      Nf /=  52;
+186   }else
+187   if(timestep == 1){
+188      Na /=  365;
+189      Nf /=  365;
+190   }
+191 
+192 /*   Rprintf("Na : %f \n",Na); */
+193 /*   Rprintf("Nf : %f \n",Nf); */
+194 /*   Nitrogen in the form of fertilizer */
+195 /*   The input units should be in g N m^2 */
+196 
+197 /*   Rprintf("Nfert : %f iMinN : %f \n",Nfert,iMinN); */
+198   MinN = Na + Nf + Nfert + iMinN;
+199 
+200 /*   Rprintf("MinN 0: %f \n",MinN); */
+201 
+202   PlantN = *LeafL * LeafL_N + *StemL * StemL_N;
+203 
+204   CN_surface = 20 - PlantN * 5;
+205   CN_active = 15 - MinN * 6;
+206   CN_slow = 20 - MinN * 4;
+207   CN_passive = 10 - MinN * 1\&.5;
+208 
+209   if(PlantN > 2) CN_surface = 10;
+210 
+211   /*   Here 2 is g m^-2 */
+212   if(MinN > 2){
+213     CN_active = 3;
+214     CN_passive = 7;
+215     CN_slow = 12;
+216   }
+217 
+218   SN1 = SC1 / CN_structural; 
+219   SN2 = SC2 / CN_active;
+220   SN3 = SC3 / CN_structural;
+221   SN4 = SC4 / CN_active;
+222   SN5 = SC5 / CN_active;
+223   SN6 = SC6 / CN_active;
+224   SN7 = SC7 / CN_slow;
+225   SN8 = SC8 / CN_passive;
+226   SN9 = SC9 / CN_passive;
+227 
+228 /*  Need to calculate the effect of temperature and moisture\&. */
+229 
+230   Abiot = AbiotEff(smoist, stemp);
+231 
+232 /*    Calculate Fm and Lc separately for each component */
+233   FmLc_Leaf = FmLcFun(LeafL_Ln,LeafL_N);
+234   FmLc_Stem = FmLcFun(StemL_Ln,StemL_N);
+235   FmLc_Root = FmLcFun(RootL_Ln,RootL_N);
+236   FmLc_Rhiz = FmLcFun(RhizL_Ln,RhizL_N);
+237 
+238   /*  Surface Metabolic Carbon */
+239   SC2_Leaf = FmLc_Leaf\&.Fm * *LeafL;
+240   SC2_Stem = FmLc_Stem\&.Fm * *StemL;
+241   /*  Root Metabolic Carbon */
+242   SC4_Root = FmLc_Root\&.Fm * *RootL;
+243   SC4_Rhiz = FmLc_Rhiz\&.Fm * *RhizL;
+244 
+245   /*  Surface Structural Carbon */
+246   SC1_Leaf = (1 - FmLc_Leaf\&.Fm) * *LeafL;
+247   SC1_Stem = (1 - FmLc_Stem\&.Fm) * *StemL;
+248   /* Lignin content needs to be considered separately */
+249   SC1_Leaf_Ln = SC1_Leaf * LeafL_Ln;
+250   SC1_Stem_Ln = SC1_Stem * StemL_Ln;
+251   SC1_Leaf = SC1_Leaf - SC1_Leaf_Ln;
+252   SC1_Stem = SC1_Stem - SC1_Stem_Ln;
+253 
+254   /*  Root Structural Carbon */
+255   SC3_Root = (1 - FmLc_Root\&.Fm) * *RootL;
+256   SC3_Rhiz = (1 - FmLc_Rhiz\&.Fm) * *RhizL;
+257   /* Lignin content needs to be considered separately */
+258   SC3_Root_Ln = SC3_Root * RootL_Ln;
+259   SC3_Rhiz_Ln = SC3_Rhiz * RhizL_Ln;
+260   SC3_Root = SC3_Root - SC3_Root_Ln;
+261   SC3_Rhiz = SC3_Rhiz - SC3_Rhiz_Ln;
+262 
+263 /*    T is silt plus clay content 
+264     Ls is fraction of structural C that is lignin 
+265 
+266     Structural Surface Litter C to Surface Microbe C 
+267     1 => 5 
+268     2 => 5 
+269     dC1/dt = Ki * Lc * A * Ci 
+270     Leaf */
+271   SC1_Leaf +=  0\&.3 * SC1;
+272   SC2_Leaf +=  0\&.3 * SC2;
+273 
+274   C1_5_Leaf = flow(&SC1_Leaf,CN_surface,Abiot,FmLc_Leaf\&.Lc,Tm,respC1_5,1,Ks);
+275   C2_5_Leaf = flow(&SC2_Leaf,CN_surface,Abiot,FmLc_Leaf\&.Lc,Tm,respC1_5,5,Ks);
+276 
+277   /*  Stem */
+278   SC1_Stem = SC1_Stem + 0\&.7 * SC1;
+279   SC2_Stem = SC2_Stem + 0\&.7 * SC2;
+280 
+281   C1_5_Stem = flow(&SC1_Stem,CN_surface,Abiot,FmLc_Stem\&.Lc,Tm,respC2_5,1,Ks);
+282   C2_5_Stem = flow(&SC2_Stem,CN_surface,Abiot,FmLc_Stem\&.Lc,Tm,respC2_5,5,Ks);
+283 
+284   SC1_Leaf = C1_5_Leaf\&.SC;
+285   SC2_Leaf = C2_5_Leaf\&.SC;
+286   SC1_Stem = C1_5_Stem\&.SC;
+287   SC2_Stem = C2_5_Stem\&.SC;
+288 
+289  /*   Adding the ligning content */
+290   C1_7_Leaf_Ln = flow(&SC1_Leaf_Ln,CN_surface,Abiot,FmLc_Leaf\&.Lc,Tm,respC1_7,1,Ks);
+291   C1_7_Stem_Ln = flow(&SC1_Stem_Ln,CN_surface,Abiot,FmLc_Stem\&.Lc,Tm,respC1_7,1,Ks);
+292   
+293   /* Flow from SC1\&.lignin to SC7 */
+294   SC7 += C1_7_Leaf_Ln\&.fC + C1_7_Stem_Ln\&.fC ;
+295 
+296   /*  Collect respiration */
+297   Resp = C1_5_Leaf\&.Resp + C2_5_Leaf\&.Resp +
+298          C1_5_Stem\&.Resp + C2_5_Stem\&.Resp +
+299          C1_7_Leaf_Ln\&.Resp + C1_7_Stem_Ln\&.Resp;
+300   /*  Collect mineralized Nitrogen */
+301   MinN += C1_5_Leaf\&.MinN + C2_5_Leaf\&.MinN +
+302           C1_5_Stem\&.MinN + C2_5_Stem\&.MinN +
+303           C1_7_Leaf_Ln\&.MinN + C1_7_Stem_Ln\&.MinN;
+304 
+305 /*   Rprintf("MinN 1: %f \n",MinN); */
+306   /*  Updating the Soil Carbon Pools 1 and 2  */
+307   SC1 = C1_5_Leaf\&.SC + C1_5_Stem\&.SC + C1_7_Leaf_Ln\&.SC + C1_7_Stem_Ln\&.SC ;
+308   SC2 = C2_5_Leaf\&.SC + C2_5_Stem\&.SC ;
+309 
+310   /*  Updating the Nitrogen Carbon Pools 1 and 2 */
+311   SN1 = SC1 / CN_structural + SN1;
+312   SN2 = SC2 / CN_surface + SN2;
+313   
+314 /*    Structural Root Litter C to Soil Microbe C */
+315 /*    4 => 6 */
+316 /*    3 => 6 */
+317 /*    Root */
+318   SC3_Root = SC3_Root + 0\&.3 * SC3;
+319   SC4_Root = SC4_Root + 0\&.3 * SC4;
+320   C3_6_Root = flow(&SC3_Root,CN_active,Abiot,FmLc_Root\&.Lc,Tm,respC3_6,2,Ks);
+321   C4_6_Root = flow(&SC4_Root,CN_active,Abiot,FmLc_Root\&.Lc,Tm,respC3_6,6,Ks);
+322 /*    Rhizome */
+323   SC3_Rhiz = SC3_Rhiz + 0\&.7 * SC3;
+324   SC4_Rhiz = SC4_Rhiz + 0\&.7 * SC4;
+325   C3_6_Rhiz = flow(&SC3_Rhiz,CN_active,Abiot,FmLc_Rhiz\&.Lc,Tm,respC4_6,2,Ks);
+326   C4_6_Rhiz = flow(&SC4_Rhiz,CN_active,Abiot,FmLc_Rhiz\&.Lc,Tm,respC4_6,6,Ks);
+327 
+328   SC3_Root = C3_6_Root\&.SC;
+329   SC4_Root = C4_6_Root\&.SC;
+330   SC3_Rhiz = C3_6_Rhiz\&.SC;
+331   SC4_Rhiz = C4_6_Rhiz\&.SC;
+332 
+333   C3_7_Root_Ln = flow(&SC3_Root_Ln,CN_slow,Abiot,FmLc_Root\&.Lc,Tm,respC3_7,2,Ks);
+334   C3_7_Rhiz_Ln = flow(&SC3_Rhiz_Ln,CN_slow,Abiot,FmLc_Rhiz\&.Lc,Tm,respC3_7,2,Ks);
+335 
+336   SC7 += C3_7_Root_Ln\&.fC + C3_7_Rhiz_Ln\&.fC ; 
+337  /*   Collect respiration */
+338   Resp += C3_6_Root\&.Resp + C4_6_Root\&.Resp +
+339            C3_6_Rhiz\&.Resp + C4_6_Rhiz\&.Resp;
+340 
+341 /*    Collect mineralized Nitrogen */
+342   MinN += C3_6_Root\&.MinN + C4_6_Root\&.MinN +
+343            C3_6_Rhiz\&.MinN + C4_6_Rhiz\&.MinN + 
+344            C3_7_Root_Ln\&.MinN + C3_7_Rhiz_Ln\&.MinN;
+345 
+346 /*   Rprintf("MinN 2: %f \n",MinN); */
+347 /*   Updating the Soil Carbon Pools 3 and 4 */
+348   SC3 = C3_6_Root\&.SC + C3_6_Rhiz\&.SC + C3_7_Root_Ln\&.SC + C3_7_Rhiz_Ln\&.SC;
+349   SC4 = C4_6_Root\&.SC + C4_6_Rhiz\&.SC ;
+350 
+351 /*   Updating the Nitrogen pools 3 and 4 */
+352   SN3 += SC3 / CN_structural ;
+353   SN4 += SC4 / CN_active ;
+354 
+355 /*    Updating the Soil Carbon Pool 5 */
+356   SC5 += C1_5_Leaf\&.fC + C1_5_Stem\&.fC + C2_5_Leaf\&.fC + C2_5_Stem\&.fC ;
+357 
+358 /*    Updating the Soil Nitrogen pool 5 */
+359   SN5 += SC5 / CN_surface ;
+360   
+361 /*    Updating the Soil Carbon Pool 6 */
+362   SC6 += C3_6_Root\&.fC + C3_6_Rhiz\&.fC + C4_6_Root\&.fC + C4_6_Rhiz\&.fC ;
+363 
+364 /*    Updating the Soil Nitrogen Pool 6 */
+365   SN6 += SC6 / CN_active ;
+366 
+367 /*    Surface Microbe C to Slow C */
+368 /*    5 => 7 */
+369   C5_7 = flow(&SC5,CN_slow,Abiot,0,0,respC5_7,4,Ks);
+370 
+371   Resp +=  C5_7\&.Resp;
+372   MinN +=  C5_7\&.MinN;
+373 
+374 /*    Updating Surface Microbe C (pool 5) and slow (pool 7) */
+375 
+376   SC5 = C5_7\&.SC ;
+377   SC7 += C5_7\&.fC ;
+378 
+379 /*    Updating Surface Microbe N pool */
+380 
+381   SN5 = SC5 / CN_surface;
+382    
+383 /*   Soil Microbe C to intermediate stage C */
+384   C6 = flow(&SC6,CN_slow,Abiot,0,Tm,respC6,3,Ks);
+385 
+386 /*   if(ISNAN(C6\&.fC) | ISNAN(C6\&.SC)){ */
+387 /*     Rprintf("C6\&.fC %f and C6\&.SC %f and SC6 %f \n",C6\&.fC,C6\&.SC,SC6); */
+388 /*   } */
+389 
+390   Resp +=  C6\&.Resp;
+391   MinN +=  C6\&.MinN;
+392 
+393 /*    Updating carbon and nitrogen soil pools 6 */
+394   SC6 = C6\&.SC;
+395   SN6 = SC6 / CN_active;
+396   
+397   C_ap = 0\&.003 + 0\&.032 * Tc;   
+398   C_al = leachWater / 18\&.0 * (0\&.01 + 0\&.04 * Ts);
+399   
+400 /*   Rprintf("C_al %f and C_ap %f Tc %f \n",C_al, C_ap, Tc); */
+401 /*   Rprintf("leachWater %f and Ts %f \n",leachWater, Ts); */
+402 
+403   C6_8 = C6\&.fC * C_ap;
+404   C6_9 = C6\&.fC * C_al;
+405   C6_7 = C6\&.fC * (1 - C_ap - C_al); /* There is no need to subtract 0\&.55 since 
+406                                        this was already taken into account in 
+407                                        the flow equation */
+408   
+409  /*   Updating the Soil Carbon Pool 7, 8 and 9 */
+410 
+411   SC7 += C6_7 ;
+412   SC8 += C6_8 ;
+413   SC9 += C6_9 ;
+414 
+415 /*   Rprintf("C6_9 %f \n",C6_9); */
+416 
+417 /*  Updating the Soil Nitrogen Pool 7, 8 and 9 */
+418 
+419   SN7 += SC7 / CN_slow ;
+420   SN8 += SC8 / CN_passive ;
+421   SN9 += SC9 / CN_slow ;
+422   
+423 /*    Slow Carbon to intermediate stage */
+424 
+425   C7 = flow(&SC7,CN_slow,Abiot,0,0,respC7,7,Ks);
+426 
+427   Resp += C7\&.Resp;
+428   MinN += C7\&.MinN;
+429   
+430   C_sp = 0\&.003 - 0\&.009 *Tc;
+431   C7_8 = C7\&.fC * C_sp;
+432   C7_6 = C7\&.fC * (1 - C_sp);  /* There is no need to subtract 0\&.55 since 
+433                                  this was already taken into account in 
+434                                  the flow equation */
+435 
+436 /*    Updating the Soil Carbon Pools 6 and 8 */
+437 
+438   SC6 += C7_6 ;
+439   SC8 += C7_8 ;
+440 
+441 /*    Updating the Soil Nitrogen Pools 6 and 8 */
+442 
+443   SN6 = SC6 / CN_active;
+444   SN8 = SN8 / CN_passive;
+445 
+446 /*    Passive Carbon to Soil Microbe C */
+447 
+448   C8_6 = flow(&SC8,CN_passive,Abiot,0,0,respC8,8,Ks);
+449 
+450   Resp += C8_6\&.Resp;
+451   MinN += C8_6\&.MinN;
+452 
+453 /*   Updating the Soil Microbe C 6 and 8 */
+454   
+455   SC8 = C8_6\&.SC ;
+456   SC6 += C8_6\&.fC ;
+457 
+458   SN6 = SC6 / CN_active;
+459   SN8 = SC8 / CN_passive;
+460 
+461   tmp\&.SNs[0] = SN1 / cf;
+462   tmp\&.SNs[1] = SN2 / cf ;
+463   tmp\&.SNs[2] = SN3 / cf ;
+464   tmp\&.SNs[3] = SN4 / cf ;
+465   tmp\&.SNs[4] = SN5 / cf ;
+466   tmp\&.SNs[5] = SN6 / cf ;
+467   tmp\&.SNs[6] = SN7 / cf ;
+468   tmp\&.SNs[7] = SN8 / cf ;
+469   tmp\&.SNs[8] = SN9 / cf ;
+470 
+471   tmp\&.SCs[0] = SC1 / cf;
+472   tmp\&.SCs[1] = SC2 / cf;
+473   tmp\&.SCs[2] = SC3 / cf;
+474   tmp\&.SCs[3] = SC4 / cf;
+475   tmp\&.SCs[4] = SC5 / cf;
+476   tmp\&.SCs[5] = SC6 / cf;
+477   tmp\&.SCs[6] = SC7 / cf;
+478   tmp\&.SCs[7] = SC8 / cf;
+479   tmp\&.SCs[8] = SC9 / cf;
+480 
+481   tmp\&.MinN = MinN;
+482   tmp\&.Resp = Resp;
+483 
+484 /* Converting Leaf Litter to its original units */
+485 
+486   *LeafL /= cf;
+487   *StemL /= cf;
+488   *RootL /= cf;
+489   *RhizL /= cf;
+490 
+491   return(tmp);
+492 }
+.fi
+.SS "SEXP cntry (SEXPLEAFL, SEXPSTEML, SEXPROOTL, SEXPRHIZL, SEXPSMOIST, SEXPSTEMP, SEXPTIMESTEP, SEXPSCS, SEXPLEACHWATER, SEXPNFERT, SEXPIMINN, SEXPPRECIP, SEXPLEAFLLN, SEXPSTEMLLN, SEXPROOTLLN, SEXPRHIZLLN, SEXPLEAFLN, SEXPSTEMLN, SEXPROOTLN, SEXPRHIZLN, SEXPSOILTYPE, SEXPKS)"
+
+.PP
+.nf
+611                    {          /* 22 */ 
+612 
+613   struct cenT_str tmp;
+614 
+615   int j;
+616 
+617   double LeafL = REAL(LEAFL)[0];
+618   double StemL = REAL(STEML)[0];
+619   double RootL = REAL(ROOTL)[0];
+620   double RhizL = REAL(RHIZL)[0];
+621 
+622   SEXP lists, names;
+623 
+624   SEXP SCs;
+625   SEXP SNs;
+626   SEXP MinN, Resp;
+627 
+628   PROTECT(lists = allocVector(VECSXP,4));
+629   PROTECT(names = allocVector(STRSXP,4));
+630   PROTECT(SCs = allocVector(REALSXP,9));
+631   PROTECT(SNs = allocVector(REALSXP,9));
+632   PROTECT(MinN = allocVector(REALSXP,1));
+633   PROTECT(Resp = allocVector(REALSXP,1));
+634 
+635   tmp = Century(&LeafL, 
+636                 &StemL, 
+637                 &RootL, 
+638                 &RhizL,
+639                 REAL(SMOIST)[0], 
+640                 REAL(STEMP)[0], 
+641                 INTEGER(TIMESTEP)[0], 
+642                 REAL(SCS),
+643                 REAL(LEACHWATER)[0], 
+644                 REAL(NFERT)[0], 
+645                 REAL(IMINN)[0], 
+646                 REAL(PRECIP)[0],
+647                 REAL(LEAFLLN)[0], 
+648                 REAL(STEMLLN)[0], 
+649                 REAL(ROOTLLN)[0], 
+650                 REAL(RHIZLLN)[0],
+651                 REAL(LEAFLN)[0], 
+652                 REAL(STEMLN)[0], 
+653                 REAL(ROOTLN)[0], 
+654                 REAL(RHIZLN)[0], 
+655                 INTEGER(SOILTYPE)[0], 
+656                 REAL(KS));
+657 
+658   REAL(MinN)[0] = tmp\&.MinN;
+659   REAL(Resp)[0] = tmp\&.Resp;
+660 
+661   for(j=0;j<9;j++){
+662   
+663     REAL(SCs)[j] = tmp\&.SCs[j];
+664     REAL(SNs)[j] = tmp\&.SNs[j];
+665   }
+666 
+667   SET_VECTOR_ELT(lists,0,SCs);
+668   SET_VECTOR_ELT(lists,1,SNs);
+669   SET_VECTOR_ELT(lists,2,MinN);
+670   SET_VECTOR_ELT(lists,3,Resp);
+671 
+672   SET_STRING_ELT(names,0,mkChar("SCs"));
+673   SET_STRING_ELT(names,1,mkChar("SNs"));
+674   SET_STRING_ELT(names,2,mkChar("MinN"));
+675   SET_STRING_ELT(names,3,mkChar("Resp"));
+676   setAttrib(lists,R_NamesSymbol,names);
+677   UNPROTECT(6);
+678   return(lists);
+679 
+680 }
+.fi
+.SS "struct \fBflow_str\fP \fBflow\fP (double *SC, doubleCNratio, doubleA, doubleLc, doubleTm, doubleresp, intkno, doubleKs[8])"
+
+.PP
+.nf
+523                                                                                                                     {
+524 
+525   struct flow_str tmp;
+526 
+527   double Kf = 0\&.0, fC = 0\&.0;
+528   double Resp, MinN;
+529 
+530   if(kno < 3){
+531     Kf = Ks[kno-1] * Lc * A ;
+532     fC = Kf * *SC;
+533   }else
+534   if(kno == 3){
+535     Kf = Ks[kno-1] * A * Tm ;
+536     fC = Kf * *SC;
+537   }else
+538   if(kno > 3){
+539     Kf = Ks[kno-1] * A;
+540     fC = Kf * *SC;
+541   }
+542 
+543   if(Kf > 1){
+544     Rprintf("Kf greater than 1: %d %f %f %f %f \n", kno, Ks[kno-1], Kf, A, Tm);
+545   }
+546 
+547   Resp = fC * resp;
+548 
+549   /*  Mineralized N */
+550   MinN = Resp / CNratio;
+551 
+552   *SC = *SC - fC;
+553   
+554   fC = fC - Resp;
+555 /*   fN = fC / CNratio; */
+556 
+557 /*  It is important to keep track of C emissions because */
+558 /*  I might need to validate it against Eddy flux data */
+559   tmp\&.SC = *SC;
+560   tmp\&.fC = fC;
+561   tmp\&.Resp = Resp;
+562   tmp\&.MinN = MinN;  
+563 
+564   return(tmp);
+565 
+566 }
+.fi
+.SS "struct \fBFL_str\fP FmLcFun (doubleLig, doubleNit)"
+
+.PP
+.nf
+496                                              {
+497 
+498   double Fm, Ls, Lc;
+499   struct FL_str tmp;
+500 
+501   Fm = 0\&.85 - 0\&.018 *(Lig/Nit);
+502   Ls = Lig / (1 - Fm);
+503   Lc = exp(-3 * Ls);
+504 
+505   tmp\&.Lc = Lc;
+506   tmp\&.Fm = Fm;
+507 
+508   return(tmp);
+509 
+510 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

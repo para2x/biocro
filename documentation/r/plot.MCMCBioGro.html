@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>plot.MCMCBioGro. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Plotting function fo the MCMCBioGro class</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>"plot"(x, x2&nbsp;=&nbsp;NULL, x3&nbsp;=&nbsp;NULL, plot.kind&nbsp;=&nbsp;c("rss", "OF", "RF", "OFT", "trace", "density"), type&nbsp;=&nbsp;c("l", "p"), coef&nbsp;=&nbsp;1, cols&nbsp;=&nbsp;c("blue", "green", "red", "magenta", "black", "purple"), ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>x</dt>
+      <dd>Object of class <code>MCMCBioGro</code></dd>
+      <dt>x2</dt>
+      <dd>Optional object of class <code>MCMCBioGro</code></dd>
+      <dt>x3</dt>
+      <dd>Optional object of class <code>MCMCBioGro</code></dd>
+      <dt>plot.kind</dt>
+      <dd>Kind of plot. See details.</dd>
+      <dt>type</dt>
+      <dd>Point of line as in <code>xyplot</code></dd>
+      <dt>coef</dt>
+      <dd>Whether to plot dry biomass partitioning
+  coeficients (2) or Vmax and alpha (1).</dd>
+      <dt>cols</dt>
+      <dd>Colors. Modify if they don't suit you.</dd>
+      <dt>...</dt>
+      <dd>Additional arguments passed to the
+  underlying <code>xyplot</code> function. Some can be really
+  useful. See details.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+A <code>lattice</code> plot.
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Powerful plotting function to make a variety of plots
+regarding the <code>MCMCBioGro</code> class (output). It plots
+the residual sum of square progression, observed vs.
+fitted, residuals vs. fitted, trace of the coefficients and
+density.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>Kind of plots that can be produced</p>
+  
+      <p>rss: Residual Sum of Squares progression.  OF: Observed vs.
+Fitted RF: Residual vs. Fitted OFT: Observed and Fitted
+with thermal time as the x-axis.  trace: trace for the
+parameters density: density for the parameters</p>
+  
+      <p>biomass 
+used. If coef=1 then Vmax 
+instead. At this point it is highly 
+and alpha are not optimized at this stage so 
+shouldn't be plotted either (it will be a straight line if
+not</p>
+  
+      <p>To choosing a subset of the 24 dry biomass partitioning
+coefficients use the subset option as you would in the
+xyplot using nams as the name. For example,
+<code>plot(x,plot.kind="trace",subset=nams=="kLeaf_1")</code>
+will select it for the leaf at the first phenological
+stage.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## See the MCMCBioGro function
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>plot.MCMCBioGro</li>
+    </ul>
+    <ul>
+      <li>hplot</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+<code><a href='MCMCBioGro.html'>MCMCBioGro</a></code>
+
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

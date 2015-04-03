@@ -1,0 +1,7 @@
+<map id="management" name="management">
+<area shape="rect" id="node2" href="$struct_napplication.html" title="Napplication" alt="" coords="5,5,99,32"/>
+<area shape="rect" id="node3" href="$structplanting.html" title="planting" alt="" coords="125,5,192,32"/>
+<area shape="rect" id="node4" href="$structharvesting.html" title="harvesting" alt="" coords="216,5,297,32"/>
+<area shape="rect" id="node5" href="$structmanagement_1_1harvestparms.html" title="harvestparms" alt="" coords="323,5,424,32"/>
+<area shape="rect" id="node6" href="$structmanagement_1_1emergenceparms.html" title="emergenceparms" alt="" coords="448,5,571,32"/>
+</map>

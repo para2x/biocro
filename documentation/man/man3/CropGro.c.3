@@ -1,0 +1,977 @@
+.TH "/home/dlebauer/dev/biocro/src/CropGro.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/CropGro.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+\fC#include 'Century\&.h'\fP
+.br
+\fC#include 'BioCro\&.h'\fP
+.br
+\fC#include 'AuxcaneGro\&.h'\fP
+.br
+\fC#include 'crocent\&.h'\fP
+.br
+\fC#include 'soilwater\&.h'\fP
+.br
+\fC#include 'function_prototype\&.h'\fP
+.br
+\fC#include 'n2o_model\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "SEXP \fBCropGro\fP (SEXP LAT, SEXP DOY, SEXP HR, SEXP SOLAR, SEXP TEMP, SEXP RH, SEXP WINDSPEED, SEXP PRECIP, SEXP KD, SEXP CHILHF, SEXP NLAYERS, SEXP RHIZOME, SEXP IRTL, SEXP SENCOEFS, SEXP TIMESTEP, SEXP VECSIZE, SEXP SPLEAF, SEXP SPD, SEXP DBPCOEFS, SEXP THERMALP, SEXP VMAX, SEXP ALPHA, SEXP KPARM, SEXP THETA, SEXP BETA, SEXP RD, SEXP CATM, SEXP B0, SEXP B1, SEXP WS, SEXP SOILCOEFS, SEXP ILEAFN, SEXP KLN, SEXP VMAXB1, SEXP ALPHAB1, SEXP MRESP, SEXP SOILTYPE, SEXP WSFUN, SEXP CENTCOEFS, SEXP CENTTIMESTEP, SEXP CENTKS, SEXP SOILLAYERS, SEXP SOILDEPTHS, SEXP CWS, SEXP HYDRDIST, SEXP SECS, SEXP KPLN, SEXP LNB0, SEXP LNB1, SEXP LNFUN, SEXP UPPERTEMP, SEXP LOWERTEMP, SEXP NNITROP, SEXP SOMPOOLSfromR, SEXP SOILTEXTUREfromR)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "SEXP CropGro (SEXPLAT, SEXPDOY, SEXPHR, SEXPSOLAR, SEXPTEMP, SEXPRH, SEXPWINDSPEED, SEXPPRECIP, SEXPKD, SEXPCHILHF, SEXPNLAYERS, SEXPRHIZOME, SEXPIRTL, SEXPSENCOEFS, SEXPTIMESTEP, SEXPVECSIZE, SEXPSPLEAF, SEXPSPD, SEXPDBPCOEFS, SEXPTHERMALP, SEXPVMAX, SEXPALPHA, SEXPKPARM, SEXPTHETA, SEXPBETA, SEXPRD, SEXPCATM, SEXPB0, SEXPB1, SEXPWS, SEXPSOILCOEFS, SEXPILEAFN, SEXPKLN, SEXPVMAXB1, SEXPALPHAB1, SEXPMRESP, SEXPSOILTYPE, SEXPWSFUN, SEXPCENTCOEFS, SEXPCENTTIMESTEP, SEXPCENTKS, SEXPSOILLAYERS, SEXPSOILDEPTHS, SEXPCWS, SEXPHYDRDIST, SEXPSECS, SEXPKPLN, SEXPLNB0, SEXPLNB1, SEXPLNFUN, SEXPUPPERTEMP, SEXPLOWERTEMP, SEXPNNITROP, SEXPSOMPOOLSfromR, SEXPSOILTEXTUREfromR)"
+
+.PP
+.nf
+75 {
+76     int vecsize = INTEGER(VECSIZE)[0];
+77     int dailyvecsize = vecsize/24;
+78 //    Rprintf("%i\n",vecsize);
+79    /*********** CROCENT VARIABLES***********************/
+80    struct cropcentlayer CROPCENT;
+81    double *fake;
+82    // Get Default parameters for miscanthus
+83      assignParms(&CROPCENT, fake);
+84   // Get Initial Values oof Pool for C and N
+85      assignPools(&CROPCENT, &REAL(SOMPOOLSfromR)[0]);
+86   // More parameters   
+87      GetBioCroToCropcentParms(&CROPCENT\&.BcroTOCentParms,fake);
+88    // Timestep is alreadt set to 1440\&.0 minutes (1 day) in the assignParms\&. We need to change the parameters to daily time step
+89      CROPCENTTimescaling(&CROPCENT);
+90      
+91    double oldstandingN, newstandingN, Ndemand;   
+92    struct crop_phenology cropdbp;
+93    struct miscanthus miscanthus, deltamiscanthus;
+94    createNULLmiscanthus(&miscanthus,vecsize);
+95 
+96 //   miscanthus\&.leafvec[vecsize]\&.newbiomass=(double)vecsize;
+97 //   Rprintf("%f, %i\n",miscanthus\&.leafvec[vecsize]\&.newbiomass, vecsize);
+98    double dailynetassim, CanopyAGross, dailyGPP;
+99    double mrespLeaf, mrespStem, mrespRoot, mrespRhizome;
+100    struct senthermaltemp senthermaltemp;
+101    struct canopyparms canopyparms;
+102    struct frostParms frostparms;
+103    dailynetassim=0\&.0;
+104    dailyGPP=0\&.0;
+105    mrespLeaf=0\&.0;
+106    mrespStem=0\&.0;
+107    mrespRoot=0\&.0;
+108    mrespRhizome=0\&.0;
+109    frostparms\&.leafT0=-8\&.0;
+110    frostparms\&.leafT100=-16\&.0;
+111    frostparms\&.stemT0=-16\&.0;
+112    frostparms\&.stemT100=-16\&.0;
+113    
+114    
+115    /***********Management Variables *************/
+116    struct management management;
+117    assignManagement(&management);
+118    /********************************************/
+119    
+120         /* This creates vectors which will collect the senesced plant
+121            material\&. This is needed to calculate litter and therefore carbon
+122            in the soil and then N in the soil\&. */
+123 
+124          double upperT=REAL(UPPERTEMP)[0];
+125          double lowerT=REAL(LOWERTEMP)[0];
+126 /*Reading NitroP Variables */
+127         struct nitroParms nitroparms;
+128         double TEMPdoubletoint;
+129         nitroparms\&.ileafN=REAL(NNITROP)[0];
+130   nitroparms\&.kln=REAL(NNITROP)[1];
+131         nitroparms\&.Vmaxb1=REAL(NNITROP)[2];
+132         nitroparms\&.Vmaxb0=REAL(NNITROP)[3];
+133         nitroparms\&.alphab1=REAL(NNITROP)[4];
+134         nitroparms\&.alphab0=REAL(NNITROP)[5];
+135   nitroparms\&.Rdb1=REAL(NNITROP)[6];
+136         nitroparms\&.Rdb0=REAL(NNITROP)[7];
+137         nitroparms\&.kpLN=REAL(NNITROP)[8];
+138         nitroparms\&.lnb0=REAL(NNITROP)[9];
+139         nitroparms\&.lnb1=REAL(NNITROP)[10];
+140         TEMPdoubletoint=REAL(NNITROP)[11];
+141         nitroparms\&.lnFun=(int)TEMPdoubletoint;
+142         nitroparms\&.maxln=REAL(NNITROP)[12];
+143         nitroparms\&.minln=REAL(NNITROP)[13];
+144         nitroparms\&.daymaxln=REAL(NNITROP)[14];
+145 
+146 
+148   double iSp, Sp , propLeaf;
+149         int i, i2, i3;
+150 
+151         double vmax1;
+152         double alpha1;
+153         double kparm1;
+154         double theta;
+155         double beta;
+156         double Rd1, Ca;
+157         double b01, b11;
+158 
+159         double Leaf, Stem, Root, LAI, Grain = 0\&.0;
+160         double TTc = 0\&.0;
+161         double kLeaf = 0\&.0, kStem = 0\&.0, kRoot = 0\&.0, kRhizome = 0\&.0, kGrain = 0\&.0;
+162         double newLeaf, newStem = 0\&.0, newRoot, newRhizome, newGrain = 0\&.0;
+163 
+164         /* Variables needed for collecting litter */
+165         double LeafLitter = REAL(CENTCOEFS)[20], StemLitter = REAL(CENTCOEFS)[21];
+166         double RootLitter = REAL(CENTCOEFS)[22], RhizomeLitter = REAL(CENTCOEFS)[23];
+167         double LeafLitter_d = 0\&.0, StemLitter_d = 0\&.0;
+168         double RootLitter_d = 0\&.0, RhizomeLitter_d = 0\&.0;
+169         double ALitter = 0\&.0, BLitter = 0\&.0;
+170         /* Maintenance respiration */
+171 
+172         double mrc1 = REAL(MRESP)[0];
+173         double mrc2 = REAL(MRESP)[1]; 
+174 
+175         double waterCont;
+176         double StomWS = 1, LeafWS = 1;
+177         int timestep;
+178         double CanopyA, CanopyT;
+179 
+180         double Rhizome;
+181 
+182         /* Soil Parameters*/
+183         double FieldC, WiltP, phi1, phi2, soilDepth;
+184         int soilType, wsFun;
+185         double LeafN, LeafN_0, kLN;
+186         double soilEvap, TotEvap;
+187         int soillayers = INTEGER(SOILLAYERS)[0];
+188         double cwsVec[soillayers];
+189         for(i2=0;i2<soillayers;i2++){
+190                 cwsVec[i2] = REAL(CWS)[i2];
+191         }
+192         double cwsVecSum = 0\&.0;
+193         /* Some soil related empirical coefficients */
+194         double rfl = REAL(SECS)[0];  /* root factor lambda */
+195         double rsec = REAL(SECS)[1]; /* radiation soil evaporation coefficient */
+196         double rsdf = REAL(SECS)[2]; /* root soil depth factor */
+197         double scsf = REAL(SOILCOEFS)[6]; /* stomatal conductance sensitivity factor */ /* Rprintf("scsf %\&.2f",scsf); */
+198         double transpRes = REAL(SOILCOEFS)[7]; /* Resistance to transpiration from soil to leaf */
+199         double leafPotTh = REAL(SOILCOEFS)[8]; /* Leaf water potential threshold */
+200 
+201         /* Parameters for calculating leaf water potential */
+202         double LeafPsim = 0\&.0;
+203 
+204         /* Effect of Nitrogen */
+205         double kpLN = REAL(KPLN)[0];
+206         double lnb0 = REAL(LNB0)[0]; 
+207         double lnb1 = REAL(LNB1)[0];
+208         int lnfun = INTEGER(LNFUN)[0];
+209 
+210         /* Century */
+211         double MinNitro = REAL(CENTCOEFS)[19];
+212         int doyNfert = REAL(CENTCOEFS)[18];
+213         double Nfert;
+214         double SCCs[9];
+215         double Resp = 0\&.0;
+216         int centTimestep = INTEGER(CENTTIMESTEP)[0];
+217 
+218         double SeneLeaf, SeneStem, SeneRoot = 0\&.0, SeneRhizome = 0\&.0 ;
+219         double *sti , *sti2, *sti3, *sti4; 
+220         double Remob;
+221         int k = 0, q = 0, m = 0, n = 0;
+222         int ri = 0;
+223 
+224         struct Can_Str Canopy;
+225         struct ws_str WaterS;
+226         struct dbp_str dbpS;
+227         struct cenT_str centS; 
+228         struct soilML_str soilMLS;
+229         struct soilText_str soTexS; /* , *soTexSp = &soTexS; */
+230   int DayCentSoilType,SoilClassification;
+231         soTexS = soilTchoose(INTEGER(SOILTYPE)[0]);
+232   soTexS\&.sand=REAL(SOILTEXTUREfromR)[0];
+233   soTexS\&.silt=REAL(SOILTEXTUREfromR)[1];
+234   soTexS\&.clay=REAL(SOILTEXTUREfromR)[2];
+235   //Based on Texture, Get Bulk Density, Field Capacity, and DayCent Soil Type
+236   getsoilprop(&soTexS\&.sand, &soTexS\&.silt, &soTexS\&.clay, &soTexS\&.bulkd,&soTexS\&.fieldc, &DayCentSoilType,&SoilClassification);
+237 //  Filling_BioCro_SoilStructure(&soilMLS, &soTexS, soillayers,REAL(SOILDEPTHS));
+238         centS\&.SCs[0] = 0\&.0;
+239         centS\&.SCs[1] = 0\&.0;
+240         centS\&.SCs[2] = 0\&.0;
+241         centS\&.SCs[3] = 0\&.0;
+242         centS\&.SCs[4] = 0\&.0;
+243         centS\&.SCs[5] = 0\&.0;
+244         centS\&.SCs[6] = 0\&.0;
+245         centS\&.SCs[7] = 0\&.0;
+246         centS\&.SCs[8] = 0\&.0;
+247         centS\&.Resp = 0\&.0;
+248 
+249         SEXP lists, names;
+250 
+251         SEXP DayofYear;
+252         SEXP Hour;
+253         SEXP CanopyAssim;
+254         SEXP CanopyTrans;
+255         SEXP Leafy;
+256         SEXP Stemy;
+257         SEXP Rooty;
+258         SEXP Rhizomey;
+259         SEXP Grainy;
+260         SEXP LAIc;
+261         SEXP TTTc;
+262         SEXP SoilWatCont;
+263         SEXP StomatalCondCoefs;
+264         SEXP LeafReductionCoefs;
+265         SEXP LeafNitrogen;
+266         SEXP AboveLitter;
+267         SEXP BelowLitter;
+268         SEXP VmaxVec;
+269         SEXP AlphaVec;
+270         SEXP SpVec;
+271         SEXP MinNitroVec;
+272         SEXP RespVec;
+273         SEXP SoilEvaporation;
+274         SEXP cwsMat;
+275         SEXP psimMat; /* Holds the soil water potential */
+276         SEXP rdMat;
+277   SEXP waterfluxMat; /* holds water flux in m3/m2 hr */
+278         SEXP SCpools;
+279         SEXP SNpools;
+280         SEXP LeafPsimVec;
+281 // From here, we have daily (instead of hourly) output vectors
+282   SEXP DayafterPlanting;
+283   SEXP GDD; // daily vector of growing degree day
+284   SEXP GPP; // Gross Primary Productivity
+285   SEXP NPP; // Net Primary Productivity
+286   SEXP autoRESP; // Autotrophic Respiration
+287   SEXP hetRESP; // Heterotrophic Respiration
+288   SEXP NER; // Net Ecosystem Respiration
+289   SEXP StemMResp;
+290   SEXP RootMResp;
+291   SEXP RhizomeMResp;
+292   SEXP LeafDarkResp;
+293   SEXP Stemd;
+294   SEXP Leafd;
+295   SEXP Rootd;
+296   SEXP Rhizomed;
+297   SEXP Stemlitterd;
+298   SEXP Leaflitterd;
+299   SEXP Rootlitterd;
+300   SEXP Rhizomelitterd;
+301   SEXP LAId;
+302   SEXP totalSOC;
+303   SEXP strucc1;
+304   SEXP strucc2;
+305   SEXP metabc1;
+306   SEXP metabc2;
+307   SEXP som1c1;
+308   SEXP som1c2;
+309   SEXP som2c1;
+310   SEXP som2c2;
+311   SEXP som3c;
+312   SEXP minN;
+313   
+314 // Declaring Daily variables
+315  double  accumulatedGDD=0\&.0;
+316 
+317 
+318 
+319 
+320 
+321 //      vecsize = length(DOY);
+322         PROTECT(lists = allocVector(VECSXP,61));
+323         PROTECT(names = allocVector(STRSXP,61));
+324 
+325         PROTECT(DayofYear = allocVector(REALSXP,vecsize));
+326         PROTECT(Hour = allocVector(REALSXP,vecsize));
+327         PROTECT(CanopyAssim = allocVector(REALSXP,vecsize));
+328         PROTECT(CanopyTrans = allocVector(REALSXP,vecsize));
+329         PROTECT(Leafy = allocVector(REALSXP,vecsize));
+330         PROTECT(Stemy = allocVector(REALSXP,vecsize));
+331         PROTECT(Rooty = allocVector(REALSXP,vecsize));
+332         PROTECT(Rhizomey = allocVector(REALSXP,vecsize));
+333         PROTECT(Grainy = allocVector(REALSXP,vecsize));
+334         PROTECT(LAIc = allocVector(REALSXP,vecsize));
+335         PROTECT(TTTc = allocVector(REALSXP,vecsize));
+336         PROTECT(SoilWatCont = allocVector(REALSXP,vecsize));
+337         PROTECT(StomatalCondCoefs = allocVector(REALSXP,vecsize));
+338         PROTECT(LeafReductionCoefs = allocVector(REALSXP,vecsize));
+339         PROTECT(LeafNitrogen = allocVector(REALSXP,vecsize));
+340         PROTECT(AboveLitter = allocVector(REALSXP,vecsize));
+341         PROTECT(BelowLitter = allocVector(REALSXP,vecsize));
+342         PROTECT(VmaxVec = allocVector(REALSXP,vecsize));
+343         PROTECT(AlphaVec = allocVector(REALSXP,vecsize));
+344         PROTECT(SpVec = allocVector(REALSXP,vecsize));
+345         PROTECT(MinNitroVec = allocVector(REALSXP,vecsize));
+346         PROTECT(RespVec = allocVector(REALSXP,vecsize));
+347         PROTECT(SoilEvaporation = allocVector(REALSXP,vecsize));
+348         PROTECT(cwsMat = allocMatrix(REALSXP,soillayers,vecsize));
+349   PROTECT(waterfluxMat = allocMatrix(REALSXP,soillayers,vecsize));
+350         PROTECT(psimMat = allocMatrix(REALSXP,soillayers,vecsize));
+351         PROTECT(rdMat = allocMatrix(REALSXP,soillayers,vecsize));
+352         PROTECT(SCpools = allocVector(REALSXP,9));
+353         PROTECT(SNpools = allocVector(REALSXP,9));
+354         PROTECT(LeafPsimVec = allocVector(REALSXP,vecsize));
+355   PROTECT(DayafterPlanting = allocVector(REALSXP,dailyvecsize));
+356   PROTECT(GDD = allocVector(REALSXP,dailyvecsize));
+357   PROTECT(GPP = allocVector(REALSXP,dailyvecsize));
+358   PROTECT(NPP = allocVector(REALSXP,dailyvecsize));
+359   PROTECT(autoRESP = allocVector(REALSXP,dailyvecsize));
+360   PROTECT(hetRESP = allocVector(REALSXP,dailyvecsize));
+361   PROTECT(NER = allocVector(REALSXP,dailyvecsize));
+362   PROTECT(StemMResp= allocVector(REALSXP,dailyvecsize));
+363   PROTECT(RootMResp = allocVector(REALSXP,dailyvecsize));
+364   PROTECT(RhizomeMResp = allocVector(REALSXP,dailyvecsize));
+365   PROTECT(LeafDarkResp = allocVector(REALSXP,dailyvecsize));
+366   PROTECT(Stemd = allocVector(REALSXP,dailyvecsize));
+367   PROTECT(Leafd = allocVector(REALSXP,dailyvecsize));
+368   PROTECT(Rootd = allocVector(REALSXP,dailyvecsize));
+369   PROTECT(Rhizomed = allocVector(REALSXP,dailyvecsize));
+370   PROTECT(Stemlitterd = allocVector(REALSXP,dailyvecsize));
+371   PROTECT(Leaflitterd = allocVector(REALSXP,dailyvecsize));
+372   PROTECT(Rootlitterd = allocVector(REALSXP,dailyvecsize));
+373   PROTECT(Rhizomelitterd = allocVector(REALSXP,dailyvecsize));
+374   PROTECT(LAId = allocVector(REALSXP,dailyvecsize));
+375   PROTECT(totalSOC = allocVector(REALSXP,dailyvecsize));
+376   PROTECT(strucc1 = allocVector(REALSXP,dailyvecsize));
+377    PROTECT(strucc2 = allocVector(REALSXP,dailyvecsize));
+378   PROTECT(metabc1 = allocVector(REALSXP,dailyvecsize));
+379   PROTECT(metabc2 = allocVector(REALSXP,dailyvecsize));
+380    PROTECT(som1c1 = allocVector(REALSXP,dailyvecsize));
+381   PROTECT(som1c2 = allocVector(REALSXP,dailyvecsize));
+382   PROTECT(som2c1 = allocVector(REALSXP,dailyvecsize));
+383    PROTECT(som2c2 = allocVector(REALSXP,dailyvecsize));
+384   PROTECT(som3c = allocVector(REALSXP,dailyvecsize));
+385   PROTECT(minN = allocVector(REALSXP,dailyvecsize));
+386         /* Picking vmax, alpha and kparm */
+387         vmax1 = REAL(VMAX)[0];
+388         alpha1 = REAL(ALPHA)[0];
+389         kparm1 = REAL(KPARM)[0];
+390         theta = REAL(THETA)[0];
+391         beta = REAL(BETA)[0];
+392         Rd1 = REAL(RD)[0];
+393         Ca = REAL(CATM)[0];
+394         b01 = REAL(B0)[0];
+395         b11 = REAL(B1)[0];
+396 
+397         LeafN_0 = REAL(ILEAFN)[0];
+398         LeafN = LeafN_0; /* Initial value of N in the leaf */
+399         kLN = REAL(KLN)[0];
+400         timestep = INTEGER(TIMESTEP)[0];
+401 
+402         Rhizome = REAL(RHIZOME)[0];
+403         Sp = REAL(SPLEAF)[0]; 
+404         SeneLeaf = REAL(SENCOEFS)[0];
+405         SeneStem = REAL(SENCOEFS)[1];
+406         SeneRoot = REAL(SENCOEFS)[2];
+407         SeneRhizome = REAL(SENCOEFS)[3];
+408 
+409         /* Soil Parameters */
+410         FieldC = REAL(SOILCOEFS)[0];
+411         WiltP = REAL(SOILCOEFS)[1];
+412         phi1 = REAL(SOILCOEFS)[2];
+413         phi2 = REAL(SOILCOEFS)[3];
+414         soilDepth = REAL(SOILCOEFS)[4];
+415         waterCont = REAL(SOILCOEFS)[5];
+416         wsFun = INTEGER(WSFUN)[0];
+417         soilType = INTEGER(SOILTYPE)[0];
+418   // Modify SOil Type Based on Texture Information entered
+419   soilType=SoilClassification; // DayCent Soil Type goes from 1-11, and BioCro from 0-10
+420   if(soilType<0 || soilType > 10)
+421   { 
+422     soilType=1;
+423   } // This is a temporary fix to avoid unknown SoilType
+424 
+425         SCCs[0] = REAL(CENTCOEFS)[0];
+426         SCCs[1] = REAL(CENTCOEFS)[1];
+427         SCCs[2] = REAL(CENTCOEFS)[2];
+428         SCCs[3] = REAL(CENTCOEFS)[3];
+429         SCCs[4] = REAL(CENTCOEFS)[4];
+430         SCCs[5] = REAL(CENTCOEFS)[5];
+431         SCCs[6] = REAL(CENTCOEFS)[6];
+432         SCCs[7] = REAL(CENTCOEFS)[7];
+433         SCCs[8] = REAL(CENTCOEFS)[8];
+434 
+435 
+436 /* Creating pointers to avoid calling functions REAL and INTEGER so much */
+437 //  int *pt_doy=INTEGER(DOY);
+438           int *pt_doy;
+439     pt_doy = malloc(vecsize*sizeof(pt_doy));
+440     pt_doy=INTEGER(DOY);
+441   
+442 //      int *pt_hr = INTEGER(HR);
+443     int *pt_hr;
+444     pt_hr = malloc(vecsize*sizeof(pt_hr));
+445     pt_hr=INTEGER(HR);
+446     
+447 //      double *pt_solar = REAL(SOLAR);
+448    double *pt_solar;
+449     pt_solar = malloc(vecsize*sizeof(pt_solar));
+450     pt_solar=REAL(SOLAR);
+451   
+452 //      double *pt_temp = REAL(TEMP);
+453     double *pt_temp;
+454     pt_temp = malloc(vecsize*sizeof(pt_temp));
+455     pt_temp=REAL(TEMP);
+456     
+457 //      double *pt_rh = REAL(RH);
+458     double *pt_rh;
+459     pt_rh = malloc(vecsize*sizeof(pt_rh));
+460     pt_rh=REAL(RH);
+461 //      double *pt_windspeed = REAL(WINDSPEED);
+462    double *pt_windspeed;
+463     pt_windspeed = malloc(vecsize*sizeof(pt_windspeed));
+464     pt_windspeed=REAL(WINDSPEED);
+465 //      double *pt_precip = REAL(PRECIP);
+466    double *pt_precip;
+467     pt_precip = malloc(vecsize*sizeof(pt_precip));
+468     pt_precip=REAL(PRECIP);
+469 
+470 
+471   
+472    
+473         double lat = REAL(LAT)[0];
+474         int nlayers = INTEGER(NLAYERS)[0];
+475         int ws = INTEGER(WS)[0];
+476         double kd = REAL(KD)[0];
+477         double chil = REAL(CHILHF)[0];
+478         double hf = REAL(CHILHF)[1];
+479 
+480  
+481  /***Initialize Daily Variables *********/
+482   struct respirationParms RESP;
+483  RESP\&.growth\&.stem=0\&.3;
+484  RESP\&.growth\&.root=0\&.3;
+485  RESP\&.growth\&.rhizome=0\&.3;
+486  
+487  RESP\&.maint\&.Qstem=2\&.0;
+488  RESP\&.maint\&.mstem=0\&.004;
+489  
+490  RESP\&.maint\&.Qroot=2\&.0;
+491  RESP\&.maint\&.mroot=0\&.002;
+492  
+493  RESP\&.maint\&.Qrhizome=2\&.0;
+494  RESP\&.maint\&.mrhizome=0\&.002;
+495 //  Resp\&.growth\&.stem=0\&.3;
+496   
+497   double LeafResp,StemResp,RootResp,RhizResp;  
+498   double gRespCoeff = 0\&.0;
+499   double dailydelTT = 0\&.0;
+500   double delTT;
+501   double Tbase=0\&.0;
+502   dailynetassim=0\&.0;
+503   senthermaltemp\&.leafcriticalT=REAL(SENCOEFS)[0];
+504   senthermaltemp\&.stemcriticalT=REAL(SENCOEFS)[1];
+505   senthermaltemp\&.rootcriticalT=REAL(SENCOEFS)[2];
+506   senthermaltemp\&.rhizomecriticalT=REAL(SENCOEFS)[3];
+507   canopyparms\&.kN=0\&.1;
+508   canopyparms\&.SLA=0\&.1;
+509   canopyparms\&.remobFac=0\&.1;
+510   canopyparms\&.leafNsen=40;
+511   frostparms\&.leafT0=-20\&.0; //REAL(FROSTP)[0];
+512   frostparms\&.leafT100=-20\&.0;//REAL(FROSTP)[1];
+513   frostparms\&.stemT0=-20\&.0;//REAL(FROSTP)[2];
+514   frostparms\&.stemT100=-20\&.0;//REAL(FROSTP)[3];
+515  
+516   propLeaf = REAL(IRTL)[0]; 
+517         /* It is useful to assume that there is a small amount of
+518            leaf area at the begining of the growing season\&. */
+519 //      Leaf = Rhizome * 0\&.001; 
+520         /* Initial proportion of the rhizome that is turned
+521            into leaf the first hour */
+522 //      Stem = Rhizome * 0\&.001;
+523 //      Root = Rhizome * 0\&.001;
+524           /**********Assining Canopy Parameters********************/
+525       canopyparms\&.remobFac=0\&.5;
+526       int dap=0;
+527       /*******************************************************/
+528   miscanthus\&.leaf\&.biomass=0\&.0;
+529   miscanthus\&.stem\&.biomass=0\&.0;
+530   miscanthus\&.root\&.biomass=0\&.0;
+531   miscanthus\&.rhizome\&.biomass=management\&.emergenceparms\&.plantingrate;
+532  
+533   int emergence=0;
+534   struct dailyclimate dailyclimate;
+535   TTc=0\&.0;
+536   REAL(TTTc)[0]=TTc;
+537   
+538   // Initializing daily soil layer flux to Zero
+539    for(i3=0;i3<soillayers;i3++)
+540           {
+541             soilMLS\&.dailyWflux[i3]=0\&.0;  
+542           }
+543   
+544  /**************************************/
+545   updateafteremergence(&miscanthus,&management);
+546   LAI = miscanthus\&.leaf\&.biomass*Sp;
+547   int phototype;
+548   phototype=1;
+549 
+550   CROPCENT\&.ENV\&.minN=12\&.0; //120*1000/10000 g N/m2
+551         for(i=0;i<vecsize;i++)
+552 //    for(i=0;i<3;i++)
+553         {
+554                 /* First calculate the elapsed Thermal Time*/
+555                 /* The idea is that here I need to divide by the time step
+556                    to calculate the thermal time\&. For example, a 3 hour time interval
+557                    would mean that the division would need to by 8 */
+558 //       delTT=*(pt_temp+i) / (24/timestep);
+559         delTT=getThermaltime(*(pt_temp+i), Tbase);
+560         delTT=delTT/24;
+561 //    dailydelTT+=delTT;
+562 //    Rprintf("index=%i,temp=%f, delTT= %f\n", i,*(pt_temp+i),delTT);
+563 //         LAI=6\&.0;
+564         if(emergence==0)
+565             {
+566             TTc +=delTT;
+567             REAL(TTTc)[i] =REAL(TTTc)[i-1]+delTT ;
+568             CanopyA = 0\&.0;
+569             CanopyAGross =0\&.0;
+570                         CanopyT = 0\&.0;
+571             miscanthus\&.autoresp\&.leafdarkresp=0;
+572             }
+573         else
+574             {
+575 //         Rprintf("Before Canopy Function, Phototype = %i, i= %i, Assim=%f, Leaf=%f, LAI=%f, Specific Leaf Area = %f \n", phototype,i, Canopy\&.Assim, miscanthus\&.leaf\&.biomass, LAI,Sp);
+576                         TTc +=delTT;
+577                         REAL(TTTc)[i] =REAL(TTTc)[i-1]+delTT ;
+578             
+579            
+580                 Canopy = CanAC(LAI, *(pt_doy+i), *(pt_hr+i),
+581                                *(pt_solar+i), *(pt_temp+i),
+582                                *(pt_rh+i), *(pt_windspeed+i),
+583                                lat, nlayers,
+584                                vmax1,alpha1,kparm1,
+585                                theta,beta,Rd1,Ca,b01,b11,StomWS,
+586                                ws, kd,
+587                                chil, hf,LeafN, kpLN, lnb0, lnb1, lnfun,upperT,lowerT,nitroparms);
+588 
+589                         CanopyA = Canopy\&.Assim * timestep;
+590             CanopyAGross =Canopy\&.GrossAssim*timestep;
+591                         CanopyT = Canopy\&.Trans * timestep;
+592             }
+593                 /* Inserting the multilayer model */
+594                   if(soillayers > 1)
+595             {
+596                         soilMLS = soilML(*(pt_precip+i), CanopyT, &cwsVec[0], soilDepth, REAL(SOILDEPTHS), FieldC, WiltP,
+597                             phi1, phi2, soTexS, wsFun, INTEGER(SOILLAYERS)[0], miscanthus\&.root\&.biomass, 
+598                                                     LAI, 0\&.68, *(pt_temp+i), *(pt_solar), *(pt_windspeed+i), *(pt_rh+i), 
+599                                                     INTEGER(HYDRDIST)[0], rfl, rsec, rsdf);
+600 
+601             StomWS = soilMLS\&.rcoefPhoto;
+602             LeafWS = soilMLS\&.rcoefSpleaf;
+603             soilEvap = soilMLS\&.SoilEvapo;
+604                                 for(i3=0;i3<soillayers;i3++)
+605                       {
+606                                         cwsVec[i3] = soilMLS\&.cws[i3];
+607                                         cwsVecSum += cwsVec[i3];
+608                                         REAL(cwsMat)[i3 + i*soillayers] = soilMLS\&.cws[i3];
+609                                         REAL(rdMat)[i3 + i*soillayers] = soilMLS\&.rootDist[i3];
+610                       REAL(waterfluxMat)[i3 + i*soillayers] = soilMLS\&.hourlyWflux[i3];
+611                       soilMLS\&.dailyWflux[i3]+=soilMLS\&.hourlyWflux[i3];
+612                                   }
+613 
+614                               waterCont = cwsVecSum / soillayers;
+615                               cwsVecSum = 0\&.0;
+616 
+617                       }
+618       else
+619           {
+620 
+621                         soilEvap = SoilEvapo(LAI, 0\&.68, *(pt_temp+i), *(pt_solar+i), waterCont, FieldC, WiltP, 
+622                                                    *(pt_windspeed+i), *(pt_rh+i), rsec);
+623                         TotEvap = soilEvap + CanopyT;
+624                         WaterS = watstr(*(pt_precip+i),TotEvap,waterCont,soilDepth,FieldC,WiltP,phi1,phi2,soilType, wsFun);   
+625                         waterCont = WaterS\&.awc;
+626                         StomWS = WaterS\&.rcoefPhoto ; 
+627                         LeafWS = WaterS\&.rcoefSpleaf;
+628                         REAL(cwsMat)[i] = waterCont;
+629                         REAL(psimMat)[i] = WaterS\&.psim;
+630                 }
+631           
+632           
+633 /**** this can be moved to a separate function **********************************/                                    
+634 /****************Evaluating Daily Maintenance R espiration and Gross canopy assimilation******************/
+635 
+636   StemResp=MRespiration(miscanthus\&.stem\&.biomass, RESP\&.maint\&.Qstem, RESP\&.maint\&.mstem, *(pt_temp+i), timestep);
+637   miscanthus\&.autoresp\&.stemmaint+=StemResp;
+638   RootResp=MRespiration(miscanthus\&.root\&.biomass, RESP\&.maint\&.Qroot, RESP\&.maint\&.mroot, *(pt_temp+i), timestep);
+639   miscanthus\&.autoresp\&.rootmaint+=RootResp;
+640   RhizResp=MRespiration(miscanthus\&.rhizome\&.biomass, RESP\&.maint\&.Qrhizome, RESP\&.maint\&.mrhizome, *(pt_temp+i), timestep);
+641   miscanthus\&.autoresp\&.rhizomemaint+=RhizResp;
+642   miscanthus\&.autoresp\&.leafdarkresp+=(CanopyAGross-CanopyA);
+643   dailynetassim+=CanopyA;//Net Canopy Assimilation
+644   miscanthus\&.GPP+=CanopyAGross;
+645 
+646 
+647 
+648    if(i % 24== 0)
+649    {
+650      /*************************************************************************************************************
+651       * Now we are entering in the daily loop, for plant biomass updating as well as for biogeochemistry calculations
+652       * In the daily loop,we need
+653       * --(1) daily climate data for calculation of biogeochemical cycle\&.Function call to getdailyclimate is made to update structure dailyclimate
+654       * --(2) dailyThermalTime (GDD) is also updated, this is used in main dailygrowth function of miscanthus
+655       * --(3) dailymiscanthus function is called to update the biomass of plant for the current day, along with logical variable emergence
+656       * --(4) LAI is updated based on current biomass of miscanthus leaf and SLA
+657       * LAI CAN BE INCLUDED IN THE MISCANTHUS STRUCTURE TO AVOID AN EXTRA HANGING LINE OF CALCULATIONS, CALL TO CANOPY  MUST BE MADE USING 
+658       * MISCANTHUS->LAI INSTEAD OF SIMPLY LAI
+659       * *************************************************************************************************************/
+660      getdailyclimate(&dailyclimate, pt_doy,pt_solar,pt_temp, pt_rh, pt_windspeed,pt_precip,i,vecsize);  
+661      dailydelTT = (emergence ==1) ? getThermaltime(dailyclimate\&.temp, Tbase):0\&.0;
+662      accumulatedGDD+=dailydelTT; 
+663      dailymiscanthus(&miscanthus, REAL(DBPCOEFS),REAL(THERMALP),accumulatedGDD, *(pt_temp+i), dailynetassim,&senthermaltemp, &canopyparms,&frostparms,i,dailydelTT,&RESP,emergence); 
+664      LAI=miscanthus\&.leaf\&.biomass*Sp;
+665              /*****************************************************************************************************************
+666              * If plant is already emerged then 
+667              * --
+668              * --Test if today is harvest day, If no set back emergence to zero and update miscanthus structure[ usually leaving zero above ground biomass or a fraction]
+669              * Else
+670              * --
+671              * --We need to check if today is the emergence date based on logical value returned by CheckEmergence Function
+672              * -- (1)If today indeed is emergence date then initialuze leaf biomass by calling updateafteremergence
+673              * ---(2)also, emergence mean we need to set accumulated GDD back to zero so paritioning calendar is reset
+674              * -- (3) setting initial LAI based on initial fraction to leaf and SLA
+675              * ---(4) Fertilization on the date of emergence
+676              * THIS WHOLE IF ELSE LOOP CAN BE REPLACED BY A FUNCTION CALL WHICH TAKED CURRENT DAY,& SCHEDULE DATA FRAME (E\&.G\&. DATE OF HARVEST, FERTILIZATION)
+677              * TO UPDATE PLANT BIOMASS POOLS AND SOIL BIOGEOCHEMICAL POOLS
+678              * ***************************************************************************************************************/   
+679                         if(emergence==1)
+680                         {
+681                                if(dailyclimate\&.doy==management\&.harvestparms\&.harvestdoy)
+682                               {
+683                                 emergence=0;                        //Emergence is set back to zero
+684                                 REAL(GDD)[dap]=0\&.0;                 //Set GDD back to zero to restart phenology from beginning
+685                                 updateafterharvest(&miscanthus,&management); // Use harvest parameters to implement pracices such as removingor leaving residues 
+686                               }         
+687                         }
+688                       
+689                         else
+690                         {             
+691                                 emergence=CheckEmergence(&dailyclimate,management\&.emergenceparms\&.emergenceTemp); 
+692                                 if((dailyclimate\&.doy==120)&&(phototype==2))emergence=1;
+693                                 if(emergence==1)
+694                                 {
+695                                 updateafteremergence(&miscanthus,&management);
+696                                 accumulatedGDD=0\&.0;
+697                                 TTc=0\&.0;
+698                                 LAI = miscanthus\&.leaf\&.biomass* Sp;
+699                                 CROPCENT\&.ENV\&.minN+=12\&.0; // adding fertilization on the emergence day
+700                                 }
+701                         }
+702           
+703               /******************************************************************************************************************************
+704                *  Base on a logical [FlagBiogeochem=1], following four steps will be performed\&. Or, productivity will not be influenced by 
+705                *  by N availability and no output of soil C and GHG will be available [ all zeros will be output]
+706                * 
+707                * (1) I need to copy soil water profile from BioCro function to CROPCENT\&.soil 
+708                * 
+709                * (2) Assign Average Soil Properties to each layer of the soilprofile of cropcentlayer
+710                * 
+711                * (2) Now we have updated plant biomass and litter content of each component\&.We need to input litter (based on a user defined 
+712                *     falling rate) to soil biogeochemical cycle and perform decomposition of soil organic pool for today\&. Important thing is to 
+713                *     use correct C:N ratio of litter, call SCHEDULING FUNCTION to modify decomposition rates as per tillage implementation and 
+714                *     addition of external Fertilizers and manures etc\&. Output of this exercise  will be updated pools of soil organic carbon and
+715                *     newmineral N in the top 15 cm layer\&.
+716                * 
+717                * (3) I can use newmineral N pool for distributing it into multilayers then canclulate GHG emission and N leaching, and distribution
+718                *     of mineral N in different soil layers\&.
+719                * 
+720                * (4) I can calculate demand of N for today and accordingly modify mineral N content of different soil layers\&.
+721                * 
+722                * (5) If There is not enough mineral N then C:N ratio of plant is modified, which will eventually result in lower productivity
+723                *     because photosynthesis parameters are a linear function of leaf N content\&. Thus Limited N will reduce productivity
+724                *
+725                * *****************************************************************************************************************************/
+726                 
+727                 int FlagBiogeochem =1;// MOVE THIS UP & ALLOW IT TO VARY FROM R ENVIRONMENT
+728  
+729 
+730                 if(FlagBiogeochem==1)
+731                 {
+732 //                Assign_Soil_Properties_To_CropCent(bulkd,swclimit,fieldc,pH,tcoeff, baseflow,stormflow,frlechd,&CROPCENT);
+733                 Copy_SoilWater_BioCro_To_CropCent(&soilMLS,&CROPCENT);
+734 //                Rprintf("soilMLS\&.dpthmn[1]=%f,CROPCENT\&.soilprofile\&.properties\&.dpthmn[1]=%f\n",soilMLS\&.dpthmn[1],CROPCENT\&.soilprofile\&.properties\&.dpthmn[1]);
+735 //                CalculateBiogeochem(&miscanthus, &CROPCENT,&dailyclimate);
+736                 }
+737               
+738                /******************* This part can go to a Separate Function - Nremobilization**************************************************/
+739                
+740                /*********This Part is to Model N response on Productivity**********************************************************************
+741                *   D=getTodayNDemand(&miscanthus) all positive partitioning for nutrients or non-decreasing N concentration
+742                *   S=getTodayInternalNSupply(&miscanthus) due to mobilization from senescing plant organs or phenology (Rhizome in the beginning, leaf & Stem in the end)
+743                *   if(S>D) satisfy all demand and remaining S will go to rhizome (storage organ)
+744                *   if(S<D) && (D-S)< soil Mineral N total
+745                *   Meet all the D and reduce soil mineral N by (D-S)
+746                *   if (S<D) && (D-S) > soil mineral N total
+747                *   make soil Mineral N = 0
+748                *   reduce all the N supply bu a factor k such that k*D-S= soil mineral
+749                *   Meet only a fraction(k) of demand D and reduce nutrient concentration of all the elements
+750                *  *******************************************************************************************************************************   
+751                * This reduced C:N ratio of leaf will eventually reduce photosynthesis as photosynthesis parameters are expressed in terms of SLN
+752                * *******************************************************************************************************************************/   
+753       
+754          for(i3=0;i3<soillayers;i3++)
+755           {
+756             soilMLS\&.dailyWflux[i3]=0\&.0;  
+757           }
+758                         
+759        printcropcentout(CROPCENT,
+760                         &REAL(totalSOC)[dap],
+761                         &REAL(strucc1)[dap],
+762                         &REAL(strucc2)[dap],
+763                         &REAL(metabc1)[dap],
+764                         &REAL(metabc2)[dap],
+765                         &REAL(som1c1)[dap],
+766                         &REAL(som1c2)[dap],
+767                         &REAL(som2c1)[dap],
+768                         &REAL(som2c2)[dap],
+769                         &REAL(som3c)[dap],
+770                         &REAL(minN)[dap]);
+771 
+772 
+773 /***************************************************************************/
+774    REAL(GPP)[dap]=miscanthus\&.GPP;
+775    REAL(LeafDarkResp)[dap]=miscanthus\&.autoresp\&.leafdarkresp;
+776    REAL(StemMResp)[dap]=miscanthus\&.autoresp\&.stemmaint;
+777    REAL(RootMResp)[dap]=miscanthus\&.autoresp\&.rootmaint;
+778    REAL(RhizomeMResp)[dap]=miscanthus\&.autoresp\&.rhizomemaint;
+779    REAL(autoRESP)[dap]= miscanthus\&.autoresp\&.total;
+780    miscanthus\&.NPP=miscanthus\&.GPP-miscanthus\&.autoresp\&.total;
+781    REAL(NPP)[dap]=miscanthus\&.NPP;
+782    REAL(Stemd)[dap]=miscanthus\&.stem\&.biomass;
+783    REAL(Leafd)[dap]=miscanthus\&.leaf\&.biomass;
+784    REAL(Rootd)[dap]=miscanthus\&.root\&.biomass;
+785    REAL(Rhizomed)[dap]=miscanthus\&.rhizome\&.biomass;
+786    REAL(Stemlitterd)[dap]=miscanthus\&.stem\&.litter;
+787    REAL(Leaflitterd)[dap]=miscanthus\&.leaf\&.litter;
+788    REAL(Rootlitterd)[dap]=miscanthus\&.root\&.litter;
+789    REAL(Rhizomelitterd)[dap]=miscanthus\&.rhizome\&.litter;
+790    REAL(DayafterPlanting)[dap]=dap;  
+791    REAL(GDD)[dap]=accumulatedGDD;
+792    REAL(LAId)[dap]=LAI;
+793    
+794     miscanthus\&.autoresp\&.leafdarkresp=0\&.0;
+795     miscanthus\&.autoresp\&.stemmaint=0\&.0;
+796     miscanthus\&.autoresp\&.rootmaint=0\&.0;
+797     miscanthus\&.autoresp\&.rhizomemaint=0\&.0;  
+798     miscanthus\&.GPP=0;
+799     miscanthus\&.NPP=0;
+800     dailynetassim=0\&.0;
+801     dailyGPP=0\&.0;
+802     dap+=1;
+803                 }
+804 
+805 
+806 
+807                 MinNitro = centS\&.MinN; /* These should be kg / m^2 per week? */
+808                 Resp = centS\&.Resp;
+809                 SCCs[0] = centS\&.SCs[0];
+810                 SCCs[1] = centS\&.SCs[1];
+811                 SCCs[2] = centS\&.SCs[2];
+812                 SCCs[3] = centS\&.SCs[3];
+813                 SCCs[4] = centS\&.SCs[4];
+814                 SCCs[5] = centS\&.SCs[5];
+815                 SCCs[6] = centS\&.SCs[6];
+816                 SCCs[7] = centS\&.SCs[7];
+817                 SCCs[8] = centS\&.SCs[8];
+818 
+819 
+820 
+821                 ALitter = LeafLitter + StemLitter;
+822                 BLitter = RootLitter + RhizomeLitter;
+823     
+824                 /* Here I could add a soil and nitrogen carbon component\&. I have soil
+825                    moisture, I have temperature and root and rhizome biomass */
+826 
+827                 REAL(DayofYear)[i] =  INTEGER(DOY)[i];
+828                 REAL(Hour)[i] =  INTEGER(HR)[i];
+829                 REAL(CanopyAssim)[i] =  CanopyA;
+830                 REAL(CanopyTrans)[i] =  CanopyT; 
+831                 REAL(Leafy)[i] = miscanthus\&.leaf\&.biomass; //Leaf;
+832                 REAL(Stemy)[i] = miscanthus\&.stem\&.biomass; // Stem;
+833                 REAL(Rooty)[i] =  miscanthus\&.root\&.biomass; //Root;
+834                 REAL(Rhizomey)[i] = miscanthus\&.rhizome\&.biomass; //Rhizome;
+835                 REAL(Grainy)[i] = Grain;
+836                 REAL(LAIc)[i] = LAI;
+837                 REAL(SoilWatCont)[i] = waterCont;
+838                 REAL(StomatalCondCoefs)[i] = StomWS;
+839                 REAL(LeafReductionCoefs)[i] = LeafWS;
+840                 REAL(LeafNitrogen)[i] = LeafN;
+841                 REAL(AboveLitter)[i] = ALitter;
+842                 REAL(BelowLitter)[i] = BLitter;
+843                 REAL(VmaxVec)[i] = vmax1;
+844                 REAL(AlphaVec)[i] = alpha1;
+845                 REAL(SpVec)[i] = Sp;
+846                 REAL(MinNitroVec)[i] = MinNitro/ (24*centTimestep);
+847                 REAL(RespVec)[i] = Resp / (24*centTimestep);
+848                 REAL(SoilEvaporation)[i] = soilEvap;
+849                 REAL(LeafPsimVec)[i] = LeafPsim;
+850     
+851 }
+852 
+853 /* Populating the results of the Century model */
+854 
+855                 REAL(SCpools)[0] = centS\&.SCs[0];
+856                 REAL(SCpools)[1] = centS\&.SCs[1];
+857                 REAL(SCpools)[2] = centS\&.SCs[2];
+858                 REAL(SCpools)[3] = centS\&.SCs[3];
+859                 REAL(SCpools)[4] = centS\&.SCs[4];
+860                 REAL(SCpools)[5] = centS\&.SCs[5];
+861                 REAL(SCpools)[6] = centS\&.SCs[6];
+862                 REAL(SCpools)[7] = centS\&.SCs[7];
+863                 REAL(SCpools)[8] = centS\&.SCs[8];
+864 
+865                 REAL(SNpools)[0] = centS\&.SNs[0];
+866                 REAL(SNpools)[1] = centS\&.SNs[1];
+867                 REAL(SNpools)[2] = centS\&.SNs[2];
+868                 REAL(SNpools)[3] = centS\&.SNs[3];
+869                 REAL(SNpools)[4] = centS\&.SNs[4];
+870                 REAL(SNpools)[5] = centS\&.SNs[5];
+871                 REAL(SNpools)[6] = centS\&.SNs[6];
+872                 REAL(SNpools)[7] = centS\&.SNs[7];
+873                 REAL(SNpools)[8] = centS\&.SNs[8];
+874 
+875         SET_VECTOR_ELT(lists,0,DayofYear);
+876         SET_VECTOR_ELT(lists,1,Hour);
+877         SET_VECTOR_ELT(lists,2,CanopyAssim);
+878         SET_VECTOR_ELT(lists,3,CanopyTrans);
+879         SET_VECTOR_ELT(lists,4,Leafy);
+880         SET_VECTOR_ELT(lists,5,Stemy);
+881         SET_VECTOR_ELT(lists,6,Rooty);
+882         SET_VECTOR_ELT(lists,7,Rhizomey);
+883         SET_VECTOR_ELT(lists,8,Grainy);
+884         SET_VECTOR_ELT(lists,9,LAIc);
+885         SET_VECTOR_ELT(lists,10,TTTc);
+886         SET_VECTOR_ELT(lists,11,SoilWatCont);
+887         SET_VECTOR_ELT(lists,12,StomatalCondCoefs);
+888         SET_VECTOR_ELT(lists,13,LeafReductionCoefs);
+889         SET_VECTOR_ELT(lists,14,LeafNitrogen);
+890         SET_VECTOR_ELT(lists,15,AboveLitter);
+891         SET_VECTOR_ELT(lists,16,BelowLitter);
+892         SET_VECTOR_ELT(lists,17,VmaxVec);
+893         SET_VECTOR_ELT(lists,18,AlphaVec);
+894         SET_VECTOR_ELT(lists,19,SpVec);
+895         SET_VECTOR_ELT(lists,20,MinNitroVec);
+896         SET_VECTOR_ELT(lists,21,RespVec);
+897         SET_VECTOR_ELT(lists,22,SoilEvaporation);
+898         SET_VECTOR_ELT(lists,23,cwsMat);
+899         SET_VECTOR_ELT(lists,24,psimMat);
+900         SET_VECTOR_ELT(lists,25,rdMat);
+901         SET_VECTOR_ELT(lists,26,SCpools);
+902         SET_VECTOR_ELT(lists,27,SNpools);
+903         SET_VECTOR_ELT(lists,28,LeafPsimVec);
+904   SET_VECTOR_ELT(lists,29,DayafterPlanting);
+905   SET_VECTOR_ELT(lists,30,GDD);
+906   SET_VECTOR_ELT(lists,31,GPP);
+907   SET_VECTOR_ELT(lists,32,NPP);
+908   SET_VECTOR_ELT(lists,33,autoRESP);  
+909   SET_VECTOR_ELT(lists,34,hetRESP);
+910   SET_VECTOR_ELT(lists,35,NER);
+911   SET_VECTOR_ELT(lists,36,StemMResp);
+912   SET_VECTOR_ELT(lists,37,RootMResp);
+913   SET_VECTOR_ELT(lists,38,RhizomeMResp);
+914   SET_VECTOR_ELT(lists,39,LeafDarkResp);
+915   SET_VECTOR_ELT(lists,40,Stemd);
+916   SET_VECTOR_ELT(lists,41,Leafd);
+917   SET_VECTOR_ELT(lists,42,Rootd);
+918   SET_VECTOR_ELT(lists,43,Rhizomed);
+919   SET_VECTOR_ELT(lists,44,Stemlitterd);
+920   SET_VECTOR_ELT(lists,45,Leaflitterd);
+921   SET_VECTOR_ELT(lists,46,Rootlitterd);
+922   SET_VECTOR_ELT(lists,47,Rhizomelitterd);
+923   SET_VECTOR_ELT(lists,48,LAId);
+924   SET_VECTOR_ELT(lists,49,totalSOC);
+925   SET_VECTOR_ELT(lists,50,strucc1);
+926   SET_VECTOR_ELT(lists,51,strucc2);
+927   SET_VECTOR_ELT(lists,52,metabc1);
+928   SET_VECTOR_ELT(lists,53,metabc1);
+929   SET_VECTOR_ELT(lists,54,som1c1);
+930   SET_VECTOR_ELT(lists,55,som1c2);
+931   SET_VECTOR_ELT(lists,56,som2c1);
+932   SET_VECTOR_ELT(lists,57,som2c2);
+933   SET_VECTOR_ELT(lists,58,som3c);
+934   SET_VECTOR_ELT(lists,59,minN);
+935   SET_VECTOR_ELT(lists,60,waterfluxMat);
+936 
+937 
+938         SET_STRING_ELT(names,0,mkChar("DayofYear"));
+939         SET_STRING_ELT(names,1,mkChar("Hour"));
+940         SET_STRING_ELT(names,2,mkChar("CanopyAssim"));
+941         SET_STRING_ELT(names,3,mkChar("CanopyTrans"));
+942         SET_STRING_ELT(names,4,mkChar("Leaf"));
+943         SET_STRING_ELT(names,5,mkChar("Stem"));
+944         SET_STRING_ELT(names,6,mkChar("Root"));
+945         SET_STRING_ELT(names,7,mkChar("Rhizome"));
+946         SET_STRING_ELT(names,8,mkChar("Grain"));
+947         SET_STRING_ELT(names,9,mkChar("LAI"));
+948         SET_STRING_ELT(names,10,mkChar("ThermalT"));
+949         SET_STRING_ELT(names,11,mkChar("SoilWatCont"));
+950         SET_STRING_ELT(names,12,mkChar("StomatalCondCoefs"));
+951         SET_STRING_ELT(names,13,mkChar("LeafReductionCoefs"));
+952         SET_STRING_ELT(names,14,mkChar("LeafNitrogen"));
+953         SET_STRING_ELT(names,15,mkChar("AboveLitter"));
+954         SET_STRING_ELT(names,16,mkChar("BelowLitter"));
+955         SET_STRING_ELT(names,17,mkChar("VmaxVec"));
+956         SET_STRING_ELT(names,18,mkChar("AlphaVec"));
+957         SET_STRING_ELT(names,19,mkChar("SpVec"));
+958         SET_STRING_ELT(names,20,mkChar("MinNitroVec"));
+959         SET_STRING_ELT(names,21,mkChar("RespVec"));
+960         SET_STRING_ELT(names,22,mkChar("SoilEvaporation"));
+961         SET_STRING_ELT(names,23,mkChar("cwsMat"));
+962         SET_STRING_ELT(names,24,mkChar("psimMat"));
+963         SET_STRING_ELT(names,25,mkChar("rdMat"));
+964         SET_STRING_ELT(names,26,mkChar("SCpools"));
+965         SET_STRING_ELT(names,27,mkChar("SNpools"));
+966         SET_STRING_ELT(names,28,mkChar("LeafPsimVec"));
+967   SET_STRING_ELT(names,29,mkChar("DayafterPlanting"));
+968   SET_STRING_ELT(names,30,mkChar("GDD"));
+969   SET_STRING_ELT(names,31,mkChar("GPP"));
+970   SET_STRING_ELT(names,32,mkChar("NPP"));
+971   SET_STRING_ELT(names,33,mkChar("autoRESP"));
+972   SET_STRING_ELT(names,34,mkChar("hetRESP"));
+973   SET_STRING_ELT(names,35,mkChar("NER"));
+974   SET_STRING_ELT(names,36,mkChar("StemMResp"));
+975   SET_STRING_ELT(names,37,mkChar("RootMResp"));
+976   SET_STRING_ELT(names,38,mkChar("RhizomeMResp"));
+977   SET_STRING_ELT(names,39,mkChar("LeafDarkResp"));
+978   SET_STRING_ELT(names,40,mkChar("Stemd"));
+979   SET_STRING_ELT(names,41,mkChar("Leafd"));
+980   SET_STRING_ELT(names,42,mkChar("Rootd"));
+981   SET_STRING_ELT(names,43,mkChar("Rhizomed"));
+982   SET_STRING_ELT(names,44,mkChar("Stemlitterd"));
+983   SET_STRING_ELT(names,45,mkChar("Leaflitterd"));
+984   SET_STRING_ELT(names,46,mkChar("Rootlitterd"));
+985   SET_STRING_ELT(names,47,mkChar("Rhizomelitterd"));
+986   SET_STRING_ELT(names,48,mkChar("LAId"));
+987   SET_STRING_ELT(names,49,mkChar("totalSOC"));
+988   SET_STRING_ELT(names,50,mkChar("strucc1"));
+989   SET_STRING_ELT(names,51,mkChar("strucc2"));
+990   SET_STRING_ELT(names,52,mkChar("metabc1"));
+991   SET_STRING_ELT(names,53,mkChar("metabc1"));
+992   SET_STRING_ELT(names,54,mkChar("som1c1"));
+993   SET_STRING_ELT(names,55,mkChar("som1c2"));
+994   SET_STRING_ELT(names,56,mkChar("som2c1"));
+995   SET_STRING_ELT(names,57,mkChar("som2c2"));
+996   SET_STRING_ELT(names,58,mkChar("som3c"));
+997    SET_STRING_ELT(names,59,mkChar("minN"));
+998    SET_STRING_ELT(names,60,mkChar("waterfluxMat"));
+999         setAttrib(lists,R_NamesSymbol,names);
+1000         UNPROTECT(63);
+1001         return(lists);
+1002 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

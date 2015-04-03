@@ -1,0 +1,69 @@
+.TH "/home/dlebauer/dev/biocro/src/c3EvapoTrans.h" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/c3EvapoTrans.h \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "double \fBTempToDdryA\fP (double Temp)"
+.br
+.ti -1c
+.RI "double \fBTempToLHV\fP (double Temp)"
+.br
+.ti -1c
+.RI "double \fBTempToSFS\fP (double Temp)"
+.br
+.ti -1c
+.RI "double \fBTempToSWVC\fP (double Temp)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "double TempToDdryA (doubleTemp)"
+
+.PP
+.nf
+180 {
+181         double DdryA;
+182         DdryA = 1\&.295163636 + -0\&.004258182 * Temp;
+183         return(DdryA);
+184 }
+.fi
+.SS "double TempToLHV (doubleTemp)"
+
+.PP
+.nf
+187 {
+188         double LHV;
+189         LHV = 2\&.501 + -0\&.002372727 * Temp;
+190         return(LHV);
+191 }
+.fi
+.SS "double TempToSFS (doubleTemp)"
+
+.PP
+.nf
+194 {
+195         double SlopeFS;
+196         SlopeFS = 0\&.338376068 +  0\&.011435897 * Temp +  0\&.001111111 * pow(Temp,2);
+197         return(SlopeFS);
+198 }
+.fi
+.SS "double TempToSWVC (doubleTemp)"
+
+.PP
+.nf
+201 {
+202         double SWVC;
+203         SWVC =  4\&.90820192 +   0\&.06387253 * Temp +    0\&.02745742 * pow(Temp,2);
+204         return(SWVC);
+205 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

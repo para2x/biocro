@@ -1,0 +1,137 @@
+.TH "/home/dlebauer/dev/biocro/src/diffusiv.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/diffusiv.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <math\&.h>\fP
+.br
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include <stdlib\&.h>\fP
+.br
+\fC#include <string\&.h>\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBPARTDENS\fP   2\&.65           /* Particle Density (g/cm3) */"
+.br
+.ti -1c
+.RI "#define \fBmin\fP(a, b)   (((a) < (b)) ? (a) : (b))"
+.br
+.ti -1c
+.RI "#define \fBmax\fP(a, b)   (((a) > (b)) ? (a) : (b))"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "double \fBdiffusiv\fP (double *A, double *bulkden, double *\fBwfps\fP)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define max(a, b)   (((a) > (b)) ? (a) : (b))"
+
+.SS "#define min(a, b)   (((a) < (b)) ? (a) : (b))"
+
+.SS "#define PARTDENS   2\&.65           /* Particle Density (g/cm3) */"
+
+.SH "Function Documentation"
+.PP 
+.SS "double diffusiv (double *A, double *bulkden, double *wfps)"
+
+.PP
+.nf
+70     {
+71       double porosity;
+72       double theta_A, theta_P, theta_V, my_theta_V;
+73       double tp1, tp2, tp3, tp4, tp5, tp6, tp7, tp8;
+74       double vfrac;
+75       double s_wat, sw_p;
+76       double pfc;
+77       double dDO;
+78       int   debug;
+79 
+80       /* Initialization */
+81       debug = 0;
+82 
+83       porosity = 1\&.0 - (*bulkden)/PARTDENS;
+84       if ((porosity - (*A)) < 0\&.0) {
+85         printf("ERROR:  Mis-match between bulk density and field capacity\n");
+86         printf("value in soils\&.in file\&.  Ending simulation!\n");
+87         exit(1);
+88       }
+89 
+90       pfc = (*wfps)*100 /((*A)/porosity);
+91  
+92       if (pfc >= 100\&.0) {
+93         vfrac = ((*wfps)*porosity - *A) / (porosity - (*A));
+94       } else {
+95         vfrac = 0\&.0;
+96       }
+97   
+98       if (pfc < 100\&.0) {
+99         theta_V = (pfc/100\&.0)*(*A);
+100       } else {
+101         theta_V = (*A) + (min(vfrac,1\&.0) * (porosity - (*A)));
+102       }
+103 
+104       my_theta_V = *wfps * (1\&.0 - *bulkden/PARTDENS);
+105 
+106       theta_P = (theta_V < (*A)) ? 0\&.0 : theta_V - (*A);
+107       theta_A = (theta_V > (*A)) ? (*A) : theta_V;
+108 
+109       if (debug) {
+110         printf("In SUB, vfrac = %f\n", vfrac);
+111         printf("In SUB, porosity - A = %f\n", (porosity - (*A)));
+112         printf("In SUB, (*A) = %f\n", (*A));
+113         printf("In SUB, (*wfps) = %f\n", (*wfps));
+114         printf("In SUB, pfc = %f\n", pfc);
+115         printf("In SUB, porosity = %f\n", porosity);
+116         printf("In SUB, theta_V = %f\n", theta_V);
+117         printf("In SUB, my_theta_V = %f\n", my_theta_V);
+118         printf("In SUB, theta_P = %f\n", theta_P);
+119         printf("In SUB, theta_A = %f\n", theta_A);
+120       }
+121 
+122       s_wat = min(1\&.0, theta_V/(*A));
+123       sw_p = min(1\&.0, theta_P/(porosity-(*A)));
+124 
+125       tp1 = pow((1\&.0 - s_wat), 2\&.0);
+126       tp2 = ((*A) - theta_A) / ((*A) + (1\&.0 - porosity));
+127       tp3 = pow(tp2,(0\&.5*tp2 + 1\&.16));
+128       tp4 = (1\&.0 - pow(((porosity-(*A))),
+129                               (0\&.5*((porosity-(*A))) + 1\&.16)));
+130       tp5 = (porosity-(*A))-theta_P;
+131       if (tp5 > 0\&.0) {
+132         tp6 = pow(tp5, (0\&.5*tp5 + 1\&.16));
+133       } else {
+134         tp6 = 0\&.0;
+135       }
+136       tp7 = pow((1\&.0-sw_p), 2\&.0);
+137       tp8 = max(0\&.0, (tp1*tp3*tp4*(tp5-tp6)) /
+138                       (1\&.0E-6 + (tp1*tp3*tp4) + tp5 - tp6) * 1\&.0E7);
+139 
+140       if (debug) printf("From SUB: %f %f %f %f %f %f %f %f\n",
+141                         tp1, tp2, tp3, tp4, tp5, tp6, tp7, tp8);
+142       dDO = max(0\&.0, (tp8/1\&.0E7 + tp7*tp6));
+143       if (debug) {
+144             printf("In SUB, dDO = %f\n", dDO);
+145       }
+146 
+147 /*      dDO /= 0\&.20;
+148       dDO = min(dDO, 1\&.0); */
+149 
+150       return(dDO);
+151     }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

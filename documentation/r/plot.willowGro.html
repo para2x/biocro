@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>plot.willowGro. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Plotting function for willowGro objects</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>"plot"(x, obs&nbsp;=&nbsp;NULL, stem&nbsp;=&nbsp;TRUE, leaf&nbsp;=&nbsp;TRUE, root&nbsp;=&nbsp;TRUE, rhizome&nbsp;=&nbsp;TRUE, LAI&nbsp;=&nbsp;TRUE, grain&nbsp;=&nbsp;TRUE, xlab&nbsp;=&nbsp;NULL, ylab&nbsp;=&nbsp;NULL, pch&nbsp;=&nbsp;21, lty&nbsp;=&nbsp;1, lwd&nbsp;=&nbsp;1, col&nbsp;=&nbsp;c("blue", "green", "red", "magenta", "black", "purple"), x1&nbsp;=&nbsp;0.1, y1&nbsp;=&nbsp;0.8, plot.kind&nbsp;=&nbsp;c("DB", "SW"), ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>x</dt>
+      <dd><code><a href='willowCent.html'>willowGro</a></code> object.</dd>
+      <dt>obs</dt>
+      <dd>optional observed data object (format
+  following the <code>OpwillowGro</code> function .</dd>
+      <dt>stem</dt>
+      <dd>whether to plot simulated stem (default =
+  TRUE).</dd>
+      <dt>leaf</dt>
+      <dd>whether to plot simulated leaf (default =
+  TRUE).</dd>
+      <dt>root</dt>
+      <dd>whether to plot simulated root (default =
+  TRUE).</dd>
+      <dt>rhizome</dt>
+      <dd>whether to plot simulated rhizome (default
+  = TRUE).</dd>
+      <dt>grain</dt>
+      <dd>whether to plot simulated grain (default =
+  TRUE).</dd>
+      <dt>LAI</dt>
+      <dd>whether to plot simulated LAI (default =
+  TRUE).</dd>
+      <dt>pch</dt>
+      <dd>point character.</dd>
+      <dt>lty</dt>
+      <dd>line type.</dd>
+      <dt>lwd</dt>
+      <dd>line width.</dd>
+      <dt>col</dt>
+      <dd>Control of colors.</dd>
+      <dt>x1</dt>
+      <dd>position of the legend. x coordinate (0-1).</dd>
+      <dt>y1</dt>
+      <dd>position of the legend. y coordinate (0-1).</dd>
+      <dt>plot.kind</dt>
+      <dd>DB plots dry biomass and SW plots soil
+  water.</dd>
+      <dt>...</dt>
+      <dd>Optional arguments.</dd>
+    </dl>
+    
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>By default it plots stem, leaf, root, rhizome and LAI for a
+<code>willowGro</code> object. Optionally, the observed data can
+be plotted.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>This function uses internally <code><a href='http://www.inside-r.org/r-doc/lattice/xyplot'>xyplot</a></code>
+in the 'lattice' package.</p>
+  
+    </div>
+      </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>plot.willowGro</li>
+    </ul>
+    <ul>
+      <li>hplot</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+<code><a href='willowCent.html'>willowGro</a></code> <code>OpwillowGro</code>
+
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

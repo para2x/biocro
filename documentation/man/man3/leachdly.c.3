@@ -1,0 +1,79 @@
+.TH "/home/dlebauer/dev/biocro/src/leachdly.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/leachdly.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'swconst\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBleachdly\fP (double wfluxout[], int numlyrs, double nitrate[], double critflow, double frlechd[], double stream[], double basef, double stormf, double *inorglch)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void leachdly (doublewfluxout[], intnumlyrs, doublenitrate[], doublecritflow, doublefrlechd[], doublestream[], doublebasef, doublestormf, double *inorglch)"
+
+.PP
+.nf
+61     {
+62 
+63       int lyr, nxt;
+64       int iel = 0;  /* nitrogen */
+65       double amtlea[MAXLYR];
+66       double strm_N;
+67       double base_N;
+68       double linten;
+69 
+70       strm_N = 0\&.0;
+71       base_N = 0\&.0;
+72       *inorglch = 0\&.0;
+73 
+74       for(lyr=0; lyr < numlyrs; lyr++) {
+75         amtlea[lyr] = 0\&.0;
+76         nxt = lyr + 1;
+77 
+78         /* wfluxout > 0\&. indicates a saturated water flow out of layer lyr */
+79 
+80         if ((wfluxout[lyr] >  0\&.0) && (nitrate[lyr] > 1\&.0E-10)) {
+81           linten = min(1\&.0 - (critflow - wfluxout[lyr]) / critflow, 1\&.0);
+82           linten = max(linten, 0\&.0);
+83           amtlea[lyr] = (frlechd[iel]) * nitrate[lyr] * linten;
+84 
+85           /* If you are at the bottom layer, compute storm flow\&. */
+86           if (lyr == numlyrs-1) {
+87             strm_N = amtlea[lyr] * stormf;
+88           }
+89           if (amtlea[lyr] < nitrate[lyr]) {
+90             nitrate[lyr] = nitrate[lyr] - amtlea[lyr];
+91             nitrate[nxt] = nitrate[nxt] + (amtlea[lyr] - strm_N);
+92           }
+93         }
+94       }
+95 
+96       /* Compute base flow and mineral stream flows\&. */
+97       /* Check for underflow\&. -mdh */
+98 
+99       if (nitrate[nxt] >= 1\&.0E-10) {
+100         base_N = nitrate[nxt] * basef;
+101         nitrate[nxt] = nitrate[nxt] - base_N;
+102       }
+103 
+104       /* Note: stream flow indices differ from mineral element */ 
+105       /*       indices by 1 (eg  stream(2) is stream flow for nitrogen)\&. */
+106 
+107       stream[iel+1] = stream[iel+1] + (strm_N + base_N);
+108       *inorglch = strm_N + base_N;
+109 
+110       return;
+111     }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

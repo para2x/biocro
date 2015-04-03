@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>OpMaizeGro. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Optimization of dry biomass partitioning coefficients.</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>OpMaizeGro(phen&nbsp;=&nbsp;1, iCoef&nbsp;=&nbsp;NULL, cTT, WetDat, data, plant.day&nbsp;=&nbsp;NULL, emerge.day&nbsp;=&nbsp;NULL, harvest.day&nbsp;=&nbsp;NULL, plant.density&nbsp;=&nbsp;7, timestep&nbsp;=&nbsp;1, lat&nbsp;=&nbsp;40, canopyControl&nbsp;=&nbsp;list(), MaizeSeneControl&nbsp;=&nbsp;list(), photoControl&nbsp;=&nbsp;list(), MaizePhenoControl&nbsp;=&nbsp;list(), MaizeCAllocControl&nbsp;=&nbsp;list(), laiControl&nbsp;=&nbsp;list(), soilControl&nbsp;=&nbsp;list(), MaizeNitroControl&nbsp;=&nbsp;list(), centuryControl&nbsp;=&nbsp;list(), op.method&nbsp;=&nbsp;c("optim", "nlminb"), verbose&nbsp;=&nbsp;FALSE, ...)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>phen</dt>
+      <dd>integer taking values 1 through 6 which
+  indicate the phenological stage being optimized. If all
+  of the phenological stages need to be optimized then use
+  zero (0).</dd>
+      <dt>iCoef</dt>
+      <dd>initial vector of size 24 for the dry
+  biomass partitioning coefficients.</dd>
+      <dt>cTT</dt>
+      <dd></dd>
+      <dt>WetDat</dt>
+      <dd>Weather data.</dd>
+      <dt>data</dt>
+      <dd>observed data.</dd>
+      <dt>plant.day</dt>
+      <dd></dd>
+      <dt>emerge.day</dt>
+      <dd></dd>
+      <dt>harvest.day</dt>
+      <dd></dd>
+      <dt>plant.density</dt>
+      <dd></dd>
+      <dt>canopyControl</dt>
+      <dd>see <code><a href='MaizeGro.html'>MaizeGro</a></code></dd>
+      <dt>seneControl</dt>
+      <dd>see <code><a href='MaizeGro.html'>MaizeGro</a></code></dd>
+      <dt>photoControl</dt>
+      <dd>see <code><a href='MaizeGro.html'>MaizeGro</a></code></dd>
+      <dt>phenoControl</dt>
+      <dd>see <code><a href='MaizeGro.html'>MaizeGro</a></code></dd>
+      <dt>soilControl</dt>
+      <dd>see <code><a href='MaizeGro.html'>MaizeGro</a></code></dd>
+      <dt>nitroControl</dt>
+      <dd>see <code><a href='MaizeGro.html'>MaizeGro</a></code></dd>
+      <dt>centuryControl</dt>
+      <dd>see <code><a href='MaizeGro.html'>MaizeGro</a></code></dd>
+      <dt>op.method</dt>
+      <dd>Optimization method. Whether to use
+  optim or nlminb</dd>
+      <dt>verbose</dt>
+      <dd>Displays additional information,
+  originally used for debugging.</dd>
+      <dt>...</dt>
+      <dd>additional arguments passed to
+  <code><a href='http://www.inside-r.org/r-doc/stats/optim'>optim</a></code> or <code><a href='http://www.inside-r.org/r-doc/stats/constrOptim'>constrOptim</a></code>.</dd>
+    </dl>
+    
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Optimizes dry biomass partitioning coefficients using
+constrained optimization (see below).</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>The optimization is done over the <code><a href='MaizeGro.html'>MaizeGro</a></code>
+function. The <code>OpMaizeGro</code> function is a wrapper for
+<code>optim</code> and the <code>constrOpBioGro</code> is a wrapper for
+<code>constrOptim</code>.</p>
+  
+    </div>
+      </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>OpMaizeGro</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

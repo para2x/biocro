@@ -1,0 +1,395 @@
+.TH "/home/dlebauer/dev/biocro/src/AuxcaneGro.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/AuxcaneGro.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+\fC#include 'AuxcaneGro\&.h'\fP
+.br
+\fC#include 'c4photo\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fBsoilML_str\fP \fBsoilML_rootfront\fP (double precipit, double transp, double *cws, double soildepth, double *depths, double fieldc, double wiltp, double phi1, double phi2, struct \fBsoilText_str\fP soTexS, int wsFun, int layers, double rootDB, double LAI, double k, double AirTemp, double IRad, double winds, double RelH, int hydrDist, double rfl, double rsec, double rsdf, int optiontocalculaterootdepth, double rootfrontvelocity, double dap)"
+.br
+.ti -1c
+.RI "struct \fBdbp_sugarcane_str\fP \fBSUGARCANE_DBP_CUADRA\fP (double TT, double TT0, double TTseed, double Tmaturity, double Rd, double Alm, double Arm, double Clstem, double Ilstem, double Cestem, double Iestem, double Clsuc, double Ilsuc, double Cesuc, double Iesuc, double Temperature)"
+.br
+.ti -1c
+.RI "double \fBGrowthRespiration\fP (double CanopyA, double fraction)"
+.br
+.ti -1c
+.RI "double \fBMRespiration\fP (double W, double Q, double m, double T, double deltime)"
+.br
+.ti -1c
+.RI "double \fBseasonal\fP (double maxLN, double minLN, double day, double daymaxLN, double dayinyear, double lat)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "double GrowthRespiration (doubleCanopyA, doublefraction)"
+
+.PP
+.nf
+335 {
+336         CanopyA=CanopyA*(1\&.0-fraction);
+337         return(CanopyA);
+338 }
+.fi
+.SS "double MRespiration (doubleW, doubleQ, doublem, doubleT, doubledeltime)"
+
+.PP
+.nf
+343 {
+344         double result,ttemp;
+345         /* change m from per day basis to per hr basis for deltime=1 hr */
+346         m=m*deltime/24;  
+347         ttemp=(T-25\&.0)/10\&.0;
+348         result=W*m*pow(Q,ttemp);
+349         return(result);
+350                 }
+.fi
+.SS "double seasonal (doublemaxLN, doubleminLN, doubleday, doubledaymaxLN, doubledayinyear, doublelat)"
+
+.PP
+.nf
+355 {
+356         
+357         double temp,leafN;  // temporary variable to calculate cyclic variation
+358               
+359          temp = sin (2*3\&.1415*((day-(daymaxLN))/(dayinyear)+0\&.25));
+360          leafN=(maxLN+minLN)*0\&.5+(maxLN-minLN)*temp*0\&.5;  
+361 
+362         return (leafN);
+363                  
+364  } 
+.fi
+.SS "struct \fBsoilML_str\fP soilML_rootfront (doubleprecipit, doubletransp, double *cws, doublesoildepth, double *depths, doublefieldc, doublewiltp, doublephi1, doublephi2, struct \fBsoilText_str\fPsoTexS, intwsFun, intlayers, doublerootDB, doubleLAI, doublek, doubleAirTemp, doubleIRad, doublewinds, doubleRelH, inthydrDist, doublerfl, doublersec, doublersdf, intoptiontocalculaterootdepth, doublerootfrontvelocity, doubledap)"
+
+.PP
+.nf
+24                                                                                                                                                                                                                                                                                                                                                                                                                                                  {
+25 
+26         struct rd_str tmp4;
+27         struct seqRD_str tmp3;
+28         struct soilML_str tmp;
+29         /* Constant */
+30         /* const double G = 6\&.67428e-11;  m3 / (kg * s-2)  ##  http://en\&.wikipedia\&.org/wiki/Gravitational_constant */
+31         const double g = 9\&.8; /* m / s-2  ##  http://en\&.wikipedia\&.org/wiki/Standard_gravity */
+32         /* Variables */
+33         double waterIn, oldWaterIn = 0\&.0;
+34 /* Here is a convention aw is available water in volume and awc
+35    is available water content as a fraction of the soil section being investigated\&.
+36    paw is plant available water aw - wiltp */
+37         double aw, paw, awc, awc2, Newpawha;
+38         double drainage = 0\&.0;
+39         double wsPhoto = 0\&.0, wsSpleaf = 0\&.0, phi10;
+40         double wsPhotoCol = 0\&.0, wsSpleafCol = 0\&.0;
+41         double slp = 0\&.0, intcpt = 0\&.0, theta = 0\&.0; 
+42         double Nleach = 0\&.0;
+43         double layerDepth;
+44         double diffw;
+45         double rootATdepth, rootDepth;
+46         double EvapoTra = 0\&.0, oldEvapoTra = 0\&.0, Sevap = 0\&.0, Ctransp = 0\&.0;
+47         double psim1 = 0\&.0, psim2 = 0\&.0, K_psim = 0\&.0, J_w = 0\&.0, dPsim = 0\&.0;
+48         double theta_s; /* This is the saturated soil water content\&. Larger than FieldC\&.*/
+49         int i;
+50         int j = layers - 1; 
+51 
+52         /* Specify the soil type */
+53 
+54         if(fieldc < 0){
+55                 fieldc = soTexS\&.fieldc;
+56         }
+57         if(wiltp < 0){
+58                 wiltp = soTexS\&.wiltp;
+59         }
+60 
+61         theta_s = soTexS\&.satur;
+62         /* rooting depth */
+63         /* Crude empirical relationship between root biomass and rooting depth*/
+64                    if (optiontocalculaterootdepth==1) {
+65                                             rootDepth = rootDB * rsdf;
+66                                            }
+67 
+68                                       else {
+69                                               rootDepth = rootfrontvelocity*dap*0\&.01;// to convert root depth from cm to meter
+70                                            }
+71 
+72         if(rootDepth > soildepth) rootDepth = soildepth;
+73 
+74         tmp3 = seqRootDepth(rootDepth,layers);
+75         tmp4 = rootDist(layers,rootDepth,&depths[0],rfl);
+76 
+77         /* unit conversion for precip */
+78         waterIn = precipit * 1e-3; /* convert precip in mm to m*/
+79 
+80         for(j=0,i=layers-1;j<layers;j++,i--){
+81         /* for(i=0;i<layers;i++){ */
+82                 /* It decreases because I increase the water content due to precipitation in the last layer first*/
+83 
+84                 /* This supports unequal depths\&. */
+85                 if(i == 0){
+86                         layerDepth = depths[1];
+87                 }else{
+88                         layerDepth = depths[i] - depths[i-1];
+89                 }
+90 
+91 
+92                 if(hydrDist > 0){
+93                         /* For this section see Campbell and Norman "Environmental BioPhysics" Chapter 9*/
+94                         /* First compute the matric potential */
+95                         psim1 = soTexS\&.air_entry * pow((cws[i]/theta_s),-soTexS\&.b) ; /* This is matric potential of current layer */
+96                         if(i > 0){
+97                                 psim2 = soTexS\&.air_entry * pow((cws[i-1]/theta_s),-soTexS\&.b) ; /* This is matric potential of next layer */
+98                                 dPsim = psim1 - psim2;
+99                                 /* The substraction is from the layer i - (i-1)\&. If this last term is positive then it will move upwards\&. If it is negative it will move downwards\&. Presumably this term is almost always positive\&. */
+100                         }else{
+101                                 dPsim = 0;
+102                         }
+103                         K_psim = soTexS\&.Ks * pow((soTexS\&.air_entry/psim1),2+3/soTexS\&.b); /* This is hydraulic conductivity */
+104                         J_w = K_psim * (dPsim/layerDepth) - g * K_psim ; /*  Campbell, pg 129 do not ignore the graviational effect*/
+105                         /* Notice that K_psim is positive because my
+106                             reference system is reversed */
+107                         /* This last result should be in kg/(m2 * s)*/
+108                          J_w *= 3600 * 0\&.9882 * 1e-3 ; /* This is flow in m3 / (m^2 * hr)\&. */
+109                         /* Rprintf("J_w %\&.10f \n",J_w);  */
+110                         if(i == (layers-1) && J_w < 0){
+111                                         /* cws[i] = cws[i] + J_w /
+112                                          * layerDepth; Although this
+113                                          * should be done it drains
+114                                          * the last layer too much\&.*/
+115                                         drainage += J_w;
+116                         }else{
+117                                 if(i > 0){
+118                                         cws[i] = cws[i] -  J_w / layerDepth;
+119                                         cws[i - 1] =  cws[i-1] +  J_w / layerDepth;
+120                                 }else{
+121                                         cws[i] = cws[i] -  J_w / layerDepth;
+122                                 }
+123                         }
+124                 }
+125 
+126                  if(cws[i] > fieldc) cws[i] = fieldc; 
+127                 /* if(cws[i+1] > fieldc) cws[i+1] = fieldc; */
+128                  if(cws[i] < wiltp) cws[i] = wiltp; 
+129                 /* if(cws[i+1] < wiltp) cws[i+1] = wiltp;  */
+130 
+131                 aw = cws[i] * layerDepth;
+132 /* Available water (for this layer) is the current water status times the layer depth */
+133 
+134                 if(waterIn > 0){
+135                         /* There is some rain\&. Need to add it\&.*/
+136                         aw += waterIn / layers + oldWaterIn; /* They are both in meters so it works */
+137                         /* Adding the same amount to water to each layer */
+138                         /* In case there is overflow */
+139                         diffw = fieldc * layerDepth - aw;
+140 
+141                         if(diffw < 0){
+142                                 /* This means that precipitation exceeded the capacity of the first layer */
+143                                 /* Save this amount of water for the next layer */
+144                                 oldWaterIn = -diffw;
+145                                 aw = fieldc * layerDepth;
+146                         }else{
+147                                 oldWaterIn = 0\&.0;
+148                         }
+149                 }
+150 
+151                 /* Root Biomass */
+152                 rootATdepth = rootDB * tmp4\&.rootDist[i];
+153                 tmp\&.rootDist[i] = rootATdepth;
+154 /* Plant available water is only between current water status and permanent wilting point */
+155                 /* Plant available water */
+156                 paw = aw - wiltp * layerDepth;
+157                 if(paw < 0) paw = 0; 
+158 
+159                 if(i == 0){
+160                         /* Only the first layer is affected by soil evaporation */
+161                         awc2 = aw / layerDepth;
+162                         /* SoilEvapo function needs soil water content  */
+163                         Sevap = SoilEvapo(LAI,k,AirTemp,IRad,awc2,fieldc,wiltp,winds,RelH,rsec);
+164                         /* I assume that crop transpiration is distributed simlarly to
+165                            root density\&.  In other words the crop takes up water proportionally
+166                            to the amount of root in each respective layer\&.*/
+167                         Ctransp = transp*tmp4\&.rootDist[0];
+168                         EvapoTra = Ctransp + Sevap;
+169                         Newpawha = (paw * 1e4) - EvapoTra / 0\&.9982; /* See the watstr function for this last number 0\&.9882 */
+170                         /* The first term in the rhs (paw * 1e4) is the m3 of water available in this layer\&.
+171                            EvapoTra is the Mg H2O ha-1 of transpired and evaporated water\&. 1/0\&.9882 converts from Mg to m3 */
+172                 }else{
+173                         Ctransp = transp*tmp4\&.rootDist[i];
+174                         EvapoTra = Ctransp;
+175                         Newpawha = (paw * 1e4) - (EvapoTra + oldEvapoTra);
+176                 }
+177 
+178                 if(Newpawha < 0){
+179 /* If the Demand is not satisfied by this layer\&. This will be stored and added to subsequent layers*/
+180                         oldEvapoTra = -Newpawha;
+181                          aw = wiltp * layerDepth; 
+182                 }
+183 
+184                 paw = Newpawha / 1e4 ;
+185                 awc = paw / layerDepth + wiltp;   
+186 
+187 /* This might look like a weird place to populate the structure, but is more convenient*/
+188                 tmp\&.cws[i] = awc;
+189 
+190                 if(wsFun == 0){
+191                         slp = 1/(fieldc - wiltp);
+192                         intcpt = 1 - fieldc * slp;
+193                         wsPhoto = slp * awc + intcpt ;
+194                 }else
+195                 if(wsFun == 1){
+196                         phi10 = (fieldc + wiltp)/2;
+197                         wsPhoto = 1/(1 + exp((phi10 - awc)/ phi1));
+198                 }else
+199                 if(wsFun == 2){
+200                         slp = (1 - wiltp)/(fieldc - wiltp);
+201                         intcpt = 1 - fieldc * slp;
+202                         theta = slp * awc + intcpt ;
+203                         wsPhoto = (1 - exp(-2\&.5 * (theta - wiltp)/(1 - wiltp))) / (1 - exp(-2\&.5));
+204                 }else
+205                 if(wsFun == 3){
+206                         wsPhoto = 1;
+207                 }
+208 
+209                 if(wsPhoto <= 0 )
+210                         wsPhoto = 1e-20; /* This can be mathematically lower than zero in some cases but I should prevent that\&. */
+211 
+212                 wsPhotoCol += wsPhoto;
+213 
+214                 wsSpleaf = pow(awc,phi2)/pow(fieldc,phi2); 
+215                 if(wsFun == 3){ 
+216                         wsSpleaf = 1;
+217                 }
+218                 wsSpleafCol += wsSpleaf;
+219         }
+220 
+221         if(waterIn > 0){ 
+222                 drainage = waterIn;
+223                 /* Need to convert to units used in the Parton et al 1988 paper\&. */
+224                 /* The data comes in mm/hr and it needs to be in cm/month */
+225                 Nleach = drainage * 0\&.1 * (1/24*30) / (18 * (0\&.2 + 0\&.7 * soTexS\&.sand));
+226         }
+227 
+228 
+229 /* returning the structure */
+230         tmp\&.rcoefPhoto = (wsPhotoCol/layers);
+231         tmp\&.drainage = drainage;
+232         tmp\&.Nleach = Nleach;
+233         tmp\&.rcoefSpleaf = (wsSpleafCol/layers);
+234         tmp\&.SoilEvapo = Sevap;
+235 
+236         return(tmp);
+237 }
+.fi
+.SS "struct \fBdbp_sugarcane_str\fP SUGARCANE_DBP_CUADRA (doubleTT, doubleTT0, doubleTTseed, doubleTmaturity, doubleRd, doubleAlm, doubleArm, doubleClstem, doubleIlstem, doubleCestem, doubleIestem, doubleClsuc, doubleIlsuc, doubleCesuc, doubleIesuc, doubleTemperature)"
+
+.PP
+.nf
+241 {
+242         struct dbp_sugarcane_str dbp;
+243         double F1, F2, F3, F4;
+244         double Aa,Astem,Al,Ar,Asuc,Astuc,Afib;
+245         double RM;
+246         double cutemp1,cutemp2,RM0;
+247         
+248 /* Germination Phase */
+249         
+250         if(TT < TT0)
+251         {
+252                 
+253                 dbp\&.kLeaf=0\&.001;
+254                 dbp\&.kStem=0\&.7;
+255                 dbp\&.kRoot=0\&.299;
+256                 dbp\&.kSeedcane=(-1)*0\&.693*(0\&.0053*Temperature-0\&.0893);
+257                 dbp\&.kSugar=0\&.0;
+258                 dbp\&.kFiber=0\&.0;
+259                 return(dbp);            
+260         }
+261         else
+262         
+263 
+264         dbp\&.kSeedcane=0;
+265         /* Calculate Relative Maturity and correct it for germination phase* */
+266         /* Now reference thermal time has changed from 0 to TT0 */
+267         RM=(TT-TT0)*100\&.0/Tmaturity;
+268 /*      RM0=TT0*100\&.0/Tmaturity;
+269         RM=RM-RM0;   */
+270 
+271         /* Criteria for linear increase in stem biomass*/
+272         F1=RM*Clstem-Ilstem*Clstem;
+273 
+274         /*Criteria for log increase in stem biomass */
+275         F2=1-exp((RM*Cestem)-(Iestem*Cestem));
+276 
+277         /* Fraction of aerial biomass */
+278         cutemp1=(1-exp((-1)*Rd*RM));
+279         Aa=(1\&.0-Arm)*((cutemp1<1\&.0) ? cutemp1 :1\&.0);
+280 
+281         /*Fraction of stem biomass */
+282         cutemp1=(1\&.0-Alm-Arm);
+283         if ((F1<=0)&&(F2<=0))
+284         {
+285                 cutemp2=0\&.0;
+286         }
+287         else
+288         {
+289                 cutemp2=Aa*((F1>F2)?F1:F2);
+290         }
+291         Astem = (cutemp2<cutemp1)?cutemp2:cutemp1;
+292 
+293         /* Fraction of leaf biomass */
+294         Al=Aa-Astem;
+295         /* Fraction of root biomass */
+296         Ar=1-Aa;
+297 
+298         /* Partiitoning of stem between structural and sugar component */
+299 
+300         /* Criteria for linear increase */
+301         F3=RM*Clsuc-Ilsuc*Clsuc;
+302 
+303         /*Criteria for log increase */
+304         F4=1-exp((RM*Cesuc)-(Iesuc*Cesuc));
+305   
+306        /*fraction of sucrose with respective to total stem allocation */ 
+307         cutemp2=0;
+308         if ((F3<=0)&&(F4<=0))
+309         {
+310                 cutemp2=0;
+311         }
+312         else
+313         {
+314                 cutemp2=Astem*((F3>F4)?F3:F4);
+315         }
+316         Asuc=cutemp2;
+317         Afib=Astem-Asuc;
+318 
+319         /*fraction of structural component of stem */
+320         Astuc=Astem-Asuc;
+321 
+322                 dbp\&.kLeaf=Al;
+323                 dbp\&.kStem=Astem;
+324                 dbp\&.kRoot=Ar;
+325                 dbp\&.kSugar=Asuc;
+326                 dbp\&.kFiber=Astuc;
+327 //              dbp\&.kSeedcane=-0\&.00005;   
+328         return(dbp);
+329 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

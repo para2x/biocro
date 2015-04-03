@@ -1,0 +1,5 @@
+<map id="soilprofile" name="soilprofile">
+<area shape="rect" id="node2" href="$structsoilprofile_1_1profilepools.html" title="profilepools" alt="" coords="5,5,93,32"/>
+<area shape="rect" id="node3" href="$structsoilprofile_1_1profilefluxes.html" title="profilefluxes" alt="" coords="118,5,209,32"/>
+<area shape="rect" id="node4" href="$structsoilprofile_1_1profileproperties.html" title="profileproperties" alt="" coords="235,5,349,32"/>
+</map>

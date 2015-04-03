@@ -1,0 +1,160 @@
+.TH "/home/dlebauer/dev/biocro/src/methane.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/methane.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'soilwater\&.h'\fP
+.br
+\fC#include 'n2o_model\&.h'\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBCH4DEPTH\fP   15\&.0"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBmethane_oxidation\fP (double *CH4, int *isdecid, int *isagri, \fBLAYERPAR_SPT\fP layers, \fBSOIL_SPT\fP soil)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define CH4DEPTH   15\&.0"
+
+.SH "Function Documentation"
+.PP 
+.SS "void methane_oxidation (double *CH4, int *isdecid, int *isagri, \fBLAYERPAR_SPT\fPlayers, \fBSOIL_SPT\fPsoil)"
+
+.PP
+.nf
+98     { 
+99       int    ilyr;
+100       double  bulkdensity;
+101       double  fieldcapacity;
+102       double soiltemp;
+103       double soilwater;
+104       double wfps;
+105       double CH4max;
+106       double  Dopt;
+107       double Wmin;
+108       double Wmax;
+109       double  Wopt;
+110       double agri_adjust;
+111       double temp_adjust;
+112       double watr_adjust;
+113       double wfps_adjust;
+114       double  percentlayer;
+115       double  temp;
+116 
+117 /*
+118       extern LAYERPAR_SPT layers;
+119       extern SOIL_SPT soil;
+120 */
+121       /* Compute a weighted average for soil temperature, field capacity, */
+122       /* bulk density, water filled pore space, and volumetric soil water */
+123       /* content in top 15 cm of soil profile */
+124       ilyr = 0;
+125       bulkdensity = 0\&.0;
+126       fieldcapacity = 0\&.0;
+127       soiltemp = 0\&.0;
+128       soilwater = 0\&.0;
+129       wfps = 0\&.0;
+130       for (ilyr = 0; ilyr < layers->numlyrs; ilyr++) {
+131         if (layers->dpthmn[ilyr] < CH4DEPTH) {
+132           if (layers->dpthmx[ilyr] <= CH4DEPTH) {
+133             bulkdensity += layers->bulkd[ilyr] * layers->width[ilyr] / 
+134                            CH4DEPTH;
+135             fieldcapacity += layers->fieldc[ilyr] * layers->width[ilyr] /
+136                              CH4DEPTH;
+137             soiltemp += soil->soiltavg[ilyr] * layers->width[ilyr] / CH4DEPTH;
+138             soilwater += layers->wfps[ilyr] * layers->width[ilyr] / CH4DEPTH;
+139             wfps += layers->wfps[ilyr] * layers->width[ilyr] / CH4DEPTH;
+140           } else if ((layers->dpthmx[ilyr] - layers->dpthmn[ilyr]) > 0\&.0) {
+141             percentlayer = (CH4DEPTH - layers->dpthmn[ilyr]) / 
+142                            (layers->dpthmx[ilyr] - layers->dpthmn[ilyr]);
+143             bulkdensity += layers->bulkd[ilyr] * layers->width[ilyr] /
+144                            CH4DEPTH * percentlayer;
+145             fieldcapacity += layers->fieldc[ilyr] * layers->width[ilyr] /
+146                              CH4DEPTH * percentlayer;
+147             soiltemp += soil->soiltavg[ilyr] * layers->width[ilyr] /
+148                         CH4DEPTH * percentlayer;
+149             soilwater += layers->wfps[ilyr] * layers->width[ilyr] / CH4DEPTH *
+150                          percentlayer;
+151             wfps += layers->wfps[ilyr] * layers->width[ilyr] / CH4DEPTH *
+152                     percentlayer;
+153           }
+154         }
+155       }
+156       /* Convert from water filled pore space to volumetric water */
+157       soilwater = soilwater * (1\&.0 - (bulkdensity / PARTDENS));
+158       soilwater *= 100\&.0;
+159 
+160       /* CH4 oxidation for a deciduous system */
+161       if (*isdecid) {
+162         CH4max = 40\&.0 - 18\&.3 * bulkdensity;
+163         temp_adjust = 0\&.0209 * soiltemp + 0\&.845;
+164         /* Use bounded value for wfps_adjust if wfps falls below a critical */
+165         /* value, cak - 11/12/02 */
+166         if (wfps <= 0\&.05) {
+167           wfps_adjust = 0\&.1;
+168         } else {
+169           wfps_adjust = pow((10\&.0 * wfps - 0\&.5) / (1\&.84 - 0\&.5), 0\&.13);
+170           wfps_adjust *= pow((10\&.0 * wfps - 55) / (1\&.84 - 55),
+171                              (0\&.13 * (55 - 1\&.84)) / (1\&.84 - 0\&.5));
+172           wfps_adjust = max(0\&.1, wfps_adjust);
+173         }
+174         *CH4 = CH4max * wfps_adjust * temp_adjust;
+175 
+176       } else {
+177         /* CH4 oxidation for a grassland/coniferous/tropical system */
+178         Wmin = 3\&.0 * fieldcapacity - 0\&.28;
+179         Wopt = 6\&.3 * fieldcapacity - 0\&.58;
+180         Wmax = 10\&.6 * fieldcapacity + 1\&.9;
+181         temp = Wopt * 0\&.1 / (1\&.0 - (bulkdensity / PARTDENS));
+182         Dopt = diffusiv(&fieldcapacity, &bulkdensity, &temp);
+183         CH4max = 53\&.8 * Dopt + 0\&.58;
+184         if ((0\&.1*soilwater < Wmin) || 0\&.1*soilwater > Wmax) {
+185           watr_adjust = 0\&.1;
+186         } else {
+187           watr_adjust = pow(((0\&.1 * soilwater - Wmin) / (Wopt - Wmin)), 0\&.4) *
+188                         pow(((0\&.1 * soilwater - Wmax) / (Wopt - Wmax)), 
+189                              ((0\&.4 * (Wmax - Wopt)) / (Wopt - Wmin))); 
+190           watr_adjust = max(0\&.1, watr_adjust);
+191         }
+192         if (*isagri) {
+193           if (Dopt < 0\&.15) {
+194             agri_adjust = 0\&.9;
+195           } else if (Dopt > 0\&.28) {
+196             agri_adjust = 0\&.28;
+197           } else {
+198             agri_adjust = -4\&.6 * Dopt + 1\&.6;
+199           }
+200         } else {
+201           agri_adjust = 1\&.0;
+202         }
+203         temp_adjust = (soiltemp * max(0\&.11, Dopt) * 0\&.095) + 0\&.9;
+204         *CH4 = CH4max * watr_adjust * temp_adjust * agri_adjust;
+205       }
+206 
+207       return;
+208     }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

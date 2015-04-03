@@ -1,0 +1,252 @@
+.TH "/home/dlebauer/dev/biocro/src/CanA.h" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/CanA.h \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fBET_Str\fP \fBEvapoTrans\fP (double Rad, double Itot, double Airtemperature, double RH, double WindSpeed, double LeafAreaIndex, double CanopyHeight, double StomataWS, int ws, double vmax2, double alpha2, double kparm, double theta, double beta, double Rd2, double b02, double b12, double upperT, double lowerT)"
+.br
+.ti -1c
+.RI "double \fBTempToSWVC\fP (double Temp)"
+.br
+.ti -1c
+.RI "double \fBTempToSFS\fP (double Temp)"
+.br
+.ti -1c
+.RI "double \fBTempToLHV\fP (double Temp)"
+.br
+.ti -1c
+.RI "double \fBTempToDdryA\fP (double Temp)"
+.br
+.ti -1c
+.RI "void \fBRHprof\fP (double RH, int nlayers)"
+.br
+.ti -1c
+.RI "void \fBWINDprof\fP (double WindSpeed, double LAI, int nlayers)"
+.br
+.ti -1c
+.RI "void \fBLNprof\fP (double LeafN, double LAI, int nlayers, double kpLN)"
+.br
+.ti -1c
+.RI "void \fBsunML\fP (double Idir, double Idiff, double LAI, int nlayers, double cosTheta, double kd, double chil, double heightf)"
+.br
+.ti -1c
+.RI "void \fBlightME\fP (double lat, int DOY, int td)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "struct \fBET_Str\fP EvapoTrans (doubleRad, doubleItot, doubleAirtemperature, doubleRH, doubleWindSpeed, doubleLeafAreaIndex, doubleCanopyHeight, doubleStomataWS, intws, doublevmax2, doublealpha2, doublekparm, doubletheta, doublebeta, doubleRd2, doubleb02, doubleb12, doubleupperT, doublelowerT)"
+
+.SS "void lightME (doublelat, intDOY, inttd)"
+
+.PP
+.nf
+27 {
+28 
+29         extern double tmp1[];
+30         double *ip1;
+31         ip1 = &tmp1[0];
+32         double omega, delta0, delta, deltaR;
+33         double tf, SSin, CCos, PPo;
+34         double CosZenithAngle, CosHour;
+35         double CosHourDeg;
+36         double Idir, Idiff, propIdir, propIdiff;
+37         const double DTR = M_PI/180;
+38         const double tsn = 12\&.0;
+39         const double alpha = 0\&.85;
+40         const double SolarConstant = 2650;
+41         const double atmP = 1e5;
+42 
+43         omega = lat * DTR;
+44         delta0 = 360\&.0 * ((DOY + 10)/365\&.0);
+45         delta = -23\&.5 * cos(delta0*DTR);
+46         deltaR = delta * DTR;
+47 
+48         tf = (15\&.0*(td - tsn))*DTR;
+49         SSin = sin(deltaR) * sin(omega);
+50         CCos = cos(deltaR) * cos(omega);
+51 
+52         CosZenithAngle = SSin + CCos * cos(tf);
+53         if(CosZenithAngle < pow(10,-10))
+54                 CosZenithAngle = pow(10,-10);
+55 
+56         CosHour = -tan(omega) * tan(deltaR);
+57         CosHourDeg = (1/DTR)*CosHour;
+58         if(CosHourDeg < -57)
+59                 CosHour = -0\&.994;
+60 
+61         PPo = 1e5 / atmP;
+62         Idir = SolarConstant * (pow(alpha,(PPo/CosZenithAngle)));
+63         Idiff = 0\&.3 * SolarConstant *(1 - pow(alpha,(PPo/CosZenithAngle))) * CosZenithAngle ;
+64 
+65         propIdir = Idir / (Idir + Idiff);
+66         propIdiff = Idiff / (Idir + Idiff);
+67 
+68         *ip1 = propIdir;
+69         *(ip1+1) = propIdiff;
+70         *(ip1+2) = CosZenithAngle;
+71         return;
+72 }
+.fi
+.SS "void LNprof (doubleLeafN, doubleLAI, intnlayers, doublekpLN)"
+
+.PP
+.nf
+164 {
+165 
+166         int i;
+167         double leafNla, LI, CumLAI;
+168 
+169         LI  = LAI / nlayers;
+170         for(i=0;i<nlayers;i++)
+171         {
+172                 CumLAI = LI * (i + 1);
+173                 leafNla = LeafN * exp(-kpLN * (CumLAI-LI));
+174                 tmp5[tp5++] = leafNla;
+175         }
+176 
+177 }
+.fi
+.SS "void RHprof (doubleRH, intnlayers)"
+
+.PP
+.nf
+145 {
+146         int i;
+147         double kh, hsla, j;
+148 
+149         kh = 1 - RH;
+150         /* kh = 0\&.2; */
+151         /*kh = log(1/RH);*/
+152         for(i=0;i<nlayers;i++)
+153         {
+154                 j = i + 1;
+155                 hsla = RH * exp(kh * (j/nlayers));
+156 //              /*hsla = RH * exp(-kh * (j/nlayers));  /*new simpler version from Joe Iverson*/
+157                 if(hsla > 1) hsla = 0\&.99; 
+158                 tmp4[tp4++] = hsla;
+159         }
+160         /* It should return values in the 0-1 range */
+161 }
+.fi
+.SS "void sunML (doubleIdir, doubleIdiff, doubleLAI, intnlayers, doublecosTheta, doublekd, doublechil, doubleheightf)"
+
+.PP
+.nf
+76 {
+77         extern int sp1, sp2, sp3, sp4, sp5, sp6;
+78         extern double layIdir[], layIdiff[], layItotal[], layFsun[], layFshade[], layHeight[];
+79         double i;
+80         double k0, k1, k;
+81         double LAIi, CumLAI;
+82         double Isolar, Idiffuse, Ibeam, Iscat, Itotal,alphascatter;
+83         double Ls, Ld;
+84         double Fsun, Fshade;
+85         alphascatter=0\&.8;
+86         k0 = sqrt(pow(chil ,2) + pow(tan(acos(cosTheta)),2));
+87         k1 = chil + 1\&.744*pow((chil+1\&.183),-0\&.733);
+88         k = k0/k1;
+89         if(k<0)
+90                 k = -k;
+91 
+92         LAIi = LAI / nlayers;
+93 
+94         for(i=0;i<nlayers;i++)
+95         {
+96                 CumLAI = LAIi * (i+0\&.5);
+97                 
+98                 Ibeam=Idir*cosTheta;
+99                 Iscat = Ibeam * exp(-k *sqrt(alphascatter)* CumLAI)-Ibeam * exp(-k * CumLAI);
+100                 
+101                 
+102                 Isolar = Ibeam*k;
+103                 Idiffuse = Idiff * exp(-kd * CumLAI) + Iscat;
+104                 
+105                 
+106                 Ls = (1-exp(-k*LAIi))*exp(-k*CumLAI)/k;
+107                 Ld=LAIi-Ls;
+108 
+109                 Fsun=Ls/(Ls+Ld);
+110                 Fshade=Ld/(Ls+Ld);
+111                 /*fraction intercepted*/
+112                 Itotal =(Fsun*Isolar + Idiffuse) * (1-exp(-k*LAIi))/k;
+113 
+114                 /* collecting the results */
+115                 layIdir[sp1++] = Isolar + Idiffuse;
+116                 layIdiff[sp2++] = Idiffuse;
+117                 layItotal[sp3++] = Itotal;
+118                 layFsun[sp4++] = Fsun;
+119                 layFshade[sp5++] = Fshade;
+120                 layHeight[sp6++] = CumLAI/heightf;
+121         }
+122 }
+.fi
+.SS "double TempToDdryA (doubleTemp)"
+
+.PP
+.nf
+180 {
+181         double DdryA;
+182         DdryA = 1\&.295163636 + -0\&.004258182 * Temp;
+183         return(DdryA);
+184 }
+.fi
+.SS "double TempToLHV (doubleTemp)"
+
+.PP
+.nf
+187 {
+188         double LHV;
+189         LHV = 2\&.501 + -0\&.002372727 * Temp;
+190         return(LHV);
+191 }
+.fi
+.SS "double TempToSFS (doubleTemp)"
+
+.PP
+.nf
+194 {
+195         double SlopeFS;
+196         SlopeFS = 0\&.338376068 +  0\&.011435897 * Temp +  0\&.001111111 * pow(Temp,2);
+197         return(SlopeFS);
+198 }
+.fi
+.SS "double TempToSWVC (doubleTemp)"
+
+.PP
+.nf
+201 {
+202         double SWVC;
+203         SWVC =  4\&.90820192 +   0\&.06387253 * Temp +    0\&.02745742 * pow(Temp,2);
+204         return(SWVC);
+205 }
+.fi
+.SS "void WINDprof (doubleWindSpeed, doubleLAI, intnlayers)"
+
+.PP
+.nf
+129 {
+130         int i;
+131         double k=0\&.7;
+132         double LI, CumLAI;
+133         double Wind;
+134 
+135         LI  = LAI / nlayers;
+136         for(i=0;i<nlayers;i++)
+137         {
+138                 CumLAI = LI * (i + 1);
+139                 Wind = WindSpeed * exp(-k * (CumLAI-LI));
+140                 tmp3[tp3++] = Wind;
+141         }
+142 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

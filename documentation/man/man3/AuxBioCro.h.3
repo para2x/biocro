@@ -1,0 +1,424 @@
+.TH "/home/dlebauer/dev/biocro/src/AuxBioCro.h" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/AuxBioCro.h \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBET_Str\fP"
+.br
+.ti -1c
+.RI "struct \fBCan_Str\fP"
+.br
+.ti -1c
+.RI "struct \fBws_str\fP"
+.br
+.ti -1c
+.RI "struct \fBsoilML_str\fP"
+.br
+.ti -1c
+.RI "struct \fBdbp_str\fP"
+.br
+.ti -1c
+.RI "struct \fBsoilText_str\fP"
+.br
+.ti -1c
+.RI "struct \fBseqRD_str\fP"
+.br
+.ti -1c
+.RI "struct \fBrd_str\fP"
+.br
+.ti -1c
+.RI "struct \fBnitroParms\fP"
+.br
+.ti -1c
+.RI "struct \fBcrop_phenology\fP"
+.br
+.ti -1c
+.RI "struct \fBcrop_phenology::minerals1\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBMAXLAY\fP   200 /* Maximum number of layers */"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fBsoilText_str\fP \fBsoilTchoose\fP (int soiltype)"
+.br
+.ti -1c
+.RI "struct \fBseqRD_str\fP \fBseqRootDepth\fP (double to, int lengthOut)"
+.br
+.ti -1c
+.RI "struct \fBrd_str\fP \fBrootDist\fP (int layer, double rootDepth, double *depths, double rfl)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "int \fBsp1\fP"
+.br
+.ti -1c
+.RI "int \fBsp2\fP"
+.br
+.ti -1c
+.RI "int \fBsp3\fP"
+.br
+.ti -1c
+.RI "int \fBsp4\fP"
+.br
+.ti -1c
+.RI "int \fBsp5\fP"
+.br
+.ti -1c
+.RI "int \fBsp6\fP"
+.br
+.ti -1c
+.RI "int \fBtp3\fP"
+.br
+.ti -1c
+.RI "int \fBtp4\fP"
+.br
+.ti -1c
+.RI "int \fBtp5\fP"
+.br
+.ti -1c
+.RI "double \fBtmp1\fP [3]"
+.br
+.ti -1c
+.RI "double \fBlayIdir\fP [\fBMAXLAY\fP]"
+.br
+.ti -1c
+.RI "double \fBlayIdiff\fP [\fBMAXLAY\fP]"
+.br
+.ti -1c
+.RI "double \fBlayItotal\fP [\fBMAXLAY\fP]"
+.br
+.ti -1c
+.RI "double \fBlayFsun\fP [\fBMAXLAY\fP]"
+.br
+.ti -1c
+.RI "double \fBlayFshade\fP [\fBMAXLAY\fP]"
+.br
+.ti -1c
+.RI "double \fBlayHeight\fP [\fBMAXLAY\fP]"
+.br
+.ti -1c
+.RI "double \fBtmp3\fP [\fBMAXLAY\fP]"
+.br
+.ti -1c
+.RI "double \fBtmp4\fP [\fBMAXLAY\fP]"
+.br
+.ti -1c
+.RI "double \fBtmp5\fP [\fBMAXLAY\fP]"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define MAXLAY   200 /* Maximum number of layers */"
+
+.SH "Function Documentation"
+.PP 
+.SS "struct \fBrd_str\fP rootDist (intlayer, doublerootDepth, double *depths, doublerfl)"
+
+.PP
+.nf
+1123                                                                                 {
+1124 
+1125         struct rd_str tmp;  
+1126         int i, j, k;
+1127         double layerDepth = 0\&.0;
+1128         double CumLayerDepth = 0\&.0;
+1129         double CumRootDist = 1\&.0;
+1130         double rootDist[layer];
+1131         double ca = 0\&.0, a = 0\&.0;
+1132 
+1133         for(i=0;i<layer;i++){
+1134 
+1135                 if(i == 0){
+1136                         layerDepth = depthsp[1];
+1137                 }else{
+1138                         layerDepth = depthsp[i] - depthsp[i-1];
+1139                 }
+1140 
+1141                 CumLayerDepth += layerDepth;
+1142 
+1143                 if(rootDepth > CumLayerDepth){
+1144                         CumRootDist++;
+1145                 }
+1146         }
+1147 
+1148         for(j=0;j<layer;j++){
+1149                 if(j < CumRootDist){ 
+1150                         a = dpois(j+1,CumRootDist*rfl,0);
+1151                         rootDist[j] = a;
+1152                         ca += a;
+1153                 }else{
+1154                         rootDist[j] = 0;
+1155                 }
+1156         }
+1157 
+1158         for(k=0;k<layer;k++){
+1159                 tmp\&.rootDist[k] = rootDist[k] / ca; 
+1160         }
+1161 
+1162         return(tmp);
+1163 }
+.fi
+.SS "struct \fBseqRD_str\fP seqRootDepth (doubleto, intlengthOut)"
+
+.PP
+.nf
+1103                                                        {
+1104 
+1105         struct seqRD_str tmp;
+1106         int i;
+1107         double by;
+1108 
+1109         /* This is because in this case from is always zero */
+1110         by = to / lengthOut;
+1111 
+1112         for(i=0;i<=lengthOut;i++){
+1113 
+1114                 tmp\&.rootDepths[i] = i * by;
+1115 
+1116         }
+1117 
+1118         return(tmp);
+1119 
+1120 }
+.fi
+.SS "struct \fBsoilText_str\fP soilTchoose (intsoiltype)"
+
+.PP
+.nf
+1166                                              {
+1167 
+1168         /* This function is based on Campbell and Norman\&.
+1169            Introduction to Environmental Biophysics\&. pg 130\&. */
+1170        /* bulk density values are taken from function getsoilprop\&.c from Melanie (Colorado) */
+1171         struct soilText_str tmp;
+1172 
+1173         tmp\&.silt = 0;
+1174         tmp\&.clay = 0;
+1175         tmp\&.sand = 0;
+1176         tmp\&.air_entry = 0;
+1177         tmp\&.b = 0;
+1178         tmp\&.Ks = 0;
+1179         tmp\&.satur = 0;
+1180         tmp\&.fieldc = 0;
+1181         tmp\&.wiltp = 0;
+1182         tmp\&.bulkd= 0\&.0;
+1183         if(soiltype == 0){
+1184         /* sand soil */
+1185         tmp\&.silt = 0\&.05;
+1186         tmp\&.clay = 0\&.03;
+1187         tmp\&.sand = 0\&.92;
+1188         tmp\&.air_entry = -0\&.7;
+1189         tmp\&.b = 1\&.7;
+1190         tmp\&.Ks = 5\&.8e-3;
+1191         tmp\&.satur = 0\&.87;
+1192         tmp\&.fieldc = 0\&.09;
+1193         tmp\&.wiltp = 0\&.03;
+1194         tmp\&.bulkd= 0\&.01; // This value is zero/undefined for sandy soil I am assigning a low value [see getsoilprop\&.c]
+1195         } else
+1196 
+1197         if(soiltype == 1){
+1198         /* loamy sand */
+1199         tmp\&.silt = 0\&.12;
+1200         tmp\&.clay = 0\&.07;
+1201         tmp\&.sand = 0\&.81;
+1202         tmp\&.air_entry = -0\&.9;
+1203         tmp\&.b = 2\&.1;
+1204         tmp\&.Ks = 1\&.7e-3;
+1205         tmp\&.satur = 0\&.72;
+1206         tmp\&.fieldc = 0\&.13;
+1207         tmp\&.wiltp = 0\&.06;
+1208         tmp\&.bulkd= 1\&.55;
+1209         } else
+1210 
+1211         if(soiltype == 2){
+1212         /* sandy loam */
+1213         tmp\&.silt = 0\&.25;
+1214         tmp\&.clay = 0\&.10;
+1215         tmp\&.sand = 0\&.65;
+1216         tmp\&.air_entry = -1\&.5;
+1217         tmp\&.b = 3\&.1;
+1218         tmp\&.Ks = 7\&.2e-4;
+1219         tmp\&.satur = 0\&.57;
+1220         tmp\&.fieldc = 0\&.21;
+1221         tmp\&.wiltp = 0\&.10;
+1222         tmp\&.bulkd= 1\&.50;
+1223         } else
+1224 
+1225         if(soiltype == 3){
+1226         /* loam */
+1227         tmp\&.silt = 0\&.40;
+1228         tmp\&.clay = 0\&.18;
+1229         tmp\&.sand = 0\&.52;
+1230         tmp\&.air_entry = -1\&.1;
+1231         tmp\&.b = 4\&.5;
+1232         tmp\&.Ks = 3\&.7e-4;
+1233         tmp\&.satur = 0\&.57;
+1234         tmp\&.fieldc = 0\&.27;
+1235         tmp\&.wiltp = 0\&.12;
+1236          tmp\&.bulkd= 1\&.43;
+1237         } else
+1238 
+1239         if(soiltype == 4){
+1240         /* silt loam */
+1241         tmp\&.silt = 0\&.65;
+1242         tmp\&.clay = 0\&.15;
+1243         tmp\&.sand = 0\&.20;
+1244         tmp\&.air_entry = -2\&.1;
+1245         tmp\&.b = 4\&.7;
+1246         tmp\&.Ks = 1\&.9e-4;
+1247         tmp\&.satur = 0\&.59;
+1248         tmp\&.fieldc = 0\&.33;
+1249         tmp\&.wiltp = 0\&.13;
+1250         tmp\&.bulkd= 1\&.36;
+1251         } else
+1252 
+1253         if(soiltype == 5){
+1254         /* sandy clay loam */
+1255         tmp\&.silt = 0\&.13;
+1256         tmp\&.clay = 0\&.27;
+1257         tmp\&.sand = 0\&.60;
+1258         tmp\&.air_entry = -2\&.8;
+1259         tmp\&.b = 4;
+1260         tmp\&.Ks = 1\&.2e-4;
+1261         tmp\&.satur = 0\&.48;
+1262         tmp\&.fieldc = 0\&.26;
+1263         tmp\&.wiltp = 0\&.15;
+1264          tmp\&.bulkd= 1\&.39;
+1265         } else
+1266 
+1267         if(soiltype == 6){
+1268         /* clay loam */
+1269         tmp\&.silt = 0\&.34;
+1270         tmp\&.clay = 0\&.34;
+1271         tmp\&.sand = 0\&.32;
+1272         tmp\&.air_entry = -2\&.6;
+1273         tmp\&.b = 5\&.2;
+1274         tmp\&.Ks = 6\&.4e-5;
+1275         tmp\&.satur = 0\&.52;
+1276         tmp\&.fieldc = 0\&.32;
+1277         tmp\&.wiltp = 0\&.20;
+1278         tmp\&.bulkd= 1\&.35;
+1279         } else
+1280 
+1281         if(soiltype == 7){
+1282         /* silty clay loam */
+1283         tmp\&.silt = 0\&.58;
+1284         tmp\&.clay = 0\&.33;
+1285         tmp\&.sand = 0\&.09;
+1286         tmp\&.air_entry = -3\&.3;
+1287         tmp\&.b = 6\&.6;
+1288         tmp\&.Ks = 4\&.2e-5;
+1289         tmp\&.satur = 0\&.52;
+1290         tmp\&.fieldc = 0\&.37;
+1291         tmp\&.wiltp = 0\&.21; /* Correction from the book from here http://www\&.public\&.iastate\&.edu/~bkh/teaching/505/norman_book_corrections\&.pdf */
+1292          tmp\&.bulkd= 1\&.24;
+1293         } else
+1294 
+1295         if(soiltype == 8){
+1296         /* sandy clay */
+1297         tmp\&.silt = 0\&.07;
+1298         tmp\&.clay = 0\&.40;
+1299         tmp\&.sand = 0\&.53;
+1300         tmp\&.air_entry = -2\&.9;
+1301         tmp\&.b = 6;
+1302         tmp\&.Ks = 3\&.3e-5;
+1303         tmp\&.satur = 0\&.51;
+1304         tmp\&.fieldc = 0\&.34;
+1305         tmp\&.wiltp = 0\&.24;
+1306          tmp\&.bulkd= 1\&.30;
+1307 
+1308         } else
+1309 
+1310         if(soiltype == 9){
+1311         /* silty clay */
+1312         tmp\&.silt = 0\&.45;
+1313         tmp\&.clay = 0\&.45;
+1314         tmp\&.sand = 0\&.10;
+1315         tmp\&.air_entry = -3\&.4;
+1316         tmp\&.b = 7\&.9;
+1317         tmp\&.Ks = 2\&.5e-5;
+1318         tmp\&.satur = 0\&.52;
+1319         tmp\&.fieldc = 0\&.39;
+1320         tmp\&.wiltp = 0\&.25;
+1321         tmp\&.bulkd= 1\&.28;
+1322         } else
+1323 
+1324         if(soiltype == 10){
+1325         /* clay */
+1326         tmp\&.silt = 0\&.20;
+1327         tmp\&.clay = 0\&.60;
+1328         tmp\&.sand = 0\&.20;
+1329         tmp\&.air_entry = -3\&.7;
+1330         tmp\&.b = 7\&.6;
+1331         tmp\&.Ks = 1\&.7e-5;
+1332         tmp\&.satur = 0\&.53;
+1333         tmp\&.fieldc = 0\&.4;
+1334         tmp\&.wiltp = 0\&.27;
+1335         tmp\&.bulkd= 1\&.19;
+1336         }
+1337 
+1338         return(tmp);
+1339 
+1340 }
+.fi
+.SH "Variable Documentation"
+.PP 
+.SS "double layFshade[\fBMAXLAY\fP]"
+
+.SS "double layFsun[\fBMAXLAY\fP]"
+
+.SS "double layHeight[\fBMAXLAY\fP]"
+
+.SS "double layIdiff[\fBMAXLAY\fP]"
+
+.SS "double layIdir[\fBMAXLAY\fP]"
+
+.SS "double layItotal[\fBMAXLAY\fP]"
+
+.SS "int sp1"
+
+.SS "int sp2"
+
+.SS "int sp3"
+
+.SS "int sp4"
+
+.SS "int sp5"
+
+.SS "int sp6"
+
+.SS "double tmp1[3]"
+
+.SS "double tmp3[\fBMAXLAY\fP]"
+
+.SS "double tmp4[\fBMAXLAY\fP]"
+
+.SS "double tmp5[\fBMAXLAY\fP]"
+
+.SS "int tp3"
+
+.SS "int tp4"
+
+.SS "int tp5"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

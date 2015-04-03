@@ -1,0 +1,365 @@
+.TH "/home/dlebauer/dev/biocro/src/denitrify.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/denitrify.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'n2o_model\&.h'\fP
+.br
+\fC#include 'soilwater\&.h'\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBM_PI\fP   3\&.1415926536"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBdenitrify\fP (double *newCO2, double *newNO3, double nitrate[\fBMAXLYR\fP], double wfluxout[\fBMAXLYR\fP], double *critflow, double frlechd[], double stream[], double *basef, double *stormf, double *inorglch, double *Dn2oflux, double *Dn2flux, double stdfieldc, double stdbulkd, double dN2lyr[], double dN2Olyr[], int *jday, \fBSITEPAR_SPT\fP sitepar, \fBLAYERPAR_SPT\fP layers)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define M_PI   3\&.1415926536"
+
+.SH "Function Documentation"
+.PP 
+.SS "void denitrify (double *newCO2, double *newNO3, doublenitrate[MAXLYR], doublewfluxout[MAXLYR], double *critflow, doublefrlechd[], doublestream[], double *basef, double *stormf, double *inorglch, double *Dn2oflux, double *Dn2flux, doublestdfieldc, doublestdbulkd, doubledN2lyr[], doubledN2Olyr[], int *jday, \fBSITEPAR_SPT\fPsitepar, \fBLAYERPAR_SPT\fPlayers)"
+
+.PP
+.nf
+147     { 
+148       int    debug;
+149       int    ilyr;
+150       double a;
+151       double fDno3; 
+152       double fDco2; 
+153       double fDwfps; 
+154       double Dtotflux; 
+155       double fRno3_co2;
+156       double fRwfps;
+157       double A[4];
+158       double ntotflux[MAXLYR];
+159       double n2oflux;
+160       double grams_soil[MAXLYR];
+161       double nitratePPM[MAXLYR];
+162       double wfps_fc[MAXLYR];
+163       double co2PPM[MAXLYR];
+164       double co2_correction[MAXLYR];
+165       double Rn2n2o;
+166       double n2ofrac, n2frac;
+167       double excess;
+168       double min_nitrate;
+169       double min_nitrate_end;
+170       double fluxout;
+171       double K;
+172       double k[MAXLYR], ksum;
+173       double k1, M;
+174       double  dD0_fc;
+175       double  x_inflection;
+176       double  WFPS_threshold;
+177       double ug_per_gram;
+178       double grams_per_ug;
+179       double  CM_per_METER;
+180 
+181 /*
+182       extern LAYERPAR_SPT layers;
+183       extern SITEPAR_SPT sitepar;
+184 */
+185       /* Initializations */
+186       debug = 0;
+187       min_nitrate = 0\&.1;
+188       min_nitrate_end = 0\&.05;
+189       K = -0\&.1;
+190       ug_per_gram = 1\&.0E6;
+191       grams_per_ug = 1\&.0E-6;
+192       CM_per_METER = 100\&.0;
+193       for (ilyr=0; ilyr < MAXLYR; ilyr++) {
+194         co2PPM[ilyr] = 0\&.0;
+195         dN2lyr[ilyr] = 0\&.0;
+196         dN2Olyr[ilyr] = 0\&.0;
+197       }
+198 
+199       *Dn2oflux = 0\&.0;
+200       *Dn2flux = 0\&.0;
+201 
+202       ksum = 0\&.0;
+203       for (ilyr=0; ilyr < layers->numlyrs; ilyr++) {
+204 /*        k[ilyr] = exp(K*layers->dpthmn[ilyr]) -  exp(K*layers->dpthmx[ilyr]); */
+205         /* Use rooting density from soils\&.in file to weight CO2 by depth, */
+206         /* cak - 04/07/04 */
+207         k[ilyr] = max(layers->tcoeff[ilyr], 0\&.001);
+208         ksum += k[ilyr];
+209         ntotflux[ilyr] = 0\&.0;
+210       }
+211 
+212       for (ilyr=0; ilyr < layers->numlyrs; ilyr++) {
+213         k[ilyr] /= ksum;
+214         nitrate[ilyr] += k[ilyr] * (*newNO3);
+215       }
+216       /* newNO3 used up after being distributed thru the soil profile */
+217       *newNO3 = 0;
+218 
+219       wfps(layers);
+220 
+221       /* Mineral leaching */
+222         
+223       leachdly(wfluxout, layers->numlyrs, nitrate, *critflow, frlechd, stream,
+224                *basef, *stormf, inorglch);
+225 
+226       for (ilyr=0; ilyr < layers->numlyrs; ilyr++) {
+227 
+228         /* Denitrification occurs over all layers */
+229         /* Convert nitrate (gN/m2) to nitratePPM (ppm N) */
+230         grams_soil[ilyr] = layers->bulkd[ilyr] * layers->width[ilyr] *
+231                            CM_per_METER * CM_per_METER;
+232         nitratePPM[ilyr] = nitrate[ilyr] / grams_soil[ilyr] * ug_per_gram;
+233         if (nitratePPM[ilyr] < min_nitrate) {
+234           if (debug) {
+235             fprintf(stdout, "CANNOT DENITRIFY layer %1d, nitrate[%1d] = %f\n",
+236                     ilyr, ilyr, nitrate[ilyr]);
+237           }
+238           continue;
+239         }
+240         co2PPM[ilyr] = k[ilyr] * (*newCO2) / grams_soil[ilyr] *
+241                        ug_per_gram;
+242 /*        wfps_fc[ilyr] = stdfieldc / (1\&.0 - stdbulkd/PARTDENS); */
+243         wfps_fc[ilyr] = layers->fieldc[ilyr] /
+244                         (1\&.0 - layers->bulkd[ilyr]/PARTDENS);
+245 /*        dD0_fc = diffusiv(&stdfieldc, &stdbulkd, &wfps_fc[ilyr]); */
+246         /* dD0 calc changed 6/20/00 -mdh */
+247         dD0_fc = diffusiv(&layers->fieldc[ilyr], &layers->bulkd[ilyr],
+248                           &wfps_fc[ilyr]);
+249         WFPS_threshold = (dD0_fc >= 0\&.15) ? 0\&.80 : (dD0_fc*250 + 43)/100;
+250         if (layers->wfps[ilyr] <= WFPS_threshold) {
+251           co2_correction[ilyr] =  co2PPM[ilyr];
+252         } else {
+253           a = (dD0_fc >= 0\&.15) ? 0\&.004 : (-0\&.1 * dD0_fc + 0\&.019);
+254           co2_correction[ilyr] = co2PPM[ilyr] * (1\&.0 + a *
+255                                  (layers->wfps[ilyr] - WFPS_threshold)*100);
+256         }
+257 
+258         /* Compute the Nitrate effect on Denitrification */
+259         /* Changed NO3 effect on denitrification based on */
+260         /* paper  "General model for N2O and N2 gas emissions from */
+261         /* soils due to denitrification", Del Grosso et\&. al, GBC, */
+262         /* 12/00,  -mdh 5/16/00 */
+263 
+264 /*        fDno3 = 1\&.15 * pow(nitratePPM[ilyr], 0\&.57);*/
+265         A[0] = 9\&.23;
+266         A[1] = 1\&.556;
+267         A[2] = 76\&.91;
+268         A[3] = 0\&.00222;
+269 
+270         fDno3 = f_arctangent(nitratePPM[ilyr], A);
+271         fDno3 = max(0\&.0, fDno3);
+272 
+273         /* Compute the Carbon Dioxide effect on Denitrification */
+274         /* (fDco2, ppm N) */
+275         /* Changed CO2 effect on denitrification based on */
+276         /* paper "General model for N2O and N2 gas emissions from */
+277         /* soils due to denitrification", Del Grosso et\&. al, GBC, */
+278         /* 12/00,  -mdh 5/16/00 */
+279 
+280 /*        fDco2 = 0\&.1 * pow(co2PPM[ilyr], 1\&.3);*/
+281         /* The CO2 effect calculation should take into account the */
+282         /* corrected CO2 concentration, cak - 07/31/02 */
+283 /*        fDco2 = max(0\&.0, ((0\&.1 * pow(co2PPM[ilyr], 1\&.3)) - min_nitrate)); */
+284         fDco2 = max(0\&.0,
+285                     ((0\&.1 * pow(co2_correction[ilyr], 1\&.3)) - min_nitrate));
+286 
+287         /* Compute wfps effect on denitrification, (fDwfps, 0-1) */
+288         /* Changed wfps effect on denitrification based on */
+289         /* paper "General model for N2O and N2 gas emissions from */
+290         /* soils due to denitrification", Del Grosso et\&. al, GBC, */
+291         /* 12/00,  -mdh 5/16/00 */
+292 
+293         M = min(0\&.113, dD0_fc) * (-1\&.25) + 0\&.145;
+294         /* The x_inflection calculation should take into account the */
+295         /* corrected CO2 concentration, cak - 07/31/02 */
+296 /*        x_inflection = (9\&.0 - M); */
+297         x_inflection = (9\&.0 - M * co2_correction[ilyr]);
+298 
+299         /* Changed fDwfps calculation - cak - 9/18/00 */
+300 /*        fDwfps = 0\&.5 +
+301                  (atan(0\&.6*M_PI*(0\&.1*layers->wfps[ilyr]*100-x_inflection))) /
+302                  M_PI; */
+303         fDwfps = (0\&.45 +
+304                          (atan(0\&.6*M_PI*(10\&.0*layers->wfps[ilyr]-
+305                           x_inflection))) / M_PI);
+306         fDwfps = max(0\&.0, fDwfps);
+307 
+308         if (debug) {
+309           fprintf(stdout, "\n%6s  %6s  %6s\n","fDwfps","fDno3","fDco2");
+310           fprintf(stdout, "%6\&.4lf  %6\&.4lf  %6\&.4lf\n", fDwfps,fDno3,fDco2); 
+311         }
+312    
+313         /* Compute the N fluxes (N2 + N2O) for the current layer, ppm N */
+314         /* If desired, do not include CO2 effect on denitrification between */
+315         /* given Julian days, cak - 02/19/04 */
+316         if (*jday >= sitepar->jdayStart && *jday <= sitepar->jdayEnd) {
+317           Dtotflux = fDno3;
+318         } else {
+319           Dtotflux = (fDno3 < fDco2) ? fDno3 : fDco2;
+320         }
+321 
+322         /* Minimum value for potential denitrification in top 2 soil layers */
+323         /* ppm N, 9/18/00 -cindyk */
+324         if (ilyr < 2) {
+325           Dtotflux = max(0\&.066, Dtotflux);
+326         }
+327         /* Account for water limitation */
+328         Dtotflux *= fDwfps;
+329         if (debug) {
+330           fprintf(stdout, "Dtotflux = %8\&.4lf\n", Dtotflux);
+331         }
+332 
+333         /* Nitrate effect on the ratio of N2 to N2O\&.  */
+334         /* Maximum N2/N2O ratio soil respiration function */
+335         /* Changed the NO3 and CO2 effect on the N2/N2O ratio based on */
+336         /* paper "General model for N2O and N2 gas emissions from */
+337         /* soils due to denitrification", Del Grosso et\&. al, GBC, */
+338         /* 12/00,  -mdh 5/16/00 */
+339         /* fRno3_co2 estimates the ratio as a function of electron */
+340         /* donor to substrate -mdh 5/17/00 */
+341 
+342         k1 = max(1\&.5, 38\&.4 - 350 * dD0_fc);
+343         fRno3_co2 = max(0\&.16 * k1, k1 * exp(-0\&.8 * nitratePPM[ilyr]/co2PPM[ilyr]));
+344 
+345         /* WFPS effect on the N2/N2O Ratio */
+346         /* Changed wfps effect on the N2/N2O ratio based on */
+347         /* paper "General model for N2O and N2 gas emissions from */
+348         /* soils due to denitrification", Del Grosso et\&. al, GBC, */
+349         /* 12/00,  -mdh 5/16/00 */
+350 
+351         fRwfps = max(0\&.1, 0\&.015 * layers->wfps[ilyr]*100 - 0\&.32);
+352 
+353         /* Compute the N2:N2O Ratio */
+354 
+355         Rn2n2o = fRno3_co2 * fRwfps; 
+356         if (Rn2n2o < 0\&.1) {
+357           Rn2n2o = 0\&.1;
+358         }
+359 
+360         if (debug) {
+361           fprintf(stdout, "\n%6s  %8s  %8s  %9s  %2s  %3s\n","fRwfps",
+362                   "nitratePPM","co2PPM","fRno3_co2","k1","dD0");
+363           fprintf(stdout, "%6\&.4lf  %6\&.4lf  %6\&.4lf  %6\&.4lf  %6\&.4lf  %6\&.4lf\n",
+364                   fRwfps,nitratePPM[ilyr],co2PPM[ilyr],fRno3_co2,k1,dD0_fc);
+365           fprintf(stdout, "Ratio N2:N2O = %12\&.10lf\n", Rn2n2o);
+366         }
+367 
+368         /* Compute N2 and N2O flux by layer (Denitrification) */
+369         /* convert ppm N to gN/m^2 */
+370    
+371         ntotflux[ilyr] = Dtotflux * grams_soil[ilyr] * grams_per_ug;
+372         n2oflux = ntotflux[ilyr] / (Rn2n2o + 1\&.0);
+373         *Dn2oflux += n2oflux;
+374         dN2Olyr[ilyr] = n2oflux;
+375         *Dn2flux += ntotflux[ilyr] - n2oflux;
+376         dN2lyr[ilyr] = ntotflux[ilyr] - n2oflux;
+377         if (debug) {
+378           fprintf(stdout, "\n%3s  %6s  %6s  %6s  %6s\n", "lyr", "n2o", "n2",
+379                   "co2", "no3");
+380           fprintf(stdout, "%3d  %6\&.4lf  %6\&.4lf  %6\&.4lf\n", ilyr,
+381                   n2oflux, co2PPM[ilyr], nitratePPM[ilyr]);
+382         }
+383       } /* for ilyr */
+384 
+385       if (debug) {
+386         fprintf(stdout, "\nIn denitrify, Dn2oflux (gN/m2/day) = %12\&.10lf\n",
+387                         *Dn2oflux);
+388         fprintf(stdout, "In denitrify, Dn2flux (gN/m2/day) = %12\&.10lf\n",
+389                         *Dn2flux);
+390       }
+391 
+392       if (*Dn2oflux < 1\&.0E-25) {
+393         *Dn2oflux = 0\&.0;
+394       }
+395       if (*Dn2flux < 1\&.0E-25) {
+396         *Dn2flux = 0\&.0;
+397       }
+398 
+399       if (debug) {
+400         fprintf(stdout, "In denitrify(1), Dn2oflux = %12\&.10lf\n", *Dn2oflux);
+401         fprintf(stdout, "In denitrify(1), Dn2flux = %12\&.10lf\n", *Dn2flux);
+402       }
+403 
+404       /* Reduce nitrate in soil by the amount of N2-N N2O-N that is lost */
+405       /* Do not let nitrate in any layer go below min_nitrate */
+406 
+407       if (*Dn2oflux + *Dn2flux > 1\&.0E-30) {
+408         n2ofrac = *Dn2oflux/(*Dn2oflux + *Dn2flux);  
+409         n2frac = *Dn2flux/(*Dn2oflux + *Dn2flux);  
+410         excess = 0\&.0;
+411    
+412         for (ilyr=0; ilyr < layers->numlyrs; ilyr++) {
+413           if (nitratePPM[ilyr] < min_nitrate) {
+414             /* No trace gas flux from this layer */
+415             excess += ntotflux[ilyr];
+416             if (debug) {
+417               printf("First IF check in loop, excess = %12\&.10lf\n", excess);
+418             }
+419           } else if ((nitrate[ilyr] - ntotflux[ilyr]) >
+420                       (min_nitrate_end * grams_soil[ilyr] * grams_per_ug)) {
+421             /* Remove N in calculated trace gas flux from the layer */
+422             nitrate[ilyr] -= ntotflux[ilyr];
+423             if (debug) {
+424               printf("Second IF check in loop, nitrate[%1d] = %12\&.10lf", ilyr,
+425                      nitrate[ilyr]);
+426               printf("    nitratePPM[%1d] = %12\&.10lf\n", ilyr, nitratePPM[ilyr]);
+427             }
+428           } else {
+429             /* Reduce trace gas flux in layer so soil N won't fall below */
+430             /* the minimum value */
+431             fluxout = (nitratePPM[ilyr] - min_nitrate_end) *
+432                       grams_soil[ilyr] * grams_per_ug; 
+433             excess += (ntotflux[ilyr] - fluxout); 
+434             nitrate[ilyr] = min_nitrate_end * grams_soil[ilyr] * grams_per_ug;
+435             if (debug) {
+436               printf("Third IF check in loop, excess = %12\&.10lf\n",excess);
+437               printf("nitrate[%1d] = %12\&.10lf", ilyr, nitrate[ilyr]);
+438               printf("     nitratePPM[%1d] = %12\&.10lf\n", ilyr, nitratePPM[ilyr]);
+439             }
+440           }
+441         } /* for ilyr */
+442 
+443         *Dn2oflux -= n2ofrac * excess;
+444         *Dn2flux -= n2frac * excess;
+445 
+446         if (debug) {
+447           printf("   n2ofrac = %12f\n", n2ofrac);
+448           printf("   n2frac = %12f\n", n2frac);
+449           fprintf(stdout, "   n2o_excess = %12\&.10lf\n", n2ofrac * excess);
+450           fprintf(stdout, "   n2_excess = %12\&.10lf\n", n2frac * excess);
+451         }
+452       } else {
+453         *Dn2oflux = 0\&.0;
+454         *Dn2flux = 0\&.0;
+455       }
+456 
+457       if (debug) {
+458         fprintf(stdout, "In denitrify(2), Dn2oflux = %12\&.10lf\n", *Dn2oflux);
+459         fprintf(stdout, "In denitrify(2), Dn2flux = %12\&.10lf\n", *Dn2flux);
+460       }
+461       return;
+462     }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

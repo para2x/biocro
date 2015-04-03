@@ -1,0 +1,42 @@
+.TH "/home/dlebauer/dev/biocro/src/wfps.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/wfps.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'soilwater\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBwfps\fP (\fBLAYERPAR_SPT\fP layers)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void wfps (\fBLAYERPAR_SPT\fPlayers)"
+
+.PP
+.nf
+51     {
+52       int ilyr;
+53       double swcfrac;
+54       double porespace;
+55 
+56       for(ilyr=0; ilyr < layers->numlyrs; ilyr++) {
+57 
+58         swcfrac = layers->swc[ilyr] / layers->width[ilyr];
+59         porespace = 1\&.0 - layers->bulkd[ilyr] / PARTDENS;
+60         layers->wfps[ilyr] = swcfrac/porespace;
+61       }
+62 
+63       return;
+64     }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

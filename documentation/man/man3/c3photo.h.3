@@ -1,0 +1,128 @@
+.TH "/home/dlebauer/dev/biocro/src/c3photo.h" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/c3photo.h \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBc3_str\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "double \fBfnpsvp\fP (double Tkelvin)"
+.br
+.ti -1c
+.RI "double \fBballBerry\fP (double Amu, double Cappm, double Temp, double RelH, double beta0, double beta1)"
+.br
+.ti -1c
+.RI "struct \fBc3_str\fP \fBc3photoC\fP (double Qp, double Tleaf, double RH, double Vcmax0, double Jmax0, double Rd0, double bb0, double bb1, double Ca, double O2, double theta, double StomWS, int ws)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "double ballBerry (doubleAmu, doubleCappm, doubleTemp, doubleRelH, doublebeta0, doublebeta1)"
+
+.PP
+.nf
+107 {
+108 
+109         const double gbw = 1\&.2; /* According to Collatz et al\&. (1992) pg\&. 526*/
+110         const double ptotPa = 101325; /* Atmospheric pressure */
+111 
+112         double pwaPa, leafTk, Camf, assimn;
+113         double wa, pwi, wi, gswmol, Cs, acs;
+114         double aaa, bbb, ccc, ddd;
+115         double gsmol;
+116         double hs;
+117 
+118         leafTk = Temp + 273\&.15;
+119         pwi = fnpsvp(leafTk);
+120         pwaPa = RelH * pwi;
+121         Camf = Cappm * 1e-6;
+122         assimn = Amu * 1e-6;
+123   
+124         /* Calculate mole fraction (mixing ratio) of water vapor in */
+125         /* atmosphere from partial pressure of water in the atmosphere and*/
+126         /* the total air pressure */
+127         wa  = pwaPa / ptotPa;
+128         /* Get saturation vapor pressure for water in the leaf based on */
+129         /* current idea of the leaf temperature in Kelvin*/
+130         /* Already calculated above */
+131         /* Calculate mole fraction of water vapor in leaf interior */
+132         wi  = pwi / ptotPa;
+133 
+134         if(assimn < 0\&.0){
+135                 /* Set stomatal conductance to the minimum value, beta0*/
+136                 gswmol = beta0 ;
+137                 /* Calculate leaf surface relative humidity, hs, (as fraction)*/
+138                 /* for when C assimilation rate is <= 0*/
+139                 /* hs = (beta0 + (wa/wi)*gbw)/(beta0 + gbw); ! unused here??*/
+140         }
+141         else{
+142                 /* leaf surface CO2, mole fraction */
+143                 Cs  = Camf - (1\&.4/gbw)*assimn;
+144                 if(Cs < 0\&.0)
+145                         Cs = 1;
+146                 /* Constrain the ratio assimn/cs to be > 1\&.e-6*/
+147                 acs = assimn/Cs;
+148 
+149                 if(acs < 1e-6)  acs = 1e-6;             
+150 
+151                 /* Calculate leaf surface relative humidity, hs, from quadratic */
+152                 /* equation: aaa*hs^2 + bbb*hs + ccc = 0 */
+153                 /*  aaa= beta1 * assimn / cs */
+154                 aaa = beta1 * acs;
+155                 /*      bbb= beta0 + gbw - (beta1 * assimn / cs)*/
+156                 bbb = beta0 + gbw - (beta1 * acs);
+157                 ccc = -(wa / wi) * gbw - beta0;
+158 
+159                 /* Solve the quadratic equation for leaf surface relative humidity */
+160                 /* (as fraction) */
+161                 ddd = bbb * bbb - 4*aaa*ccc;
+162 
+163                 hs  = (-bbb + sqrt(ddd)) / (2* aaa);
+164 
+165                 /* Ball-Berry equation (Collatz'91, eqn 1) */
+166                 gswmol = beta1 * hs * acs + beta0;
+167         }
+168         gsmol = gswmol * 1000; /* converting to mmol */
+169 
+170         if(gsmol <= 0) gsmol = 1e-5;
+171 
+172         return(gsmol);
+173 }
+.fi
+.SS "struct \fBc3_str\fP c3photoC (doubleQp, doubleTleaf, doubleRH, doubleVcmax0, doubleJmax0, doubleRd0, doublebb0, doublebb1, doubleCa, doubleO2, doubletheta, doubleStomWS, intws)"
+
+.SS "double fnpsvp (doubleTkelvin)"
+
+.PP
+.nf
+176                              {
+177         /* water boiling point = 373\&.16 oK*/
+178 /* This is the Arden Buck Equation 
+179 http://en\&.wikipedia\&.org/wiki/Arden_Buck_equation
+180  */
+181         double u, v;
+182         double tmp, esat;
+183 
+184         tmp = Tkelvin - 273\&.15;
+185         u = (18\&.678 - tmp/234\&.5)*tmp;
+186         v = 257\&.14 + tmp;
+187         esat = 6\&.1121 * exp(u/v);
+188         esat /= 10;
+189 
+190         return(esat);
+191 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

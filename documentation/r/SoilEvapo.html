@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>SoilEvapo. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="
+Fernando Miguez
+">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Soil Evaporation</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>SoilEvapo(LAI, k, AirTemp, IRad, awc, FieldC, WiltP, winds, RelH)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>LAI</dt>
+      <dd>Leaf Area Index.</dd>
+      <dt>k</dt>
+      <dd>~~Describe <code>k</code> here~~</dd>
+      <dt>AirTemp</dt>
+      <dd>Air temperature.</dd>
+      <dt>IRad</dt>
+      <dd>Incident radiation.</dd>
+      <dt>awc</dt>
+      <dd>Available water content.</dd>
+      <dt>FieldC</dt>
+      <dd>Field capacity.</dd>
+      <dt>WiltP</dt>
+      <dd>Wilting point.</dd>
+      <dt>winds</dt>
+      <dd>Wind speed.</dd>
+      <dt>RelH</dt>
+      <dd>Relative humidty.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+Returns a single value of soil Evaporation in Mg H20 per
+hectare.
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Calculates soil evaporation</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>The style of the code is <code>C</code> like because this is a
+prototype for the underlying <code>C</code> (like so many other
+functions in this package). I leave it here for future
+development.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>SoilEvapo(LAI=3,k=0.68,AirTemp=20,IRad=1000,awc=0.3,FieldC=0.4,WiltP=0.2,winds=3,RelH=0.8)
+</div>
+<div class='output'>[1] 0.1067245
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>SoilEvapo</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+Source code :)
+
+    
+    <h2>Author</h2>
+    
+Fernando Miguez
+
+    
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

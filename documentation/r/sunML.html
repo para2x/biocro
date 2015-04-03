@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>sunML. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Sunlit shaded multi-layer model</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>sunML(Idir, Idiff, LAI&nbsp;=&nbsp;8, nlayers&nbsp;=&nbsp;8, cos.theta&nbsp;=&nbsp;0.5, kd&nbsp;=&nbsp;0.7, chi.l&nbsp;=&nbsp;1, heightf&nbsp;=&nbsp;3)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>I.dir</dt>
+      <dd>direct light (quantum flux), (<code class = 'eq'>micro mol /m2/s</code>).</dd>
+      <dt>I.diff</dt>
+      <dd>indirect light (diffuse), (<code class = 'eq'>micro mol /m2/s</code>).</dd>
+      <dt>LAI</dt>
+      <dd>leaf area index, default 8.</dd>
+      <dt>nlayers</dt>
+      <dd>number of layers in which the canopy is
+  partitioned, default 8.</dd>
+      <dt>kd</dt>
+      <dd>extinction coefficient for diffuse light.</dd>
+      <dt>chi.l</dt>
+      <dd>The ratio of horizontal:vertical projected
+  area of leaves in the canopy segment.</dd>
+      <dt>cos.theta</dt>
+      <dd>cosine of <code class = 'eq'>theta</code>, solar
+  zenith angle.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+a <code><a href='http://www.inside-r.org/r-doc/base/list'>list</a></code> structure with components</p>
+  
+      <p>Vectors size equal to the number of layers.
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Simulates the light microenvironment in the canopy based on
+the sunlit-shade model and the multiple layers.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## &lt;strong&gt;Not run&lt;/strong&gt;: 
+# res2 &lt;- sunML(1500,200,3,10)
+# 
+# xyplot(Fsun + Fshade ~ c(1:10), data=res2,
+#        ylab=&#39;LAI&#39;,
+#        xlab=&#39;layer&#39;,
+#        type=&#39;l&#39;,lwd=2,col=c(&#39;blue&#39;,&#39;green&#39;),
+#        lty=c(1,2),
+#        key=list(text=list(c(&#39;Direct&#39;,&#39;Diffuse&#39;)),lty=c(1,2),
+#                 cex=1.2,lwd=2,lines=TRUE,x=0.7,y=0.5,
+#                 col=c(&#39;blue&#39;,&#39;green&#39;)))
+# ## &lt;strong&gt;End(Not run)&lt;/strong&gt;
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>sunML</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

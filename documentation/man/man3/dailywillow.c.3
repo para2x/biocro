@@ -1,0 +1,312 @@
+.TH "/home/dlebauer/dev/biocro/src/dailywillow.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/dailywillow.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+\fC#include 'Century\&.h'\fP
+.br
+\fC#include 'BioCro\&.h'\fP
+.br
+\fC#include 'AuxcaneGro\&.h'\fP
+.br
+\fC#include 'crocent\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBUpdateC3treeAfterEmergence\fP (struct \fBc3tree\fP *willow, struct \fBmanagement\fP *\fBmanagement\fP)"
+.br
+.ti -1c
+.RI "void \fBcreateNULLwillow\fP (struct \fBc3tree\fP *willow, int vecsize)"
+.br
+.ti -1c
+.RI "void \fBUpdateWillowAfterHarvest\fP (struct \fBc3tree\fP *willow, struct \fBmanagement\fP *\fBmanagement\fP)"
+.br
+.ti -1c
+.RI "void \fBUpdateWillowAfterEmergence\fP (struct \fBc3tree\fP *willow, struct \fBmanagement\fP *\fBmanagement\fP)"
+.br
+.ti -1c
+.RI "void \fBdailywillow\fP (struct \fBc3tree\fP *willow, double coefs[25], double TherPrds[6], double TherTime, double Temp, double dailynetassim, struct \fBsenthermaltemp\fP *senparms, struct \fBcanopyparms\fP *\fBcanopyparms\fP, struct \fBfrostParms\fP *frostparms, int N, double delTT, struct \fBrespirationParms\fP *RESP, int emergence)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void createNULLwillow (struct \fBc3tree\fP *willow, intvecsize)"
+
+.PP
+.nf
+21 {
+22    int i;
+23    willow->leafvec=malloc((vecsize+1)*sizeof(*willow->leafvec));
+24    willow->stemvec=malloc((vecsize+1)*sizeof(*willow->stemvec));
+25    willow->rootvec=malloc((vecsize+1)*sizeof(*willow->rootvec));
+26    willow->rhizomevec=malloc((vecsize+1)*sizeof(*willow->rhizomevec));
+27   
+28    for (i = 0; i<=vecsize;i++)
+29    {
+30       willow->leafvec[i]\&.newbiomass=0\&.0;
+31       willow->leafvec[i]\&.newlitter=0\&.0;
+32        willow->leafvec[i]\&.ageinTT=0\&.0;
+33        willow->stemvec[i]\&.newbiomass=0\&.0;
+34       willow->stemvec[i]\&.newlitter=0\&.0;
+35        willow->stemvec[i]\&.ageinTT=0\&.0;
+36        willow->rootvec[i]\&.newbiomass=0\&.0;
+37       willow->rootvec[i]\&.newlitter=0\&.0;
+38        willow->rootvec[i]\&.ageinTT=0\&.0;
+39        willow->rhizomevec[i]\&.newbiomass=0\&.0;
+40       willow->rhizomevec[i]\&.newlitter=0\&.0;
+41        willow->rhizomevec[i]\&.ageinTT=0\&.0;
+42        
+43    }
+44    
+45    willow->leaf\&.biomass=0\&.0;
+46    willow->stem\&.biomass=0\&.0;
+47    willow->root\&.biomass=0\&.0;
+48    willow->rhizome\&.biomass=0\&.0;
+49    willow->leaf\&.litter=0\&.0;
+50    willow->stem\&.litter=0\&.0;
+51    willow->root\&.litter=0\&.0;
+52    willow->rhizome\&.litter=0\&.0;
+53    willow->rhizome\&.carbohydratefraction=0\&.6; // Lets assume that in the beginning carbohydrate fraction of dry biomass is  60%
+54    return;
+55 }
+.fi
+.SS "void dailywillow (struct \fBc3tree\fP *willow, doublecoefs[25], doubleTherPrds[6], doubleTherTime, doubleTemp, doubledailynetassim, struct \fBsenthermaltemp\fP *senparms, struct \fBcanopyparms\fP *canopyparms, struct \fBfrostParms\fP *frostparms, intN, doubledelTT, struct \fBrespirationParms\fP *RESP, intemergence)"
+
+.PP
+.nf
+85 {
+86 
+87   double remobStem,remobRoot,remobRhiz;
+88   remobStem=canopyparms->remobFac;
+89   remobRoot=canopyparms->remobFac;
+90   remobRhiz=canopyparms->remobFac;
+91   double deadleaf,deadstem,deadroot,deadrhiz;
+92   double dailysenesced;
+93   double remobilized;
+94   double totalassimilate;
+95   struct crop_phenology cropdbp;
+96   double newleaf,newstem,newrhiz,newroot;
+97   double kLeaf,kStem,kRoot,kRhizome;
+98   double newLeaf,newStem,newRhizome,newRoot;
+99   double newLeaflitter,newStemlitter,newRhizomelitter,newRootlitter;
+100   double totalmaintenance;
+101   double RemobilizedFromLitter,RemobilizedFromRhizome;
+102   double SumofKpart,Dailybalance;
+103 
+104 // double getStemSenescence(struct stem *stem, struct littervec *littervec, double criticalTT, double Temp, double remobfa, struct frostParms *frostparms, int N)
+105  // calculate senescing biomass for today based on Thermal Time, N conce\&. and Frost conditions 
+106  
+107    getfrostparms(frostparms);
+108    getsenescenceparms(senparms);
+109    
+110    
+111    if(emergence ==1)
+112    {
+113           cropcent_dbp(coefs,TherPrds,TherTime, &cropdbp);
+114           kLeaf = cropdbp\&.DBP\&.kLeaf;
+115           kStem = cropdbp\&.DBP\&.kStem;
+116           kRoot = cropdbp\&.DBP\&.kRoot;
+117           kRhizome = cropdbp\&.DBP\&.kRhiz;
+118 
+119            // calculate senescence, Remobilization due to senescece will contribute to growth of new plant organs
+120           deadleaf=getLeafSenescence(&willow->leaf,senparms->leafcriticalT,senparms->leaffr, Temp, frostparms,TherTime,canopyparms);
+121           deadstem=getStemSenescence(&willow->stem,senparms->stemcriticalT,senparms->stemfr, Temp, frostparms,TherTime);
+122           deadroot=getRootSenescence(&willow->root, senparms->rootcriticalT,senparms->rootfr, Temp, frostparms,TherTime);
+123           deadrhiz=getRhizomeSenescence(&willow->rhizome,senparms->rhizomecriticalT,senparms->rhizomefr, Temp, frostparms,TherTime);    
+124           dailysenesced=deadleaf+deadstem+deadroot+deadrhiz;
+125           //Calculate how much of dead biomass is remobilized based on a remobilization factor
+126           RemobilizedFromLitter = dailysenesced*canopyparms->remobFac; // assuming all the dead organs remobilizes same fraction
+127          
+128          // Check and calculate whether carbohydrate in Rhizome is being remobilized baksed on K(negative value of partitioning coefficient)
+129          if(kRhizome>=0)
+130           {
+131             RemobilizedFromRhizome=0;          
+132           }
+133           else
+134           {
+135             // I need to multiply by (-1) because kRhizome is negative
+136             RemobilizedFromRhizome=(-1)*kRhizome*willow->rhizome\&.biomass;
+137           }
+138           
+139           // Total maintenance respiration, which is a temperature dependet function of existing biomass
+140           totalmaintenance=willow->autoresp\&.stemmaint+willow->autoresp\&.rootmaint+willow->autoresp\&.rhizomemaint;
+141           // Total assimilate includes net canopy assimilation and remobilization from litter and rhizome, also it must satisfy total maintenance respiration
+142           totalassimilate=dailynetassim+RemobilizedFromLitter+RemobilizedFromRhizome-totalmaintenance;
+143           
+144           // If total assimilate for growth (& growth respiration) is negative then this is provided by rhizome only (storage carb\&.) leaving other parts intacts
+145           if(totalassimilate<=0\&.0)
+146           {
+147           newLeaf=0\&.0;
+148           willow->autoresp\&.stemgrowth=0\&.0;
+149           newStem=0\&.0;
+150           willow->autoresp\&.rootgrowth=0\&.0;
+151           newRoot=0\&.0;
+152           willow->autoresp\&.rhizomegrowth=0\&.0;
+153           // New rhizome must provide for total negative assimilate\&. Also we need to update remobilization
+154           newRhizome=totalassimilate+RemobilizedFromRhizome;
+155           willow->autoresp\&.rhizomegrowth=0\&.0;
+156           }
+157           else
+158           {
+159           SumofKpart=((kLeaf>0)?kLeaf:0)+((kStem>0)?kStem:0)+((kRoot>0)?kRoot:0)+((kRhizome>0)?kRhizome:0);
+160             if((SumofKpart-1\&.0)>1e-10)
+161             {
+162 //            Rprintf("Kleaf=%f,kStem=%f,kRoot=%f,kRhiz=%f, Sum=%f\n",kLeaf,kStem,kRoot,kRhizome,SumofKpart);
+163  //           error("Sum of Positive partitioning coefficient is not one");
+164             
+165             }
+166           newLeaf=newbiomass(totalassimilate,kLeaf,0\&.0);          
+167           newStem=newbiomass(totalassimilate,kStem,RESP->growth\&.stem);
+168           willow->autoresp\&.stemgrowth=CalculateGrowthResp(newStem,RESP->growth\&.stem);
+169           newRoot=newbiomass(totalassimilate,kRoot,RESP->growth\&.root);
+170           willow->autoresp\&.rootgrowth=CalculateGrowthResp(newRoot,RESP->growth\&.stem);
+171           // Make sure that remobilization termis taken care of in the calculation of newRhizome
+172           newRhizome=(kRhizome>0)?newbiomass(totalassimilate,kRhizome,RESP->growth\&.rhizome):(-1)*RemobilizedFromRhizome;
+173           
+174           willow->autoresp\&.rhizomegrowth=CalculateGrowthResp(newRhizome,RESP->growth\&.stem);
+175           }
+176            
+177          // Now we know growth respiration of each component & we can update total autotrophic respiration
+178           willow->autoresp\&.total=willow->autoresp\&.leafdarkresp+totalmaintenance+willow->autoresp\&.stemgrowth+willow->autoresp\&.rootgrowth+willow->autoresp\&.rhizomegrowth;
+179          // Here, we are updating net primary productivity
+180          willow->NPP=willow->GPP-willow->autoresp\&.total;
+181           
+182         // Here, we are evaluating new litter, This is fraction of dead biomass which was not remobilized  
+183           newLeaflitter=(deadleaf>0)?deadleaf*(1-canopyparms->remobFac):0\&.0;
+184           newStemlitter=(deadleaf>0)?deadstem*(1-canopyparms->remobFac):0\&.0;
+185           newRootlitter=(deadroot>0)?deadroot*(1-canopyparms->remobFac):0\&.0;
+186           newRhizomelitter=(deadrhiz>0)?deadrhiz*(1-canopyparms->remobFac):0\&.0;
+187           
+188 
+189          Dailybalance=newLeaf- deadleaf+newRoot- deadroot+newStem- deadstem+newRhizome- deadrhiz+newLeaflitter+newStemlitter+newRootlitter + newRhizomelitter;
+190          Dailybalance=Dailybalance-willow->NPP;
+191          if(Dailybalance>1e-10)
+192           {
+193           /*
+194           Rprintf("\nNPP and Daily Change inBiomass is not matching & difference is %f\n", Dailybalance);
+195           Rprintf("Thermal Time = %f, GPP = %f, Autotrophic Respiration = %f, NPP = %f, Remobilized from Litter = %f, Remobilized from Rhizome = %f \n", TherTime,willow->GPP, willow->autoresp\&.total,willow->NPP,RemobilizedFromLitter,RemobilizedFromRhizome);
+196           Rprintf("kLeaf=%f, kstem=%f, kRoot=%f, kRhizome=%f \n", kLeaf, kStem, kRoot,kRhizome);
+197           Rprintf("NewLeaf = %f Dead Leaf=%f, newLeafLitter=%f\n",newLeaf, deadleaf,newLeaflitter); 
+198           Rprintf("NewStem = %f Dead Stem=%f, newStemLitter=%f\n",newStem, deadstem,newStemlitter);
+199           Rprintf("NewRoot = %f Dead Root=%f, newRootLitter=%f\n",newRoot, deadroot,newRootlitter);
+200           Rprintf("NewRhizome = %f Dead Rhizome=%f, newRhizomeLitter=%f\n",newRhizome, deadrhiz,newRhizomelitter);
+201           Rprintf("LeafDarkResp=%f, Total maintenance (ExceptLeaf) = %f, StemGrowthResp=%f, RootGrowthResp=%f, RhizGrowthResp=%f\n",willow->autoresp\&.leafdarkresp,totalmaintenance,willow->autoresp\&.stemgrowth,willow->autoresp\&.rootgrowth,willow->autoresp\&.rhizomegrowth);
+202               Rprintf("Daily Biomas Balance Gain = %f", Dailybalance);
+203               Rprintf("--------Emergence= %i-, N= %i---------------------\n",emergence, N);
+204           */
+205           }
+206 
+207           // Adding new biomass of green components
+208           UpdateStandingbiomass(&willow->leaf\&.biomass, newLeaf);
+209           UpdateStandingbiomass(&willow->stem\&.biomass, newStem);
+210           UpdateStandingbiomass(&willow->root\&.biomass, newRoot);
+211           UpdateStandingbiomass(&willow->rhizome\&.biomass, newRhizome);
+212           
+213           // Subtracting dead biomass from the green components
+214           // before thant I must multiply all the dead leaf components by -1, so I can still use 
+215           // Updatestandingbiomass function for SUBTRACTING instead of ADDING
+216           
+217           deadleaf*=(-1);
+218           deadstem*=(-1);
+219           deadroot*=(-1);
+220           deadrhiz*=(-1);
+221           
+222           UpdateStandingbiomass(&willow->leaf\&.biomass, deadleaf);
+223           UpdateStandingbiomass(&willow->stem\&.biomass, deadstem);
+224           UpdateStandingbiomass(&willow->root\&.biomass, deadroot);
+225           UpdateStandingbiomass(&willow->rhizome\&.biomass, deadrhiz);
+226           
+227           
+228           // Updating standing biomass of litter  components
+229           UpdateStandingbiomass(&willow->leaf\&.litter, newLeaflitter);
+230           UpdateStandingbiomass(&willow->stem\&.litter, newStemlitter);
+231           UpdateStandingbiomass(&willow->root\&.litter, newRootlitter);
+232           UpdateStandingbiomass(&willow->rhizome\&.litter, newRhizomelitter);
+233           
+234         
+235           
+236    }
+237    else // Dormant stange simulation, where rhizome provides for respiration loss
+238    {
+239           willow->stem\&.biomass=0\&.0;
+240           willow->autoresp\&.stemgrowth=0;
+241           willow->leaf\&.biomass=0\&.0;
+242           willow->autoresp\&.leafdarkresp=0\&.0;
+243           
+244           //Perhaps I can implement senescence rate of belowground components during dormant stage?
+245 //          willow->root\&.biomass=0\&.0;
+246           willow->autoresp\&.rootgrowth=0;
+247 //          willow->rhizome\&.biomass=0\&.0;
+248           willow->autoresp\&.rhizomegrowth=0;
+249           
+250           totalmaintenance=willow->autoresp\&.stemmaint+willow->autoresp\&.rootmaint+willow->autoresp\&.rhizomemaint;
+251           willow->autoresp\&.total=willow->autoresp\&.leafdarkresp+totalmaintenance+willow->autoresp\&.stemgrowth+willow->autoresp\&.rootgrowth+willow->autoresp\&.rhizomegrowth;
+252           willow->NPP=willow->GPP-willow->autoresp\&.total;
+253           newRhizome=(-1)* willow->autoresp\&.total;
+254           UpdateStandingbiomass(&willow->rhizome\&.biomass, newRhizome);
+255           if(willow->rhizome\&.biomass <0)error("rhizome has become negative");
+256    } 
+257     return;
+258 }
+.fi
+.SS "void UpdateC3treeAfterEmergence (struct \fBc3tree\fP *willow, struct \fBmanagement\fP *management)"
+
+.PP
+.nf
+12 {
+13   willow->leaf\&.biomass=(management->emergenceparms\&.StoragetoLeaffraction)* willow->rhizome\&.biomass +
+14                       (management->emergenceparms\&.StemtoLeaffraction)* willow->stem\&.biomass;
+15   willow->rhizome\&.biomass= (1-management->emergenceparms\&.StoragetoLeaffraction)*willow->rhizome\&.biomass;
+16   willow->stem\&.biomass=(1-management->emergenceparms\&.StemtoLeaffraction)* willow->stem\&.biomass;
+17   return;
+18 }
+.fi
+.SS "void UpdateWillowAfterEmergence (struct \fBc3tree\fP *willow, struct \fBmanagement\fP *management)"
+
+.PP
+.nf
+74 {
+75   willow->leaf\&.biomass= willow->stem\&.biomass*management->emergenceparms\&.StemtoLeaffraction + willow->rhizome\&.biomass*management->emergenceparms\&.StoragetoLeaffraction;
+76   willow->stem\&.biomass=(1-management->emergenceparms\&.StemtoLeaffraction)*willow->stem\&.biomass;
+77   willow->rhizome\&.biomass=(1-management->emergenceparms\&.StoragetoLeaffraction)*willow->rhizome\&.biomass;
+78   return;
+79 }
+.fi
+.SS "void UpdateWillowAfterHarvest (struct \fBc3tree\fP *willow, struct \fBmanagement\fP *management)"
+
+.PP
+.nf
+58 {
+59   willow->leaf\&.biomass=(1-management->harvestparms\&.frleaf)*willow->leaf\&.biomass;
+60   willow->leaf\&.litter=(1-management->harvestparms\&.frleaflitter)*willow->leaf\&.litter;
+61   
+62   willow->stem\&.biomass=(1-management->harvestparms\&.frstem)*willow->stem\&.biomass;
+63   willow->stem\&.litter=(1-management->harvestparms\&.frstemlitter)*willow->stem\&.litter;
+64   
+65   willow->root\&.biomass=(1-management->harvestparms\&.frdeadroot)*willow->root\&.biomass;
+66   willow->root\&.litter=management->harvestparms\&.frdeadroot*willow->root\&.biomass;
+67   
+68   willow->rhizome\&.biomass=(1-management->harvestparms\&.frdeadrhizome)*willow->rhizome\&.biomass;
+69   willow->rhizome\&.litter=management->harvestparms\&.frdeadrhizome*willow->rhizome\&.biomass;
+70   return;
+71 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

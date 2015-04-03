@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>RUEmod. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Radiation use efficiency based model</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>RUEmod(Rad, T.a, doy.s&nbsp;=&nbsp;91, doy.f&nbsp;=&nbsp;227, lai.c&nbsp;=&nbsp;0.0102, rue&nbsp;=&nbsp;2.4, T.b&nbsp;=&nbsp;10, k&nbsp;=&nbsp;0.68)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>Rad</dt>
+      <dd>Daily solar radiation (MJ <code class = 'eq'>ha^{-2}</code>).</dd>
+      <dt>T.a</dt>
+      <dd>Daily average temperature (Fahrenheit).</dd>
+      <dt>doy.s</dt>
+      <dd>first day of the growing season, default
+  91.</dd>
+      <dt>doy.f</dt>
+      <dd>last day of the growing season, default
+  227.</dd>
+      <dt>lai.c</dt>
+      <dd>linear relationship between growing degree
+  days and leaf area index.</dd>
+      <dt>rue</dt>
+      <dd>radiation use efficiency, default 2.4.</dd>
+      <dt>T.b</dt>
+      <dd>base temperature for calculating growing
+  degree days, default 10.</dd>
+      <dt>k</dt>
+      <dd>light extinction coefficient, default 0.68.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+a <code><a href='http://www.inside-r.org/r-doc/base/list'>list</a></code> structure with components
+<dt>doy</dt><dd>day of the year.</dd>
+ <dt>lai.cum</dt><dd>cumulative leaf
+area index.</dd>
+ <dt>AG.cum</dt><dd>cumulative above ground dry
+biomass (Mg <code class = 'eq'>ha^{-1}</code>).</dd>
+ <dt>AGDD</dt><dd>cumulative growing
+degree days.</dd>
+ <dt>Int.e</dt><dd>Intercepted solar radiation.</dd></p>
+  
+      <p></dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Simulates leaf area index, biomass and light interception.
+Based on the Monteith (1973) equations, adapted for
+Miscanthus by Clifton Brown et al.(2001) (see references).</p>
+  
+    </div>
+
+    <div class="Note">
+      <h2>Note</h2>
+
+      <p>This empirical model is useful but it has limitations.</p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p>Monteith (1973) <em>Principles of Environmental Physics</em>.
+Edward Arnold, London. UK.</p>
+  
+      <p>Clifton-Brown, J.C., Long, S.P. and Jorgensen, U. with
+contributions from S.A. Humphries, Schwarz, K.-U. and
+Schwarz, H. (2001) <em>Miscanthus Productivity</em>. Ch 4.
+In: Miscanthus for Energy and Fibre. Edited by: Jones,
+Michael B. and Walsh, Mary. James & James (Science
+Publishers), London, UK.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## See RUEmodMY
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>RUEmod</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+<code><a href='RUEmodMY.html'>RUEmodMY</a></code>
+
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

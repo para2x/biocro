@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>aq. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>A/Q curves</h1>
+
+<div class="row">
+  <div class="span8">
+        
+    <div class="Format">
+      <h2>Format</h2>
+
+      <p>A data frame with 64 observations on the following 6 variables.
+<dl>
+<dt>list('ID')</dt><dd>a numeric vector</dd>
+ <dt>list('trt')</dt><dd>a factor
+with levels <code>mxg</code> <code>swg</code></dd>
+ <dt>list('A')</dt><dd>a numeric vector.
+Assimilation</dd>
+ <dt>list('PARi')</dt><dd>a numeric vector. Photosynthetic Active
+Radiation (incident).</dd>
+ <dt>list('Tleaf')</dt><dd>a numeric vector. Temperature
+of the leaf.</dd>
+ <dt>list('RH_S')</dt><dd>a numeric vector. Relative humidity
+(fraction).</dd>
+ </dl></p>
+  
+    </div>
+
+    <div class="A/Q curves">
+      <h2>A/Q curves</h2>
+
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Example of A/Q curves which serves as a template for using
+the <code><a href='Opc4photo.html'>Opc4photo</a></code> and <code><a href='mOpc4photo.html'>mOpc4photo</a></code>
+functions.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p><code>swg</code> stand for switchgrass (Panicum virgatum)
+<code>mxg</code> stands for miscanthus (Miscanthus x gignateus)</p>
+  
+      <p>above ~~</p>
+  
+    </div>
+
+    <div class="References">
+      <h2>References</h2>
+
+      <p>Dandan Wang</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>data(aq)
+plotAQ(aq)
+</div>
+<p><img src='aq-2.png' alt='' width='540' height='400' /></p></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>aq</li>
+    </ul>
+    <ul>
+      <li>datasets</li>
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

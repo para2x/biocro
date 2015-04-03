@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>soilML. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="
+Fernando E. Miguez
+">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>soil multi-layered</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>soilML(precipt, CanopyT, cws, soilDepth, FieldC, WiltP, phi1&nbsp;=&nbsp;0.01, phi2&nbsp;=&nbsp;10, wsFun&nbsp;=&nbsp;c("linear", "logistic", "exp", "none"), rootDB, soilLayers&nbsp;=&nbsp;3, LAI, k, AirTemp, IRad, winds, RelH, soilType&nbsp;=&nbsp;10, hydrDist&nbsp;=&nbsp;0, rfl&nbsp;=&nbsp;0.3)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>precipt</dt>
+      <dd>Precipitation (mm).</dd>
+      <dt>CanopyT</dt>
+      <dd>Canopy transpiration.</dd>
+      <dt>cws</dt>
+      <dd>Current water status. Vector of length equal
+  to soilLayers.</dd>
+      <dt>soilDepth</dt>
+      <dd>Rooting depth.</dd>
+      <dt>FieldC</dt>
+      <dd>Field capacity.</dd>
+      <dt>WiltP</dt>
+      <dd>Wilting point.</dd>
+      <dt>phi1</dt>
+      <dd>See <code><a href='wtrstr.html'>wtrstr</a></code>.</dd>
+      <dt>phi2</dt>
+      <dd>See <code><a href='wtrstr.html'>wtrstr</a></code>.</dd>
+      <dt>wsFun</dt>
+      <dd>See <code><a href='wtrstr.html'>wtrstr</a></code>.</dd>
+      <dt>rootDB</dt>
+      <dd>Root biomass (Mg/ha).</dd>
+      <dt>soilLayers</dt>
+      <dd>Integer used to specify the number of
+  soil layers.</dd>
+      <dt>LAI</dt>
+      <dd>Leaf area index.</dd>
+      <dt>k</dt>
+      <dd>Light extinction coefficient.</dd>
+      <dt>AirTemp</dt>
+      <dd>Air temperature (Celsius).</dd>
+      <dt>IRad</dt>
+      <dd>Direct irradiance (<code class = 'eq'>\mu</code> <code class = 'eq'>m^-2</code>
+  <code class = 'eq'>s^-1</code>).</dd>
+      <dt>winds</dt>
+      <dd>Wind speed (m/s).</dd>
+      <dt>RelH</dt>
+      <dd>Relative humidity (0-1).</dd>
+      <dt>soilType</dt>
+      <dd>See <code><a href='BioGro.html'>showSoilType</a></code>.</dd>
+      <dt>hydrDist</dt>
+      <dd>Zero or otherwise positive integer. Zero
+  does not calculate hydraulic distribution, otherwise
+  does.</dd>
+      <dt>rfl</dt>
+      <dd>Root factor lambda. A Poisson distribution is
+  used to simulate the distribution of roots in the soil
+  profile and this parameter can be used to change the
+  lambda parameter of the Poisson.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+optiontocalculaterootdept</p>
+  
+      <p>rootfrontvelocity</p>
+  
+      <p>dap</p>
+  
+      <p>matrix with 8 (if hydrDist=0) or 12 (if hydrDist > 0).
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Simulates soil water content for a layered soil.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>layers &lt;- 5
+ans &lt;- soilML(precipt=2, CanopyT=2, cws = rep(0.3,layers),
+soilDepth=1.5, FieldC=0.33, WiltP=0.13, rootDB=2, soilLayers=layers,
+LAI=3, k=0.68, AirTemp=25,IRad=500, winds=2, RelH=0.8, soilType=6,
+hydrDist=1)
+ans
+</div>
+<div class='output'>           cws rootATdepth waterIn layerDepth CanopyTra   SoilEvap   wsPhoto
+[1,] 0.3006469           2   0.002        0.3         2 0.05921622 0.8387243
+[2,] 0.3013333           0   0.002        0.3         0 0.00000000 0.8444444
+[3,] 0.3013333           0   0.002        0.3         0 0.00000000 0.8444445
+[4,] 0.3013381           0   0.002        0.3         0 0.00000000 0.8444844
+[5,] 0.3013333           0   0.002        0.3         0 0.00000000 0.8444444
+      wsSpleaf     drainage           J_w       K_psim      psim
+[1,] 0.5358804 1.438281e-06 -1.437973e-06 4.027791e-08 -45.41469
+[2,] 0.5482416 1.438281e-06 -1.439820e-06 4.027791e-08 -45.41469
+[3,] 0.5482417 1.438281e-06 -1.439819e-06 4.027791e-08 -45.41468
+[4,] 0.5483288 1.438281e-06 -1.438281e-06 4.028654e-08 -45.41091
+[5,] 0.5482416 1.438281e-06 -1.438281e-06 4.028654e-08 -45.41091
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>rootDist</li><li>soilML</li>
+    </ul>
+    <ul>
+      <li>models</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+See Also <code><a href='wtrstr.html'>wtrstr</a></code>.
+
+    
+    <h2>Author</h2>
+    
+Fernando E. Miguez
+
+    
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

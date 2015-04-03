@@ -1,0 +1,229 @@
+.TH "/home/dlebauer/dev/biocro/src/c3EvapoTrans.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/c3EvapoTrans.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'c3photo\&.h'\fP
+.br
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+\fC#include 'c3EvapoTrans\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "struct \fBET_Str\fP \fBc3EvapoTrans\fP (double Rad, double Itot, double Airtemperature, double RH, double WindSpeed, double LeafAreaIndex, double CanopyHeight, double vcmax2, double jmax2, double Rd2, double b02, double b12, double Catm2, double O2, double theta2, double StomWS, int ws)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "struct \fBET_Str\fP c3EvapoTrans (doubleRad, doubleItot, doubleAirtemperature, doubleRH, doubleWindSpeed, doubleLeafAreaIndex, doubleCanopyHeight, doublevcmax2, doublejmax2, doubleRd2, doubleb02, doubleb12, doubleCatm2, doubleO2, doubletheta2, doubleStomWS, intws)"
+
+.PP
+.nf
+37 {
+38         /* creating the structure to return */
+39         struct ET_Str tmp;
+40         struct c3_str tmpc3;
+41 
+42         const double LeafWidth = 0\&.04;
+43         const double kappa = 0\&.41;
+44         const double WindSpeedHeight = 5;
+45         const double dCoef = 0\&.77;
+46         const double tau = 0\&.2;
+47         const double ZetaCoef = 0\&.026;
+48         const double ZetaMCoef = 0\&.13;
+49         const double LeafReflectance = 0\&.2;
+50         const double SpecificHeat = 1010;
+51 
+52         double Tair, WindSpeedTopCanopy;
+53         double DdryA, LHV, SlopeFS, SWVC;
+54         double LayerRelativeHumidity, LayerWindSpeed, totalradiation;
+55         double LayerConductance, DeltaPVa, PsycParam, ga;
+56         double BoundaryLayerThickness, DiffCoef,LeafboundaryLayer;
+57         double d, Zeta, Zetam, ga0, ga1, ga2; 
+58         double Ja, Deltat;
+59         double PhiN;
+60         double TopValue, BottomValue;
+61         double EPen, TransR,EPries; 
+62         double OldDeltaT, rlc, ChangeInLeafTemp; 
+63         int Counter;
+64 
+65         WindSpeedTopCanopy = WindSpeed;
+66         Tair = Airtemperature;
+67 
+68         if(CanopyHeight < 0\&.1)
+69                 CanopyHeight = 0\&.1; 
+70 
+71         DdryA = TempToDdryA(Tair) ;
+72         LHV = TempToLHV(Tair) * 1e6 ; 
+73         /* Here LHV is given in MJ kg-1 and this needs to be converted
+74            to Joules kg-1  */
+75         SlopeFS = TempToSFS(Tair) * 1e-3;
+76         SWVC = TempToSWVC(Tair) * 1e-3;
+77 
+78         /* FIRST CALCULATIONS*/
+79 
+80         Zeta = ZetaCoef * CanopyHeight;
+81         Zetam = ZetaMCoef * CanopyHeight;
+82         d = dCoef * CanopyHeight;
+83 
+84         /* Relative Humidity is giving me a headache */
+85         /* RH2 = RH * 1e2; A high value of RH makes the 
+86            difference of temperature between the leaf and the air huge\&.
+87            This is what is causing the large difference in DeltaT at the 
+88            bottom of the canopy\&. I think it is very likely\&.  */
+89         LayerRelativeHumidity = RH * 100;
+90         if(LayerRelativeHumidity > 100) 
+91                 error("LayerRelativehumidity > 100"); 
+92 
+93         if(WindSpeed < 0\&.5) WindSpeed = 0\&.5;
+94 
+95         LayerWindSpeed = WindSpeed;
+96 
+97         /*' Convert light assuming 1 µmol PAR photons = 0\&.235 J/s Watts*/
+98         totalradiation = Itot * 0\&.235;
+99 
+100         tmpc3 = c3photoC(Rad,Airtemperature,RH,vcmax2,jmax2,Rd2,b02,b12,Catm2,O2,theta2,StomWS,ws); 
+101         LayerConductance = tmpc3\&.Gs;
+102 
+103         /* Convert mmoles/m2/s to moles/m2/s
+104            LayerConductance = LayerConductance * 1e-3
+105            Convert moles/m2/s to mm/s
+106            LayerConductance = LayerConductance * 24\&.39
+107            Convert mm/s to m/s
+108            LayerConductance = LayerConductance * 1e-3 */
+109 
+110         LayerConductance = LayerConductance * 1e-6 * 24\&.39;  
+111 
+112         /* Thornley and Johnson use m s^-1 on page 418 */
+113 
+114         /* prevent errors due to extremely low Layer conductance */
+115         if(LayerConductance <=0)
+116                 LayerConductance = 0\&.01;
+117 
+118 
+119         if(SWVC < 0)
+120                 error("SWVC < 0");
+121         /* Now RHprof returns relative humidity in the 0-1 range */
+122         DeltaPVa = SWVC * (1 - LayerRelativeHumidity / 100);
+123 
+124         PsycParam =(DdryA * SpecificHeat) / LHV;
+125 
+126         /* Ja = (2 * totalradiation * ((1 - LeafReflectance - tau) / (1 - tau))) * LeafAreaIndex; */
+127         /* It seems that it is not correct to multiply by the leaf area index\&. Thornley
+128            and johnson pg\&. 400 suggest using (1-exp(-k*LAI) but note that for a full canopy
+129            this is 1\&. so I'm using 1 as an approximation\&. */
+130         Ja = (2 * totalradiation * ((1 - LeafReflectance - tau) / (1 - tau)));
+131         /* Calculation of ga */
+132         /* According to thornley and Johnson pg\&. 416 */
+133         ga0 = pow(kappa,2) * LayerWindSpeed;
+134         ga1 = log((WindSpeedHeight + Zeta - d)/Zeta);
+135         ga2 = log((WindSpeedHeight + Zetam - d)/Zetam);
+136         ga = ga0/(ga1*ga2);
+137 
+138         /*  Rprintf("ga: %\&.5f \n", ga); */
+139         if(ga < 0)
+140                 error("ga is less than zero");
+141 
+142         DiffCoef = (2\&.126 * 1e-5) + ((1\&.48 * 1e-7) * Airtemperature);
+143         BoundaryLayerThickness = 0\&.004 * sqrt(LeafWidth / LayerWindSpeed);
+144         LeafboundaryLayer = DiffCoef / BoundaryLayerThickness;
+145 
+146         /* Temperature of the leaf according to Campbell and Norman (1998) Chp 4\&.*/
+147         /* This version is non-iterative and an approximation*/
+148         /* Stefan-Boltzmann law: B = sigma * T^4\&. where sigma is the Boltzmann
+149            constant: 5\&.67 * 1e-8 W m^-2 K^-4\&. */
+150 
+151         /* From Table A\&.3 in the book we know that*/
+152 
+153         /*  rlc = (4 * (5\&.67*1e-8) * pow(273 + Airtemperature, 3) * Deltat) * LeafAreaIndex;   */
+154         /*  PhiN = Ja - rlc; */
+155 
+156         /*  dd = 0\&.72 * LeafWidth; */
+157         /*  gHa = 1\&.4 * 0\&.135 * sqrt(LayerWindSpeed * 0\&.72 * LeafWidth);  */
+158         /*  gva = 1\&.4 * 0\&.147 * sqrt(LayerWindSpeed * 0\&.72 * LeafWidth);  */
+159 
+160         /*  TopValue = Ja - (SWVC/7\&.28) * 5\&.67*1e-8 * pow(Airtemperature + 273\&.15,4) - LHV * LayerConductance * 1e-3 * DeltaPVa / 101\&.3; */
+161         /* Here I divide SWVC by 7\&.28 to approximately change from g/m3 to kPa */
+162         /* I'm also multiplying Layer conductance by 1e-3 since it should be in mol m^-2 s^-1 */
+163 
+164         /*  BottomValue = SpecificHeat * gHr + LHV * SlopeFS * LayerConductance * 1e-3;  */
+165 
+166         /*  Deltat = Airtemperature + TopValue/BottomValue; */
+167 
+168         /*  PhiN = TopValue; */
+169 
+170         /* This is the original from WIMOVAC*/
+171         Deltat = 0\&.01;
+172         ChangeInLeafTemp = 10;
+173 
+174         Counter = 0;
+175         while( (ChangeInLeafTemp > 0\&.5) && (Counter <= 10))
+176         {
+177                 OldDeltaT = Deltat;
+178 
+179                 /*         rlc = (4 * (5\&.67*1e-8) * pow(273 + Airtemperature, 3) * Deltat) * LeafAreaIndex;   */
+180                 rlc = (4 * (5\&.67*1e-8) * pow(273 + Airtemperature, 3) * Deltat);  
+181 
+182                 PhiN = (Ja - rlc);
+183 
+184 
+185                 TopValue = PhiN * (1 / ga + 1 / LayerConductance) - LHV * DeltaPVa;
+186                 BottomValue = LHV * (SlopeFS + PsycParam * (1 + ga / LayerConductance));
+187                 Deltat = TopValue / BottomValue;
+188                 if(Deltat > 5)  Deltat = 5;
+189                 if(Deltat < -5) Deltat = -5;
+190 
+191 
+192                 ChangeInLeafTemp = OldDeltaT - Deltat;
+193                 if(ChangeInLeafTemp <0)
+194                         ChangeInLeafTemp = -ChangeInLeafTemp;
+195                 Counter++;
+196         }
+197 
+198 
+199         if(PhiN < 0)
+200                 PhiN = 0;
+201 
+202         TransR = (SlopeFS * PhiN + (LHV * PsycParam * ga * DeltaPVa)) / (LHV * (SlopeFS + PsycParam * (1 + ga / LayerConductance)));
+203 
+204         EPries = 1\&.26 * ((SlopeFS * PhiN) / (LHV * (SlopeFS + PsycParam)));
+205 
+206         EPen = (((SlopeFS * PhiN) + LHV * PsycParam * ga * DeltaPVa)) / (LHV * (SlopeFS + PsycParam));
+207 
+208         /* This values need to be converted from Kg/m2/s to
+209            mmol H20 /m2/s according to S Humphries */
+210         /*res[1,1] = EPen * 10e6 / 18;*/
+211         /*res[1,2] = EPries * 10e6 / 18;*/
+212         /* 1e3 - kgrams to grams  */
+213         /* 1e3 - mols to mmols */
+214         /*  res[0] = ((TransR * 1e3) / 18) * 1e3 ; */
+215         /*  res[1] = Deltat; */
+216         /*  res[2] = LayerConductance; */
+217         /* Let us return the structure now */
+218 
+219         tmp\&.TransR = TransR * 1e6 / 18; 
+220         tmp\&.EPenman = EPen * 1e6 / 18; 
+221         tmp\&.EPriestly = EPries * 1e6 / 18; 
+222         tmp\&.Deltat = Deltat;
+223         tmp\&.LayerCond = LayerConductance * 1e6 * (1/24\&.39);   
+224         /*    tmp\&.LayerCond = RH2;   */
+225         /*   tmp\&.LayerCond = 0\&.7; */
+226         return(tmp);
+227 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

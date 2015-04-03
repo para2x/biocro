@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>idbp. BioCro 0.93</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="
+Fernando E. Miguez
+">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">BioCro 0.93</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Initial Dry Biomass Partitioning Coefficients</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>idbp(data, phenoControl&nbsp;=&nbsp;list())</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>data</dt>
+      <dd>Should have at least five columns with:
+  ThermalT, Stem, Leaf, Root, Rhizome and Grain.</dd>
+      <dt>phenoControl</dt>
+      <dd>list that supplies mainly in this
+  case the thrmal time periods that delimit the
+  phenological stages,</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+
+      <p><dl>
+It returns a vector of length 25 suitable for
+<code>BioGro</code>, <code>OpBioGro</code>, <code>constrOpBioGro</code>, or
+<code>MCMCBioGro</code>.
+</dl></p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+
+      <p>Atempts to guess good initial vales for dry biomass
+coefficients that can be passed to <code>BioGro</code>,
+<code>OpBioGro</code>, <code>constrOpBioGro</code>, or
+<code>MCMCBioGro</code>.  It is very fragile.</p>
+  
+    </div>
+
+    <div class="Details">
+      <h2>Details</h2>
+
+      <p>This function will not accept missing values. It can be
+quite fragile and it is rather inflexible in what it
+expects in terms of data.</p>
+  
+    </div>
+
+    <div class="Note">
+      <h2>Note</h2>
+
+      <p>It is highly recommended that the results of this function
+are tested with <code><a href='valid_dbp.html'>valid_dbp</a></code>.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>## See ?OpBioGro
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>idbp</li>
+    </ul>
+    <ul>
+      <li>utilities</li>
+    </ul> -->
+      
+    <h2>See also</h2>
+    
+<code><a href='valid_dbp.html'>valid_dbp</a></code>
+
+    
+    <h2>Author</h2>
+    
+Fernando E. Miguez
+
+    
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

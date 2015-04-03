@@ -1,0 +1,762 @@
+.TH "/home/dlebauer/dev/biocro/src/maizeGro.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/maizeGro.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <R\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <Rmath\&.h>\fP
+.br
+\fC#include <Rinternals\&.h>\fP
+.br
+\fC#include 'AuxBioCro\&.h'\fP
+.br
+\fC#include 'BioCro\&.h'\fP
+.br
+\fC#include 'Century\&.h'\fP
+.br
+\fC#include 'maizeGro\&.h'\fP
+.br
+\fC#include 'AuxMaizeGro\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "SEXP \fBmaizeGro\fP (SEXP DOY, SEXP HR, SEXP SOLAR, SEXP TEMP, SEXP RH, SEXP WINDSPEED, SEXP PRECIP, SEXP DATES, SEXP PHENOP, SEXP PHOTOP, SEXP CANOPYP, SEXP NITROP, SEXP LAIP, SEXP MALLOCP, SEXP LAT, SEXP TIMESTEP, SEXP PLANTDENSITY, SEXP SOILP, SEXP SOILP2, SEXP SOILDEPTHS, SEXP CWS, SEXP SENEP, SEXP NNITROP)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "SEXP maizeGro (SEXPDOY, SEXPHR, SEXPSOLAR, SEXPTEMP, SEXPRH, SEXPWINDSPEED, SEXPPRECIP, SEXPDATES, SEXPPHENOP, SEXPPHOTOP, SEXPCANOPYP, SEXPNITROP, SEXPLAIP, SEXPMALLOCP, SEXPLAT, SEXPTIMESTEP, SEXPPLANTDENSITY, SEXPSOILP, SEXPSOILP2, SEXPSOILDEPTHS, SEXPCWS, SEXPSENEP, SEXPNNITROP)"
+
+.PP
+.nf
+40 {
+41 
+42 /* Initializing variables  */
+43 
+44         int vecsize = 8760 ; /* 365 days * 24 hours  */
+45         int i, i2, i3, i4;
+46 
+47         struct nitroParms nitroparms;
+48         double TEMPdoubletoint;
+49         nitroparms\&.ileafN=REAL(NNITROP)[0];
+50         nitroparms\&.kln=REAL(NNITROP)[1];
+51         nitroparms\&.Vmaxb1=REAL(NNITROP)[2];
+52         nitroparms\&.Vmaxb0=REAL(NNITROP)[3];
+53         nitroparms\&.alphab1=REAL(NNITROP)[4];
+54         nitroparms\&.alphab0=REAL(NNITROP)[5];
+55         nitroparms\&.Rdb1=REAL(NNITROP)[6];
+56         nitroparms\&.Rdb0=REAL(NNITROP)[7];
+57         nitroparms\&.kpLN=REAL(NNITROP)[8];
+58         nitroparms\&.lnb0=REAL(NNITROP)[9];
+59         nitroparms\&.lnb1=REAL(NNITROP)[10];
+60         TEMPdoubletoint=REAL(NNITROP)[11];
+61         nitroparms\&.lnFun=(int)TEMPdoubletoint;
+62         nitroparms\&.maxln=REAL(NNITROP)[12];
+63         nitroparms\&.minln=REAL(NNITROP)[13];
+64         nitroparms\&.daymaxln=REAL(NNITROP)[14];
+65 
+66 
+67 
+68 /* Some structures */
+69         struct lai_str tmpLAI;
+70         struct maize_dbp_str tmpDBP;
+71         struct soilML_str soilMLS;
+72         struct soilText_str soTexS; 
+73         struct ws_str WaterS;
+74 
+75         int plantDate, emergeDate, harvestDate;
+76         double baseTemp, maxLeaves;
+77         double plantEmerge, phyllochron1, phyllochron2;
+78         double R1, R2, R3, R4, R5, R6;
+79         double phenoStage = 0\&.0;
+80 
+81         double TTc = 0\&.0, TTc_V10 = 0\&.0, TTc_Vn = 0\&.0;
+82 
+83         double LAI = 0\&.0;
+84 
+85         double lat = REAL(LAT)[0];
+86         int timestep = INTEGER(TIMESTEP)[0];
+87 
+88 /* Variables for photosynthesis */
+89         double vmax1, vmax11, vmax12, alpha1, kparm1, theta, beta, Rd11, Rd12, Rd1,upperT,lowerT;
+90         double vmax;
+91         double alpha;
+92         double Ca, b01, b11, ws_0;
+93         int ws;
+94         double StomWS = 1;
+95         double CanopyA, CanopyT;
+96         struct Can_Str Canopy;
+97 
+98 /* Variables for canopy */
+99         double Sp, SpD, nlayers, kd, chil, heightFactor;
+100         double mrc1, mrc2;
+101 
+102 /* Variables for senescence */
+103         double seneLeaf, seneStem, seneRoot;
+104         double newLeafcol[8760];
+105         double newStemcol[8760];
+106         double newRootcol[8760];
+107         double *sti, *sti2, *sti3;
+108         int k = 0, j = 0, q = 0, m = 0;
+109         sti = &newLeafcol[0];
+110         sti2 = &newStemcol[0];
+111         sti3 = &newRootcol[0];
+112 
+113 /* Variables for nitrogen */
+114         double iLeafN, kLN, vmax_b1, alpha_b1, kpLN, lnb0, lnb1, lnFun_0;
+115         double LeafN, LeafNR;
+116         int lnFun; 
+117 
+118 /* Variables for leaf area index */
+119         double laiMethod, TTcoef, maxLAI;
+120         double Ax, LNx, LT, a1, a2, k0, L0, LLx, Lx, LNl, Amax, c1, c2, c3, 
+121           c4, a, b, x0, f, g;
+122 
+123 /* Variables for C allocation */
+124         double kLeaf, kStem, kRoot, kGrain;
+125         double newLeaf, newStem, newRoot, newGrain;
+126         double Leaf = 0\&.0, Stem = 0\&.0, Root = 0\&.0, Grain = 0\&.0;
+127 
+128         double plantdensity = REAL(PLANTDENSITY)[0];
+129 
+130 /* Variables for soil parameters */
+131         double FieldC, WiltP, phi1, phi2, soilDepth;
+132         int soilType, wsFun, hydrDist;
+133         double soilEvap, TotEvap;
+134         double waterCont = 0\&.3;
+135         double LeafWS = 1;
+136         int soillayers = INTEGER(SOILP2)[1];
+137         double cwsVec[soillayers];
+138         for(i3=0;i3<soillayers;i3++){
+139                 cwsVec[i3] = REAL(CWS)[i3];
+140         } 
+141         double cwsVecSum = 0\&.0;
+142         double rfl;  /* root factor lambda */
+143         double rsec; /* radiation soil evaporation coefficient */
+144         double rsdf; /* root soil depth factor */
+145         double scsf; /* stomatal conductance sensitivity factor */
+146         double transpRes; /* Resistance to transpiration from soil to leaf */
+147         double leafPotTh; /* Leaf water potential threshold */
+148 
+149         /* Parameters for calculating leaf water potential */
+150         double LeafPsim = 0\&.0;
+151 
+152 /* Extracting dates */
+153 
+154         plantDate = INTEGER(DATES)[0];
+155         emergeDate = INTEGER(DATES)[1];
+156         harvestDate = INTEGER(DATES)[2];
+157 
+158 /* Extracting phenology parameters */
+159 
+160         baseTemp = REAL(PHENOP)[0];
+161         maxLeaves = REAL(PHENOP)[1];
+162         plantEmerge = REAL(PHENOP)[2];
+163         phyllochron1 = REAL(PHENOP)[3];
+164         phyllochron2 = REAL(PHENOP)[4];
+165         R1 = REAL(PHENOP)[5];
+166         R2 = REAL(PHENOP)[6];
+167         R3 = REAL(PHENOP)[7];
+168         R4 = REAL(PHENOP)[8];
+169         R5 = REAL(PHENOP)[9];
+170         R6 = REAL(PHENOP)[10];
+171 
+172 /* Extracting photosynthesis parameters */
+173 
+174         vmax11 = REAL(PHOTOP)[0];
+175         vmax12 = REAL(PHOTOP)[1];
+176         vmax = vmax11;
+177         alpha1 = REAL(PHOTOP)[2];
+178         alpha = alpha1;
+179         kparm1 = REAL(PHOTOP)[3];
+180         theta = REAL(PHOTOP)[4];
+181         beta = REAL(PHOTOP)[5];
+182         Rd11 = REAL(PHOTOP)[6];
+183         Rd12 = REAL(PHOTOP)[7];
+184         Ca = REAL(PHOTOP)[8];
+185         b01 = REAL(PHOTOP)[9];
+186         b11 = REAL(PHOTOP)[10];
+187         ws_0 = REAL(PHOTOP)[11];
+188         ws = ws_0;
+189         upperT = REAL(PHOTOP)[12];
+190         lowerT= REAL(PHOTOP)[13];
+191 
+192 /* Extracting canopy parameters */
+193         Sp = REAL(CANOPYP)[0];
+194         SpD = REAL(CANOPYP)[1];
+195         nlayers = REAL(CANOPYP)[2];
+196         kd = REAL(CANOPYP)[3];
+197         chil = REAL(CANOPYP)[4];
+198         mrc1 = REAL(CANOPYP)[5];
+199         mrc2 = REAL(CANOPYP)[6];
+200         heightFactor = REAL(CANOPYP)[7];
+201 
+202 /* Extracting senescence parameters */
+203         seneStem = REAL(SENEP)[0];
+204         seneLeaf = REAL(SENEP)[1];
+205         seneRoot = REAL(SENEP)[2];
+206 
+207 /* Extracting nitrogen parameters */
+208         iLeafN = REAL(NITROP)[0];
+209         LeafN = iLeafN;
+210         kLN = REAL(NITROP)[1];
+211         vmax_b1 = REAL(NITROP)[2];
+212         alpha_b1 = REAL(NITROP)[3];
+213         kpLN = REAL(NITROP)[4];
+214         lnb0 = REAL(NITROP)[5];
+215         lnb1 = REAL(NITROP)[6];
+216         lnFun_0 = REAL(NITROP)[7];
+217         lnFun = lnFun_0;
+218 
+219 /* Extracting LAI parms */
+220         laiMethod = REAL(LAIP)[0];
+221         TTcoef = REAL(LAIP)[1];
+222         maxLAI = REAL(LAIP)[2];
+223         Ax = REAL(LAIP)[3];
+224         LT = REAL(LAIP)[4];
+225         a1 = REAL(LAIP)[5];
+226         a2 = REAL(LAIP)[6];
+227         k0 = REAL(LAIP)[7];
+228         L0 = REAL(LAIP)[8];
+229         LLx = REAL(LAIP)[9];
+230         Lx = REAL(LAIP)[10];
+231         LNl = REAL(LAIP)[11];
+232         Amax = REAL(LAIP)[12];
+233         c1 = REAL(LAIP)[13];
+234         c2 = REAL(LAIP)[14];
+235         c3 = REAL(LAIP)[15];
+236         c4 = REAL(LAIP)[16];
+237         a = REAL(LAIP)[17];
+238         b = REAL(LAIP)[18];
+239         x0 = REAL(LAIP)[19];
+240         f = REAL(LAIP)[20];
+241         g = REAL(LAIP)[21];
+242 
+243 /* Extracting soil parameters */
+244 
+245         FieldC = REAL(SOILP)[0];
+246         WiltP = REAL(SOILP)[1];
+247         phi1 = REAL(SOILP)[2];
+248         phi2 = REAL(SOILP)[3];
+249         soilDepth = REAL(SOILP)[4];
+250         scsf = REAL(SOILP)[5];
+251         transpRes = REAL(SOILP)[6];
+252         leafPotTh = REAL(SOILP)[7];
+253         rfl = REAL(SOILP)[8];
+254         rsec = REAL(SOILP)[9];
+255         rsdf = REAL(SOILP)[10];
+256 
+257 /* Extracting soil parameters 2 */
+258         soilType = INTEGER(SOILP2)[0];
+259         wsFun = INTEGER(SOILP2)[2];
+260         hydrDist = INTEGER(SOILP2)[3];
+261 
+262         soTexS = soilTchoose(soilType);
+263 
+264 /* Create list components */
+265 
+266         SEXP lists;
+267         SEXP names;
+268 
+269         SEXP DayofYear;
+270         SEXP Hour;
+271         SEXP TTTc;
+272         SEXP PhenoStage;
+273         SEXP CanopyAssim;
+274         SEXP CanopyTrans;
+275         SEXP LAIc;
+276         SEXP LeafVec;
+277         SEXP StemVec;
+278         SEXP RootVec;
+279         SEXP GrainVec;
+280         SEXP LAImat;
+281         SEXP VmaxVec;
+282         SEXP LeafNVec;
+283         SEXP cwsMat;
+284         SEXP psimMat; /* Holds the soil water potential */
+285         SEXP rdMat;
+286         SEXP SCpools;
+287         SEXP SNpools;
+288         SEXP LeafPsimVec;
+289         SEXP SoilEvaporation;
+290         SEXP SoilWatCont;
+291         SEXP StomatalCondCoefs;
+292 
+293         PROTECT(lists = allocVector(VECSXP,23)); /* 1 */
+294         PROTECT(names = allocVector(STRSXP,23)); /* 2 */  
+295 
+296         PROTECT(DayofYear = allocVector(REALSXP,vecsize)); /* 3 */
+297         PROTECT(Hour = allocVector(REALSXP,vecsize)); /* 4 */
+298         PROTECT(TTTc = allocVector(REALSXP,vecsize)); /* 5 */
+299         PROTECT(PhenoStage = allocVector(REALSXP,vecsize)); /* 6 */
+300         PROTECT(CanopyAssim = allocVector(REALSXP,vecsize)); /* 7 */
+301         PROTECT(CanopyTrans = allocVector(REALSXP,vecsize)); /* 8 */
+302         PROTECT(LAIc = allocVector(REALSXP,vecsize)); /* 9 */
+303         PROTECT(LeafVec = allocVector(REALSXP,vecsize)); /* 10 */
+304         PROTECT(StemVec = allocVector(REALSXP,vecsize)); /* 11 */
+305         PROTECT(RootVec = allocVector(REALSXP,vecsize)); /* 12 */
+306         PROTECT(GrainVec = allocVector(REALSXP,vecsize)); /* 13 */
+307         PROTECT(LAImat = allocMatrix(REALSXP,MAXLEAFNUMBER,vecsize)); /* 14 */
+308         PROTECT(VmaxVec = allocVector(REALSXP,vecsize)); /* 15 */
+309         PROTECT(LeafNVec = allocVector(REALSXP,vecsize)); /* 16 */
+310         PROTECT(cwsMat = allocMatrix(REALSXP,soillayers,vecsize)); /* 17 */
+311         PROTECT(psimMat = allocMatrix(REALSXP,soillayers,vecsize)); /* 18 */
+312         PROTECT(rdMat = allocMatrix(REALSXP,soillayers,vecsize)); /* 19 */
+313         PROTECT(SCpools = allocVector(REALSXP,9)); /* 20 */
+314         PROTECT(SNpools = allocVector(REALSXP,9)); /* 21 */
+315         PROTECT(LeafPsimVec = allocVector(REALSXP,vecsize)); /* 22 */
+316         PROTECT(SoilEvaporation = allocVector(REALSXP,vecsize)); /* 23 */
+317         PROTECT(SoilWatCont = allocVector(REALSXP,vecsize)); /* 24 */
+318         PROTECT(StomatalCondCoefs = allocVector(REALSXP,vecsize)); /* 25 */
+319 
+320         int *pt_doy = INTEGER(DOY);
+321         int *pt_hr = INTEGER(HR);
+322         double *pt_temp = REAL(TEMP);
+323         double *pt_solar = REAL(SOLAR);
+324         double *pt_rh = REAL(RH);
+325         double *pt_windspeed = REAL(WINDSPEED);
+326         double *pt_precip = REAL(PRECIP);
+327 
+328         for(i=0;i<vecsize;i++)
+329         {
+330                 /* First calculate the elapsed Thermal Time*/
+331                 /* The idea is that here I need to divide by the time step
+332                    to calculate the thermal time\&. For example, a 3 hour time interval
+333                    would mean that the division would need to by 8 */
+334 
+335                 /* If before planting date phenology is not calculated */
+336                 if(*(pt_doy+i) < plantDate){
+337                         REAL(PhenoStage)[i] = -1;
+338                         REAL(TTTc)[i] = 0;
+339                 }else{
+340 
+341                         if(*(pt_doy+i) >= harvestDate){
+342                                 REAL(TTTc)[i] = TTc;
+343                                 REAL(PhenoStage)[i] = -1;
+344                         }else{
+345                                 if(*(pt_temp+i) > baseTemp){
+346                                         TTc += (*(pt_temp+i) - baseTemp)  / (24/timestep); 
+347                                 }
+348                                 REAL(TTTc)[i] = TTc; 
+349                                 
+350                                 if(TTc < plantEmerge || *(pt_doy+i) < emergeDate){
+351                                         REAL(PhenoStage)[i] = 0\&.0;
+352                                 }else{
+353                                         if(REAL(PhenoStage)[i-1] < 0\&.10){
+354                                                 REAL(PhenoStage)[i] = floor(TTc / phyllochron1) / 100;
+355                                                 TTc_V10 = TTc;
+356                                         }else
+357                                                 if(REAL(PhenoStage)[i-1] < 1){
+358                                                         REAL(PhenoStage)[i] = 0\&.10 + 
+359                                                                 floor((TTc - TTc_V10) / phyllochron2) / 100;
+360                                                         TTc_Vn = TTc;
+361                                                 }
+362                                         
+363                                         if(TTc > R1) REAL(PhenoStage)[i] = 1;
+364                                         
+365                                         if(TTc > R2) REAL(PhenoStage)[i] = 2;
+366                                         
+367                                         if(TTc > R3) REAL(PhenoStage)[i] = 3;
+368                                         
+369                                         if(TTc > R4) REAL(PhenoStage)[i] = 4;
+370                                         
+371                                         if(TTc > R5) REAL(PhenoStage)[i] = 5;
+372                                         
+373                                         if(TTc > R6) REAL(PhenoStage)[i] = 6;
+374                                 
+375                                         /* if(*(pt_doy+i) >= harvestDate) REAL(PhenoStage)[i] = -1; */
+376                                 }
+377 
+378                         }
+379                 }
+380                 
+381 
+382 
+383 /* There are several possible approaches to modleing LAI\&. One is solely based on thermal time */
+384 /* another one is based on specific leaf area and the third one in based on modeling individual leaves */
+385 /* citations below */
+386 
+387                /* LAI following Lizaso J, Batchelor WD, Westgate ME\&. A
+388                 * leaf area model to simulate cultivar-specific
+389                 * expansion and senescence of maize leaves\&. Field
+390                 * Crops Research\&. 2003;80(1):1-17\&. Available at:
+391                 * http://linkinghub\&.elsevier\&.com/retrieve/pii/S037842900200151X\&. */
+392 
+393                 phenoStage = REAL(PhenoStage)[i];
+394                 if(*(pt_doy+i) < emergeDate){
+395                         LAI = 0\&.0;
+396                         CanopyA = 0\&.0;
+397                         CanopyT = 0\&.0;
+398                         for(i2=0;i2<MAXLEAFNUMBER;i2++){
+399                                 REAL(LAImat)[i2 + i*MAXLEAFNUMBER] = 0\&.0;
+400                         }
+401                 }else{
+402                         if(laiMethod == 0\&.0){
+403                 /* Implementing the simplest method based on thermal time */
+404                                 LAI = fabs(TTc * TTcoef - plantEmerge * TTcoef);
+405                         }
+406                         
+407                         if(laiMethod == 1\&.0){
+408                                 LAI = Leaf * Sp + 1e-3;
+409                         }
+410 
+411                         if(laiMethod == 2\&.0){
+412                                 tmpLAI = laiLizasoFun(TTc, phenoStage, phyllochron1,
+413                                                       phyllochron2, Ax, LT, k0,
+414                                                       a1, a2, L0, LLx, Lx, LNl);
+415 
+416                                 for(i2=0;i2<MAXLEAFNUMBER;i2++){
+417                                         REAL(LAImat)[i2 + i*MAXLEAFNUMBER] = tmpLAI\&.leafarea[i2];
+418                                 }
+419                                 LAI = tmpLAI\&.totalLeafArea * 1e-4 * plantdensity; 
+420                         }
+421 
+422                         if(laiMethod == 3\&.0){
+423                                 tmpLAI = laiBirchdiscontinuousFun(phenoStage, LT, Amax, 
+424                                                                   c1, c2, c3, c4); 
+425                                 /* Amax = area of largest leaf (-1 if unspecified in which
+426                                  * case it will be calculated by Birch eq 13), c1 is coefficient
+427                                  * for Birch eq 15, c2 is coefficient for Birch eq 16, c3 and c4
+428                                  * are the first and second coefficients in Birch eq 17
+429                                  */
+430                                 for (i2 = 0; i2 < MAXLEAFNUMBER; i2++){
+431                                         REAL(LAImat)[i2 + i * MAXLEAFNUMBER] = tmpLAI\&.leafarea[i2];
+432                                 }
+433                                 LAI = tmpLAI\&.totalLeafArea * 1e-4 * plantdensity;
+434                         }
+435 
+436                         if(laiMethod == 4\&.0){
+437                                 tmpLAI = laiBirchcontinuousFun(phenoStage, a, b, Amax, x0, 
+438                                                                            f, g, TTc, LT);
+439                                 /* a and b are coefficients to Birch Eq 5, x0 is leaf number
+440                                  * of largest leaf, and f and g are coefficients to Birch
+441                                  * Eq 11\&.
+442                                  */
+443                                 for (i2 = 0; i2 < MAXLEAFNUMBER; i2++){
+444                                         REAL(LAImat)[i2 + i * MAXLEAFNUMBER] = tmpLAI\&.leafarea[i2];
+445                                 }
+446                                 LAI = tmpLAI\&.totalLeafArea / 1e4 * plantdensity;
+447                         }
+448                  /* Total leaf area will be in cm2, for a meter squared I need to divide by 1e4*/
+449                         if(LAI > maxLAI) LAI = maxLAI;
+450                         if(LAI < 1e-3) LAI = 1e-3;
+451                 }
+452                       
+453 
+454 /* There is a different value of Rd for vegetative vs\&. reproductive */
+455                 if(phenoStage < 1){
+456                         Rd1 = Rd11;
+457                         vmax1 = vmax11;
+458                 }else{
+459                         Rd1 = Rd12;
+460                         vmax1 = vmax12;
+461                 }
+462 
+463                /* Calculate Canopy Assimilation  */
+464 /* Canopy Assimilation should only happen between emergence and R6 */
+465                 /* if(*(pt_doy+i) > emergeDate && *(pt_doy+i) < harvestDate){ */
+466                 if(*(pt_doy+i) > emergeDate && TTc < R6){
+467 
+468                         Canopy = CanAC(LAI, *(pt_doy+i), *(pt_hr+i),
+469                                        *(pt_solar+i), *(pt_temp+i),
+470                                        *(pt_rh+i), *(pt_windspeed+i),
+471                                        lat, nlayers,
+472                                        vmax,alpha,kparm1,
+473                                        theta,beta,Rd1,Ca,b01,b11,StomWS,
+474                                        ws, kd,
+475                                        chil, heightFactor,
+476                                        LeafN, kpLN, lnb0, lnb1, lnFun,upperT,lowerT,nitroparms);
+477 
+478                         /* Rprintf("LAI: %\&.4f, vmax: %\&.1f",LAI,vmax);  */
+479 
+480                         CanopyA = Canopy\&.Assim * timestep;
+481                         CanopyT = Canopy\&.Trans * timestep;
+482                         q++;
+483                 }else{
+484                         CanopyA = 0\&.0;
+485                         CanopyT = 0\&.0;
+486                 }
+487 
+488                /* Section about N deficiency on Vmax */
+489                /* The equation below works well for the vegetative part */
+490                 if(phenoStage < 1){
+491                         LeafN = iLeafN * pow(Stem + Leaf,-kLN); 
+492                         if(LeafN > iLeafN) LeafN = iLeafN;
+493                         LeafNR = LeafN;
+494                 }else{
+495                         LeafN = LeafNR - (TTc - R1) * (kLN * 0\&.0045);
+496                         if(LeafN < 1e-3) LeafN = 1e-3;  
+497                 }
+498                 
+499                 if(phenoStage == -1) LeafN = 0;
+500 
+501                 /* vmax = (iLeafN - LeafN) * vmax_b1 + vmax1; */
+502                 vmax = vmax1 * (2/(1 + exp(-vmax_b1*(LeafN - 0\&.02))) - 1); 
+503                 /* if(vmax < 0){ */
+504                 /*      Rprintf("vmax1: %\&.1f, vmax_b1: %\&.3f, LeafN: %\&.1f",vmax1,vmax_b1,LeafN); */
+505                 /*         error("stop here"); */
+506                 /* } */
+507 
+508                 alpha = (iLeafN - LeafN) * alpha_b1 + alpha1; 
+509 
+510 
+511                 /* Inserting the multilayer model */
+512                 if(soillayers > 1){
+513                         soilMLS = soilML(*(pt_precip+i), CanopyT, &cwsVec[0], soilDepth, 
+514                                          REAL(SOILDEPTHS), FieldC, WiltP,
+515                                          phi1, phi2, soTexS, wsFun, soillayers, Root, 
+516                                          LAI, 0\&.68, *(pt_temp+i), *(pt_solar), *(pt_windspeed+i), *(pt_rh+i), 
+517                                          hydrDist, rfl, rsec, rsdf);
+518 
+519                         StomWS = soilMLS\&.rcoefPhoto;
+520                         LeafWS = soilMLS\&.rcoefSpleaf;
+521                         soilEvap = soilMLS\&.SoilEvapo;
+522                         for(i4=0;i4<soillayers;i4++){
+523                                 cwsVec[i4] = soilMLS\&.cws[i4];
+524                                 cwsVecSum += cwsVec[i4];
+525                                 REAL(cwsMat)[i4 + i*soillayers] = soilMLS\&.cws[i4];
+526                                 REAL(rdMat)[i4 + i*soillayers] = soilMLS\&.rootDist[i4];
+527                         }
+528 
+529                         waterCont = cwsVecSum / soillayers;
+530                         cwsVecSum = 0\&.0;
+531 
+532                 }else{
+533 
+534                         soilEvap = SoilEvapo(LAI, 0\&.68, *(pt_temp+i), *(pt_solar+i), waterCont, FieldC, WiltP, 
+535                                              *(pt_windspeed+i), *(pt_rh+i), rsec);
+536                         TotEvap = soilEvap + CanopyT;
+537                         WaterS = watstr(*(pt_precip+i),TotEvap,waterCont,soilDepth,FieldC,WiltP,phi1,phi2,soilType, wsFun);   
+538                         waterCont = WaterS\&.awc;
+539                         StomWS = WaterS\&.rcoefPhoto ; 
+540                         LeafWS = WaterS\&.rcoefSpleaf;
+541                         REAL(cwsMat)[i] = waterCont;
+542                         REAL(psimMat)[i] = WaterS\&.psim;
+543                 }
+544 
+545 /* An alternative way of computing water stress is by doing the leaf
+546  * water potential\&. This is done if the wsFun is equal to 4 */
+547 
+548                 if(wsFun == 4){
+549                         /* Calculating the leaf water potential */
+550                         /* From Campbell E = (Psim_s - Psim_l)/R or
+551                          * evaporation is equal to the soil water potential
+552                          * minus the leaf water potential divided by the resistance\&.
+553                          * This can be rearranged to Psim_l = Psim_s - E x R   */
+554                         /* It is assumed that total resistance is 5e6 m^4 s^-1
+555                          * kg^-1 
+556                          * Transpiration is in Mg ha-2 hr-1
+557                          * Multiply by 1e3 to go from Mg to kg
+558                          * Multiply by 1e-4 to go from ha to m^2 
+559                          * This needs to go from hours to seconds that's
+560                          * why the conversion factor is (1/3600)\&.*/
+561                         LeafPsim = WaterS\&.psim - (CanopyT * 1e3 * 1e-4 * 1\&.0/3600\&.0) * transpRes;
+562 
+563                         /* From WIMOVAVC the proposed equation to simulate the effect of water
+564                          * stress on stomatal conductance */
+565                         if(LeafPsim < leafPotTh){
+566                                 /* StomWS = 1 - ((LeafPsim - leafPotTh)/1000 *
+567                                  * scsf); In WIMOVAC this equation is used but
+568                                  * the absolute values are taken from the
+569                                  * potentials\&. Since they both should be
+570                                  * negative and leafPotTh is greater than
+571                                  * LeafPsim this can be rearranged to*/ 
+572                                 StomWS = 1 - ((leafPotTh - LeafPsim)/1000 * scsf);
+573                                 /* StomWS = 1; */
+574                                 if(StomWS < 0\&.1) StomWS = 0\&.1;
+575                         }else{
+576                                 StomWS = 1;
+577                         }
+578                 }else{
+579                         LeafPsim = 0;
+580                 }
+581 
+582                /* Soil Carbon Pools place holder*/
+583                 REAL(SCpools)[0] = 1;
+584                 REAL(SCpools)[1] = 1;
+585                 REAL(SCpools)[2] = 1;
+586                 REAL(SCpools)[3] = 1;
+587                 REAL(SCpools)[4] = 1;
+588                 REAL(SCpools)[5] = 1;
+589                 REAL(SCpools)[6] = 1;
+590                 REAL(SCpools)[7] = 1;
+591                 REAL(SCpools)[8] = 1;
+592 
+593                 REAL(SNpools)[0] = 1;
+594                 REAL(SNpools)[1] = 1;
+595                 REAL(SNpools)[2] = 1;
+596                 REAL(SNpools)[3] = 1;
+597                 REAL(SNpools)[4] = 1;
+598                 REAL(SNpools)[5] = 1;
+599                 REAL(SNpools)[6] = 1;
+600                 REAL(SNpools)[7] = 1;
+601                 REAL(SNpools)[8] = 1;
+602 
+603                /* Need to incoporate the partitioning of carbon to plant components  */
+604                 tmpDBP = maize_sel_dbp_coef(REAL(MALLOCP), phenoStage);
+605 
+606                 kLeaf = tmpDBP\&.kLeaf;
+607                 kStem = tmpDBP\&.kStem;
+608                 kRoot = tmpDBP\&.kRoot;
+609                 kGrain = tmpDBP\&.kGrain;
+610 
+611                 /* if(i == 300){ */
+612                 /*      Rprintf("kLeaf %\&.2f",kLeaf,"\n"); */
+613                 /*      Rprintf("kStem %\&.2f",kStem,"\n"); */
+614                 /*      Rprintf("kRoot %\&.2f",kRoot,"\n"); */
+615                 /*      Rprintf("kGrain %\&.2f",kGrain,"\n"); */
+616                 /* } */
+617                /* Creating the increase in biomass for each component */
+618         
+619                 if(kLeaf > 0 || TTc > R6){
+620                         newLeaf = CanopyA * kLeaf * LeafWS;
+621                         newLeaf = resp(newLeaf, mrc1, *(pt_temp+i));
+622                 }else{
+623                         newLeaf = Leaf * kLeaf;
+624                         Stem += kStem * -newLeaf   * 0\&.9;
+625                         Root += kRoot * -newLeaf * 0\&.9;
+626                         Grain += kGrain * -newLeaf * 0\&.9;
+627                 }
+628 
+629                 if(kStem > 0 || TTc > R6){
+630                         newStem = CanopyA * kStem;
+631                         newStem = resp(newStem, mrc1, *(pt_temp+i));
+632                 }else{
+633                         newStem = Stem * kStem;
+634                         Leaf += kLeaf * -newStem   * 0\&.9;
+635                         Root += kRoot * -newStem * 0\&.9;
+636                         Grain += kGrain * -newStem * 0\&.9;
+637                 }
+638 
+639                 newRoot = CanopyA * kRoot;
+640 
+641 /* I need a better implementation of reproductive specific stress */
+642                 if(LeafWS < StomWS){
+643                         newGrain = CanopyA * kGrain * LeafWS;
+644                 }else{
+645                         newGrain = CanopyA * kGrain * StomWS;
+646                 }
+647 
+648 
+649                 if(*(pt_doy+i) < emergeDate + 7){
+650                         if(newLeaf < 0) newLeaf = 0\&.0;
+651                         if(newStem < 0) newStem = 0\&.0;
+652                         if(newRoot < 0) newRoot = 0\&.0;
+653                         if(newGrain < 0) newGrain = 0\&.0;
+654                 }
+655 
+656                 Grain += newGrain;
+657 
+658 /* Implementing senescence */
+659                 *(sti+q) = newLeaf;
+660                 *(sti2+q) = newStem;
+661                 *(sti3+q) = newRoot;
+662 
+663 /* Senescence for leaf */
+664                 if(TTc < seneLeaf || TTc > R6){
+665                         Leaf += newLeaf;
+666                 }else{
+667                         Leaf += newLeaf - *(sti+k);
+668                         k++;
+669                 }
+670 
+671 /* Senescence for stem */
+672                 if(TTc < seneStem || TTc > R6){
+673                         Stem += newStem;
+674                 }else{
+675                         Stem += newStem - *(sti2+j);
+676                         j++;
+677                 }
+678 
+679 /* Senescence for root */
+680                 if(TTc < seneRoot || TTc > R6){
+681                         Root += newRoot;
+682                 }else{
+683                         Root += newRoot - *(sti3+m);
+684                         m++;
+685                 }
+686 
+687                 /* Collecting results */
+688                 REAL(DayofYear)[i] =  *(pt_doy+i);
+689                 REAL(Hour)[i] =  *(pt_hr+i);
+690                 REAL(CanopyAssim)[i] =  CanopyA;
+691                 REAL(CanopyTrans)[i] =  CanopyT; 
+692                 REAL(LAIc)[i] = LAI;
+693                 REAL(LeafVec)[i] = Leaf;
+694                 REAL(StemVec)[i] = Stem;
+695                 REAL(RootVec)[i] = Root;
+696                 REAL(GrainVec)[i] = Grain;
+697                 REAL(VmaxVec)[i] = vmax;
+698                 REAL(LeafNVec)[i] = LeafN;
+699                 REAL(SoilEvaporation)[i] = soilEvap;
+700                 REAL(LeafPsimVec)[i] = LeafPsim;
+701                 REAL(SoilWatCont)[i] = waterCont;
+702                 REAL(StomatalCondCoefs)[i] = StomWS;
+703         }
+704 
+705         SET_VECTOR_ELT(lists, 0, DayofYear);
+706         SET_VECTOR_ELT(lists, 1, Hour);
+707         SET_VECTOR_ELT(lists, 2, TTTc);
+708         SET_VECTOR_ELT(lists, 3, PhenoStage);
+709         SET_VECTOR_ELT(lists, 4, CanopyAssim);
+710         SET_VECTOR_ELT(lists, 5, CanopyTrans);
+711         SET_VECTOR_ELT(lists, 6, LAIc);
+712         SET_VECTOR_ELT(lists, 7, LeafVec);
+713         SET_VECTOR_ELT(lists, 8, StemVec);
+714         SET_VECTOR_ELT(lists, 9, RootVec);
+715         SET_VECTOR_ELT(lists, 10, GrainVec);
+716         SET_VECTOR_ELT(lists, 11, LAImat);
+717         SET_VECTOR_ELT(lists, 12, VmaxVec);
+718         SET_VECTOR_ELT(lists, 13, LeafNVec);
+719         SET_VECTOR_ELT(lists, 14, cwsMat);
+720         SET_VECTOR_ELT(lists, 15, psimMat);
+721         SET_VECTOR_ELT(lists, 16, rdMat);
+722         SET_VECTOR_ELT(lists, 17, SCpools);
+723         SET_VECTOR_ELT(lists, 18, SNpools);
+724         SET_VECTOR_ELT(lists, 19, LeafPsimVec);
+725         SET_VECTOR_ELT(lists, 20, SoilEvaporation);
+726         SET_VECTOR_ELT(lists, 21, SoilWatCont);
+727         SET_VECTOR_ELT(lists, 22, StomatalCondCoefs);
+728 
+729         SET_STRING_ELT(names,0,mkChar("DayofYear"));
+730         SET_STRING_ELT(names,1,mkChar("Hour"));
+731         SET_STRING_ELT(names,2,mkChar("TTTc"));
+732         SET_STRING_ELT(names,3,mkChar("PhenoStage"));
+733         SET_STRING_ELT(names,4,mkChar("CanopyAssim"));
+734         SET_STRING_ELT(names,5,mkChar("CanopyTrans"));
+735         SET_STRING_ELT(names,6,mkChar("LAI"));
+736         SET_STRING_ELT(names,7,mkChar("Leaf"));
+737         SET_STRING_ELT(names,8,mkChar("Stem"));
+738         SET_STRING_ELT(names,9,mkChar("Root"));
+739         SET_STRING_ELT(names,10,mkChar("Grain"));
+740         SET_STRING_ELT(names,11,mkChar("LAImat"));
+741         SET_STRING_ELT(names,12,mkChar("VmaxVec"));
+742         SET_STRING_ELT(names,13,mkChar("LeafNVec"));
+743         SET_STRING_ELT(names,14,mkChar("cwsMat"));
+744         SET_STRING_ELT(names,15,mkChar("psimMat"));
+745         SET_STRING_ELT(names,16,mkChar("rdMat"));
+746         SET_STRING_ELT(names,17,mkChar("SCpools"));
+747         SET_STRING_ELT(names,18,mkChar("SNpools"));
+748         SET_STRING_ELT(names,19,mkChar("LeafPsimVec"));
+749         SET_STRING_ELT(names,20,mkChar("SoilEvaporation"));
+750         SET_STRING_ELT(names,21,mkChar("SoilWatCont"));
+751         SET_STRING_ELT(names,22,mkChar("StomatalCondCoefs"));
+752 
+753         setAttrib(lists,R_NamesSymbol,names);
+754         UNPROTECT(25);
+755         return(lists);
+756 
+757 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.

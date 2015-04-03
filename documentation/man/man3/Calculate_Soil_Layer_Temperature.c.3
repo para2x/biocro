@@ -1,0 +1,50 @@
+.TH "/home/dlebauer/dev/biocro/src/Calculate_Soil_Layer_Temperature.c" 3 "Fri Apr 3 2015" "Version 0.92" "BioCro" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/home/dlebauer/dev/biocro/src/Calculate_Soil_Layer_Temperature.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'crocent\&.h'\fP
+.br
+
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBCalculate_Soil_Layer_Temperature\fP (double soiltavg[], int num_layers, struct \fBdailyclimate\fP *\fBdailyclimate\fP)"
+.br
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "void Calculate_Soil_Layer_Temperature (doublesoiltavg[], intnum_layers, struct \fBdailyclimate\fP *dailyclimate)"
+
+.PP
+.nf
+3 {
+4   /************************************************************************
+5    * Purpose:
+6    * To calculate average  temperature of multiple soil layer
+7    * Input
+8    * daily climate structure
+9    * number of layers in soil profile num_layers
+10    * Output
+11    * soiltavg[num_layers]
+12    * 
+13    * Currently I am assuming temperature of all the soil layers is same as air temperature
+14    * This is similar to what i got in the version Melaniie gave me\&.
+15    * I need to change it to make it more sophisticated, 
+16    * Also, perhaps I will need to include maxm and minm temperature of layers too 
+17    * *********************************************************************/
+18   int i;
+19   for (i=0; i<num_layers; i++)
+20   {
+21     soiltavg[i]=dailyclimate->temp;
+22   }
+23   return;
+24 }
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for BioCro from the source code\&.
